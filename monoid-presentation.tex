@@ -1,0 +1,749 @@
+\documentclass{beamer}
+%
+% Choose how your presentation looks.
+%
+% For more themes, color themes and font themes, see:
+% http://deic.uab.es/~iblanes/beamer_gallery/index_by_theme.html
+%
+\mode<presentation>
+{
+  \usetheme{Madrid}      % or try Darmstadt, Madrid, Warsaw, ...
+  \usecolortheme{default} % or try albatross, beaver, crane, ...
+  \usefonttheme{default}  % or try serif, structurebold, ...
+  \useoutertheme{default}
+  \setbeamertemplate{navigation symbols}{}
+  \setbeamertemplate{caption}[numbered]
+  \logo{\includegraphics[height=0.8cm]{assoc2.png}}
+}
+
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{ulem} % for \sout
+\usepackage{tikz}
+\usepackage{amsmath}
+
+\title[Monoids]{MONOIDS}
+\subtitle{\textit{What}, \textit{How} and \textit{Why}}
+\author{Sebastian Galkin}
+\institute[@paraseba]{\texttt{@paraseba} \\ \texttt{paraseba@gmail.com}}
+\date[Scaladores]{Scaladores - May 2018}
+
+\definecolor{keyword}{rgb}{0,0.38,0}
+\definecolor{comments}{rgb}{0.4,0.1,0.1}
+
+\begin{document}
+\lstset{
+  language=Scala,
+  basicstyle={\small\ttfamily},
+  keywordstyle=\color{keyword},
+  commentstyle={\color{comments}\itshape},
+  columns=fullflexible
+}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+% Uncomment these lines for an automatically generated outline.
+\begin{framej}
+  \frametitle{Outline}
+ \tableofcontents
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{About me}
+
+  {\LARGE Sebastian Galkin}
+
+  \begin{itemize}
+    \item I've been doing \alert{FP} for a while. Mostly big data and enterprise.
+    \item I \alert{really} want to get more people into FP.
+    \item It shouldn't be scary to learn FP.
+    \item Available if you (or your company) want to learn, or improve in FP.
+  \end{itemize}
+
+  \color{blue}\texttt{paraseba@gmail.com}
+
+\end{frame}
+
+\section{Monoids in Math \& Coding}
+\subsection{Why Monoids}
+
+\begin{frame}{What is Abstraction?}
+  \begin{quote}
+Abstraction is the process of extracting the underlying \alert{essence} of a concept,
+removing any \alert{dependence} on real world objects, and \alert{generalizing} it so that it
+has \alert{wider applications.}\\[2pt] \rightline{{\rm --- Wikipedia}}
+  \end{quote}
+
+  \vspace{3ex}
+
+  \begin{quote}
+Being abstract is something profoundly different from being vague...The purpose of abstraction is not to be vague, but to create a \alert{new semantic level} in which one can be \alert{absolutely precise.}
+\\[2pt] \rightline{{\rm --- E. W. Dijkstra}}
+    \end{quote}
+\end{frame}
+
+
+\begin{frame}[fragile]{Example of Abstraction in Code}
+  \begin{block}{v1}
+  \begin{lstlisting}
+    def findOrder(all: List[Order], id: OrderID)
+  \end{lstlisting}
+  \end{block}
+
+  \begin{block}{v2}
+  \begin{lstlisting}
+    def findOrder(all: List[Order], f: Order => Boolean)
+  \end{lstlisting}
+  \end{block}
+
+  \begin{block}{v3}
+  \begin{lstlisting}
+    filter(all)(_.id == id)
+  \end{lstlisting}
+  \end{block}
+
+  \begin{block}{v4}
+  \begin{lstlisting}
+    foldRight(all)(List())(...)
+  \end{lstlisting}
+  \end{block}
+
+\end{frame}
+
+\begin{frame}{In Math You Will Find}
+  \begin{block}{Theorem 1}
+    For any Matrix M...
+  \end{block}
+
+  \begin{block}{Theorem 2}
+    Given a Group...
+  \end{block}
+
+  \begin{block}{Theorem 3}
+    Given a Field...
+  \end{block}
+
+  \begin{block}{Theorem 4}
+    Given a Category...
+  \end{block}
+
+\end{frame}
+
+
+\begin{frame}{Standing On the Shoulders of Giants}
+  It turns out, mathematicians are the \alert{masters of abstraction.}
+  \begin{itemize}
+  \item Finding the minimum set of requirements,
+  \item the maximum generality of the result,
+  \item analogies and analogies between analogies,
+  \item reusing results from different areas of math.
+  \end{itemize}
+
+  \begin{block}{}
+  We, programmers, should be all over their stuff!
+  \end{block}
+\end{frame}
+
+
+\subsection{What is a Monoid}
+
+\begin{frame}{An Example of an Algebraic Structure: Monoids}
+  \begin{block}{}
+    \alert{Monoid:} a set together with an associative binary operation
+      and an identity element.
+  \end{block}
+
+  \pause
+
+  \begin{block}{Components - A Triplet \((A, \bullet, u)\)}
+  \begin{itemize}
+    \item A [carrier] set (\(A\))
+    \item A binary associative operation (\(\bullet\))
+    \item An identity for the operation (\(u\))
+  \end{itemize}
+  \end{block}
+
+  \pause
+  \begin{block}{Laws (\(a,b,c \in A\))}
+
+  \begin{description}[Commutativity:]
+    \item[Closure:] \(a \bullet b\) is an element of \(A\)
+    \item[Associativity:] \((a \bullet b) \bullet c = a \bullet (b \bullet c)\)
+    \item[Identity:] \(u \bullet a = a \bullet u \ = a\)
+    \item[\sout{Commutativity:}] \(a \bullet b \neq b \bullet a\)
+  \end{description}
+  \end{block}
+\end{frame}
+
+
+\subsection{Examples in Math}
+\begin{frame}{A Monoid in ``Real Life''}
+  \alert{Color addition}
+  \begin{columns}[c]
+    \column{0.5\textwidth}
+      \begin{itemize}
+        \item \(A\): the set of all colors
+        \item \(a, b\): particular colors
+        \item \(a \bullet b\): the color formed with light from \(a\) and \(b\)
+        \item \(u\): transparent color
+      \end{itemize}
+
+    \column{0.5\textwidth}
+
+    \begin{figure}
+        \centering
+        \def\svgwidth{\columnwidth}
+        \input{additive-color.pdf_tex}
+    \end{figure}
+  \end{columns}
+
+  \alert{What does associativity mean?}
+
+  \alert{Is it a commutative monoid?}
+\end{frame}
+
+\begin{frame}{Examples of Monoids in Math}
+  \begin{itemize}
+    \item Integers under addition with zero identity.
+      \[(a + b) + c = a + (b + c)\]
+    \item Reals under multiplication with 1 identity.
+      \[(a b) c = a (b c)\]
+    \item Subsets of a set under union with empty identity.
+      \begin{eqnarray*}
+      (a \cup b)\cup  c = a\cup  (b\cup  c) & a \cup \emptyset =
+        \emptyset \cup a = a
+      \end{eqnarray*}
+    \item Spatial transformations
+    \item Integers under division?
+  \end{itemize}
+\end{frame}
+
+\subsection{Examples in Programming}
+
+\begin{frame}{Basic Monoids in Programming}
+  Back to code.
+
+  \begin{itemize}
+    \item \texttt{Integer} under \texttt{(+)} with \texttt{0}
+    \item \texttt{Double} under \texttt{(+)} with \texttt{0}?
+      \pause
+      \[ (0.1+0.2)+0.3 \neq 0.1+(0.2+0.3)\]
+      \pause
+    \item \texttt{Boolean} under \texttt{||} with \texttt{False}.
+    \item \texttt{Boolean} under \texttt{\&\&} with \texttt{True}.
+    \item Sets under union. Is it commutative?
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Modeling Monoids in Scala}
+  If the type \texttt{M} \emph{has} a monoid we have:
+  \begin{itemize}
+    \item a way to create an \texttt{M} from nothing and,
+    \item a way to combine two \texttt{M}s.
+  \end{itemize}
+
+  \begin{block}{}
+  \begin{lstlisting}
+trait Monoid[M] {
+
+  // The associative operation
+  def append(a: M, b: => M): M
+
+  // The identity
+  def zero: M
+
+}
+  \end{lstlisting}
+  \end{block}
+
+  We can have more than one Monoid for the same \texttt{M}
+\end{frame}
+
+\begin{frame}[fragile]{Two Monoids for Ints}
+  \begin{block}{}
+  \begin{lstlisting}
+implicit val sumMon = new Monoid[Int] {
+  def zero = 0
+
+  def append(a: Int, b: => Int) =
+    a + b
+}
+
+val mulMon = new Monoid[Int] {
+  def zero = 1
+
+  def append(a: Int, b: => Int) =
+    a * b
+}
+  \end{lstlisting}
+  \end{block}
+  These monoids are first class citizens, we can pass them to
+  functions, put them in containers, etc.
+\end{frame}
+
+\begin{frame}[fragile]{The List Monoid}
+  \begin{block}{}
+
+  \begin{lstlisting}
+implicit val freeMon[A] = new Monoid[List[A]] {
+
+  def zero = List()
+
+  def append(as: List[A], bs: => List[A]) =
+    a ++ b
+
+}
+  \end{lstlisting}
+  \end{block}
+Is it a commutative monoid?
+\end{frame}
+
+\begin{frame}[fragile]{Monoid for Tuples}
+  How to combine two tuples?
+  \pause
+
+  If the elements of the tuple have monoids themselves,
+  we can
+
+  \alert{combine componentwise}.
+
+  \pause
+  \begin{block}{}
+  \begin{lstlisting}
+implicit def pairMon[A, B]
+  (implicit am: Monoid[A], implicit bm: Monoid[B]) =
+
+  new Monoid[(A, B)] {
+
+    def zero: (A,B) = (am.zero, bm.zero)
+
+    def append(a: (A, B) , b: => (A, B)): (A,B) =
+      (am.append(a.fst, b.fst), bm.append(a.fst, b.fst))
+  }
+  \end{lstlisting}
+  \end{block}
+
+  \texttt{am} and \texttt{bm} are sometimes called \emph{evidence} or
+  \emph{witnesses} of the monoids for \texttt{A} and \texttt{B}.
+\end{frame}
+
+
+\begin{frame}[fragile]{Is There a Monoid for Functions?}
+  Not arbitrary functions \texttt{A => B}.
+
+  But what if they are functions \texttt{A => A}?
+
+  How can we create a function \texttt{A => A} given two others?
+  \pause
+  \begin{block}{Functions that take and return the same type}
+
+  \begin{lstlisting}
+def endoMon[A] = Monoid[A => A] {
+
+  def zero: A => A = identity
+
+  def append(f: A => A, g: => (A => A)): A => A =
+    g andThen f
+
+}
+  \end{lstlisting}
+  \end{block}
+Is it a commutative monoid?
+\end{frame}
+
+
+\begin{frame}[fragile]{A Different Monoid for Functions}
+  What happens if the \alert{return type has a Monoid?}
+
+  How can we use it to write a Monoid for \texttt{A => M}?
+
+  \begin{block}{Functions that return a monoidal type}
+
+  \begin{lstlisting}
+def monFunMon[A, M]
+    (implicit mMon: Monoid[M]) = Monoid[A => M] {
+
+    def zero: A => M = _ => mMon.zero
+
+    def append(f: A => M, g: => (A => M)): A => M =
+      a => mMon.append(f(a), g(a))
+
+  }
+  \end{lstlisting}
+  \end{block}
+Is it a commutative monoid?
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Option Monoids}
+  \begin{onlyenv}<1>
+  \begin{block}{Quick Test}
+    Would it make sense to try to write an instance of
+    \texttt{Monoid[Option]}
+  \end{block}
+  \end{onlyenv}
+
+  \begin{onlyenv}<2>
+  \begin{block}{Quick Test}
+    Would it make sense to try to combine with a monoid
+    \texttt{Option[A]} and  \texttt{Option[B]}
+  \end{block}
+  \end{onlyenv}
+
+  \begin{onlyenv}<3>
+    There are a few ways to combine \texttt{Options[A]}
+
+  \begin{block}{Taking the first \texttt{Some}}
+  \begin{lstlisting}
+def firstMon[A] = new Monoid[Option[A]] {
+
+  def zero: Option[A] = None
+
+  def append(a: Option[A], b: => Option[A]): Option[A] =
+    a orElse b
+}
+  \end{lstlisting}
+  \end{block}
+
+  Similarly taking the last \texttt{Some}
+  \end{onlyenv}
+
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{Option Monoids}
+
+  What happens if \texttt{Option} is wrapping a monoidal type?
+
+  \begin{block}{Using the wrapped monoid}
+  \begin{lstlisting}
+def discardMon[M](implicit m: Monoid[M]) =
+  new Monoid[Option[M]] {
+
+    // this is weird
+    def zero: Option[M] = None
+
+    def append(a: Option[M], b: => Option[M]): Option[M] =
+      (a,b) match {
+        case (a, None) => a
+        case (None, b) => b
+        case (Some(a), Some(b)) => Some(m.append(a, b))
+      }
+  }
+  \end{lstlisting}
+  \end{block}
+
+  Why is \texttt{zero} weird?
+  \pause
+  Can we do \texttt{zero = Some(m.zero)} instead?
+\end{frame}
+
+\begin{frame}
+  \frametitle{Recap}
+  We have seen:
+  \begin{itemize}
+    \item Monoid definition (binary assoc operation with identity).
+    \item Monoid \texttt{trait} (one type parameter,
+      two methods: \texttt{zero, append})
+    \item Monoids for:
+      \begin{itemize}
+      \item Numbers,
+      \item lists, sequences
+      \item tuples (if members have monoids)
+      \item \texttt{A => A} and \texttt{A => M} where \texttt{M} has a monoid
+      \item \texttt{Options} (first, last and monoid wrapper)
+      \item There are many, many more.
+      \end{itemize}
+  \end{itemize}
+
+  \begin{block}{}
+    \centering
+    But we haven't seen \alert{why} or \alert{how} to use monoids.
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Simple usage examples}
+
+  \begin{block}{A helpful function: \texttt{mconcat}}
+  \begin{lstlisting}
+def mconcat[A](as: List[A])(implicit m: Monoid[A]): A =
+  // fold? foldLeft? foldRight? What laws are we using?
+  as.fold(m.zero)(m.append(_, _))
+
+def sum(xs: List[Int]): Int = mconcat(xs)(sumMon)
+
+def first[A](os: List[Option[A]]): Option[A] =
+  mconcat(os)(firstMon)
+  \end{lstlisting}
+  \end{block}
+
+  Almost equal implementation for \texttt{sum} and \texttt{first}
+
+  An even more useful function is:
+
+  \begin{block}{}
+  \begin{lstlisting}
+def foldMap[A,M](List[A])(f: A => M)(implicit m: Monoid[M]): M
+  \end{lstlisting}
+  \end{block}
+  See \texttt{Foldable}.
+\end{frame}
+
+\begin{frame}[fragile]{Composing Monoids}
+
+  \begin{block}{Define a comparison}
+  \begin{onlyenv}<1>
+  \begin{lstlisting}[escapechar=\|]
+sealed trait Ord[A] {
+  def compare(a: A,  b:A): |\fbox{\texttt{???}}|
+}
+\end{lstlisting}
+\end{onlyenv}
+
+\begin{onlyenv}<2>
+\begin{lstlisting}[escapechar=\|]
+sealed trait Ord[A] {
+  def compare(a: A,  b:A): |\fbox{\texttt{Ordering}}|
+}
+
+sealed trait Ordering
+
+object Ordering {
+  case object LT extends Ordering
+  case object GT extends Ordering
+  case object EQ extends Ordering
+}
+
+  \end{lstlisting}
+  \end{onlyenv}
+  \end{block}
+
+  \only<1>{What should we use for \fbox{???} here?}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Composing Monoids}
+  It turns out \texttt{Ordering} has a monoid:
+
+  \begin{block}{An \texttt{Ordering} monoid}
+  \begin{lstlisting}
+val ordMon = new Monoid[Ordering] {
+  def zero: Ordering = Ordering.EQ
+
+  def append(a: Ordering, b: => Ordering): Ordering =
+    a match {
+      case Ordering.EQ => b
+      case o => o
+  }
+}
+  \end{lstlisting}
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Composing Monoids}
+  \begin{block}{}
+  \begin{lstlisting}
+def sortBy(as: Array[A])(by: A => A => Ordering): Array[A] = ...
+def comparing[A, B](f: B => A)(b1: B, b2: B)(implicit o: Ord[A]): Ordering
+
+case class Person(addr: Address, name: String, dob: Date)
+case class Address(zip: Int, street: String)
+
+val people: Array[Person] = ...
+
+val sorted = sortBy(people)(mconcat(List(
+  comparing(_.address.zip),
+  comparing(_.name),
+  comparing(_.dob)))
+
+  \end{lstlisting}
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Larger Use Cases}
+  \framesubtitle{Parallelization}
+  \[a_1 \bullet a_2 \bullet a_3 \dotsb \bullet a_n\]
+
+  What happens if \texttt{append} for \texttt{Monoid[E]} is CPU expensive?
+
+\pause
+\include{tree}
+
+\begin{block}{Quiz}
+  \pause
+  Can we swap the two red root branches in the last tree?
+\end{block}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Larger Use Cases}
+  \framesubtitle{Incremental updates}
+  The Problem:
+
+  \begin{itemize}
+    \item System measures a magnitude (e.g. latency)
+    \item Compute and store daily means, variances, etc.
+    \item Events arrive at high rate (millions per hour)
+  \end{itemize}
+
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Larger Use Cases}
+  \framesubtitle{Incremental updates}
+  \begin{columns}[c]
+    \column{0.6\textwidth}
+      \begin{block}{Naive approach}
+        \begin{itemize}
+        \item On event load all previous measurements,
+        \item recompute meand/variance,
+        \item store.
+        \end{itemize}
+      \end{block}
+
+    \column{0.3\textwidth}
+  Too much \alert{memory}, to much compute \alert{time}, not able to \alert{catch up}
+  to the stream.
+  \end{columns}
+
+  \pause
+
+  \begin{columns}[c]
+    \column{0.6\textwidth}
+      \begin{block}{Unsound approach}
+        \begin{itemize}
+        \item Store previous mean/variance,
+        \item on event, average previous and current,
+        \item store.
+        \end{itemize}
+      \end{block}
+
+    \column{0.3\textwidth}
+    Fast, low memory. But, if we got \(2,1\) and then \(0\):
+
+    \alert{\(\frac{(2 + 1) / 2 + 0}{3} \neq 1\).}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Larger Use Cases}
+  \framesubtitle{Incremental updates}
+  A better approach (showed for mean but easy to generalize):
+
+  \begin{itemize}
+  \item Store mean and number of measurements
+  \item accumulate several (or 1) new events,
+  \item combine the old and new means using the right \alert{monoid},
+  \item store.
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Larger Use Cases}
+  \framesubtitle{Incremental updates}
+  What to store?
+  \[
+  \begin{split}
+    \mu = \sum_{i=0}^{n-1} x_i \qquad  \nu = \sum_{i=0}^{m-1} x_{i+n} \\
+    \frac{1}{n+m} \sum_{i=0}^{n+m-1} x_i = \frac{n\mu + m\nu} {n+m}
+  \end{split}
+  \]
+
+  \pause
+
+  \begin{itemize}
+  \item Store mean and number of measurements
+  \item accumulate several (or 1) new events,
+  \item combine the old and new means using the right \alert{monoid},
+  \item store.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Larger Use Cases}
+  \framesubtitle{Incremental updates}
+  \begin{block}{The mean monoid}
+  \begin{lstlisting}
+case class Mean(mu: Double, n: Int)
+
+implicit val meanMonoid = new Monoid[Mean] {
+  def zero: Mean = Mean(0,0)
+
+  def append(a: Mean, b: => Mean): Mean = (a, b) match {
+     case (Mean(mua, na), Mean(mub, nb)) =>
+       Mean((mua * na + mub * nb) / (na + nb), na + nb)
+  }
+}
+  \end{lstlisting}
+  \end{block}
+  Now we can accumulate measurements for some time, and then easily
+  combine the previous stored averages with new ones.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Larger Use Cases}
+  \framesubtitle{Incremental updates}
+  Few more details:
+  \begin{itemize}
+    \item How about \texttt{Double} under sum not being a monoid?
+  \item We saw mean, but same is extensible to variance.
+  \item In fact, it's extensible to any higher moment.
+  \item In fact, you can extend it to do approximate histograms and other fun stuff.
+  \end{itemize}
+
+\end{frame}
+
+\subsection{References}
+
+\section{Monoids in Design \color[rgb]{0.5,0.1,0.9}[next session]}
+
+
+
+% \begin{frame}{Functional Programming in Scala}
+%   reading the book as a group?
+% \end{frame}
+
+% \begin{frame}{Figures as Monoids Paper}
+% \end{frame}
+
+% \begin{frame}{Why functional programming matters}
+% \end{frame}
+
+% \begin{frame}{Scalaz}
+% \end{frame}
+
+
+
+\begin{frame}{ToDo / Fixme}
+  \begin{itemize}
+    \item what happens with broken rules
+    \item Monoid seems too simple but it's powerful
+    \item mconcat can be parallelized, incrementally, cached
+    \item dual monoid
+    \item summaries
+      \item substracition not a monoid
+      \item where to find code/presentation
+        \item mathematical building, is elegant, if you don't care about
+          elegance in software what do you care about? elegance is simple (not easy)
+    \item level of the talk, audience
+    \item accent
+    \item quizes to keep awake
+      \item scalaz to try things
+        \item grammarly
+          \item The Red Book
+  \end{itemize}
+\end{frame}
+
+\end{document}
