@@ -1,10 +1,52 @@
+\iffalse
+Title: Monoids. What, how and why?
+Titulo: Monoides. Que, Como e Por Que?
+
+Abstract:
+We will learn about Monoids, a concept invented (discovered?) by mathematicians
+that we can leverage to great value in our code and designs.
+
+The talk is structured in two sessions, in this first one (5/29) we'll learn what
+Monoids are, go through many examples, and write code that creates and uses Monoids. In
+the second session (June maybe?) we will see how we can use Monoids to guide software design.
+
+Despite the weird name, Monoids are easy to understand, and once you do, you'll
+start finding them everywhere. More importantly, after a little practice
+you'll gain intuition and you'll be able to integrate Monoids in your code and
+designs, obtaining more abstract and reusable results.
+
+Requirements:
+This is an intermediate level talk. No knowledge of math or functional
+programming is required. I'll assume you can understand simple Scala code.
+In particular, if you don't know what implicit parameters are, spend 10 minutes
+learning about them. You don't need to understand the details of implicit search
+mechanisms or anything like that.
+
+
+Resumo:
+Vamos aprender sobre Monoids, um conceito inventado (ou descoberto?) pelos
+matematicos, que nos podemos aproveitar com grandes resultados no nosso codigo e desenhos.
+
+A palestra esta estruturada em duas sessoes, na primeira (29/05) vamos aprender o
+que sao os Monoids, ver muitos exemplos e escrever codigo que cria e usa
+Monoids. Na segunda sessao (data a confirmar) vamos ver como podemos usar os
+Monoids para guiar o desenho de software.
+
+Apesar de seu nome estranho, os Monoids sao faceis de entender, e uma vez que os
+entenda, voce vai acha-los em todo lugar. Ainda mais importante, com um
+pouco de pratica, voce vai aprimorar sua intuicao e sera capaz de integrar Monoids no seu
+codigo e desenhos, consiguindo resultados mais abstratos e reusaveis.
+
+Requerimentos:
+Essa e uma palestra de nivel intermediario. Nao precisa conhecimentos de
+matematica ou programacao funcional. Todos os exemplos serao em Scala, voce devera
+conhecer a linguagem para entende-los. Particularmente, se voce nao sabe o que sao os parametros
+implicitos, gaste 10 minutos aprendedo-os. Nao precisa saber os detalhes dos
+mecanismos de busca de implicitos.
+\fi
+
 \documentclass{beamer}
-%
-% Choose how your presentation looks.
-%
-% For more themes, color themes and font themes, see:
-% http://deic.uab.es/~iblanes/beamer_gallery/index_by_theme.html
-%
+
 \mode<presentation>
 {
   \usetheme{Madrid}      % or try Darmstadt, Madrid, Warsaw, ...
@@ -15,6 +57,7 @@
   \setbeamertemplate{caption}[numbered]
   \logo{\includegraphics[height=0.8cm]{assoc2.png}}
 }
+
 
 \usepackage[english]{babel}
 \usepackage[utf8]{inputenc}
@@ -47,7 +90,7 @@
 \end{frame}
 
 % Uncomment these lines for an automatically generated outline.
-\begin{framej}
+\begin{frame}
   \frametitle{Outline}
  \tableofcontents
 \end{frame}
@@ -72,71 +115,40 @@
 \section{Monoids in Math \& Coding}
 \subsection{Why Monoids}
 
-\begin{frame}{What is Abstraction?}
+\begin{frame}
+  \frametitle{What is Abstraction?}
   \begin{quote}
 Abstraction is the process of extracting the underlying \alert{essence} of a concept,
 removing any \alert{dependence} on real world objects, and \alert{generalizing} it so that it
 has \alert{wider applications.}\\[2pt] \rightline{{\rm --- Wikipedia}}
   \end{quote}
 
+\end{frame}
+
+\begin{frame}
+  \frametitle{You call this abstraction?}
+  \begin{itemize}
+    \item Avoiding copy/paste
+    \item Factor out common code to a function
+    \item Pass to functions only what they need
+      \pause
+    \item What is the \alert{essence} of your auth system?
+    \item How \alert{general} is your code really?
+    \item Can you make decisions without looking at the \alert{details}?
+  \end{itemize}
+
   \vspace{3ex}
+  \pause
 
-  \begin{quote}
-Being abstract is something profoundly different from being vague...The purpose of abstraction is not to be vague, but to create a \alert{new semantic level} in which one can be \alert{absolutely precise.}
-\\[2pt] \rightline{{\rm --- E. W. Dijkstra}}
-    \end{quote}
-\end{frame}
-
-
-\begin{frame}[fragile]{Example of Abstraction in Code}
-  \begin{block}{v1}
-  \begin{lstlisting}
-    def findOrder(all: List[Order], id: OrderID)
-  \end{lstlisting}
-  \end{block}
-
-  \begin{block}{v2}
-  \begin{lstlisting}
-    def findOrder(all: List[Order], f: Order => Boolean)
-  \end{lstlisting}
-  \end{block}
-
-  \begin{block}{v3}
-  \begin{lstlisting}
-    filter(all)(_.id == id)
-  \end{lstlisting}
-  \end{block}
-
-  \begin{block}{v4}
-  \begin{lstlisting}
-    foldRight(all)(List())(...)
-  \end{lstlisting}
+  \begin{block}{}
+  \texttt{\LARGE{We are so bad at abstraction!}}
   \end{block}
 
 \end{frame}
 
-\begin{frame}{In Math You Will Find}
-  \begin{block}{Theorem 1}
-    For any Matrix M...
-  \end{block}
-
-  \begin{block}{Theorem 2}
-    Given a Group...
-  \end{block}
-
-  \begin{block}{Theorem 3}
-    Given a Field...
-  \end{block}
-
-  \begin{block}{Theorem 4}
-    Given a Category...
-  \end{block}
-
-\end{frame}
-
-
-\begin{frame}{Standing On the Shoulders of Giants}
-  It turns out, mathematicians are the \alert{masters of abstraction.}
+\begin{frame}
+  \frametitle{Standing On the Shoulders of Giants}
+  Mathematicians are the \alert{masters of abstraction.}
   \begin{itemize}
   \item Finding the minimum set of requirements,
   \item the maximum generality of the result,
@@ -145,7 +157,11 @@ Being abstract is something profoundly different from being vague...The purpose 
   \end{itemize}
 
   \begin{block}{}
-  We, programmers, should be all over their stuff!
+  This is exactly what they do.
+  \end{block}
+
+  \begin{block}{}
+  We, developers, should be all over their stuff!
   \end{block}
 \end{frame}
 
@@ -743,6 +759,8 @@ implicit val meanMonoid = new Monoid[Mean] {
       \item scalaz to try things
         \item grammarly
           \item The Red Book
+            \item syntax sugar for implicits
+              \item lazyness, is the by name argument important?
   \end{itemize}
 \end{frame}
 
