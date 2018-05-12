@@ -102,47 +102,60 @@ mecanismos de busca de implicitos.
   {\LARGE Sebastian Galkin}
 
   \begin{itemize}
-    \item I've been doing \alert{FP} for a while. Mostly big data and enterprise.
-    \item I \alert{really} want to get more people into FP.
-    \item It shouldn't be scary to learn FP.
-    \item Available if you (or your company) want to learn, or improve in FP.
+  \item \alert{Functional Programming} for a while.
+  \item Mostly big data and enterprise.
+  \item People are still scared of FP.
+  \item You or your team want to learn FP?
+  \color{blue}\texttt{paraseba@gmail.com}
   \end{itemize}
 
-  \color{blue}\texttt{paraseba@gmail.com}
 
 \end{frame}
 
-\section{Monoids in Math \& Coding}
-\subsection{Why Monoids}
+\section{Monoids in Math \& Programming}
+\subsection{Abstraction}
 
 \begin{frame}
   \frametitle{What is Abstraction?}
   \begin{quote}
-Abstraction is the process of extracting the underlying \alert{essence} of a concept,
+\alert{Abstraction} is the process of extracting the underlying \alert{essence} of a concept,
 removing any \alert{dependence} on real world objects, and \alert{generalizing} it so that it
-has \alert{wider applications.}\\[2pt] \rightline{{\rm --- Wikipedia}}
+has \alert{wider applications.}\\[2ex] \rightline
+  {{\rm --- Wikipedia, \href{https://en.wikipedia.org/wiki/Abstraction_(mathematics)}{\underline{Abstraction (mathematics)}}}}
   \end{quote}
-
 \end{frame}
 
 \begin{frame}
   \frametitle{You call this abstraction?}
-  \begin{itemize}
-    \item Avoiding copy/paste
-    \item Factor out common code to a function
-    \item Pass to functions only what they need
-      \pause
-    \item What is the \alert{essence} of your auth system?
-    \item How \alert{general} is your code really?
-    \item Can you make decisions without looking at the \alert{details}?
-  \end{itemize}
+  \begin{quote}
+    I wouldn't really think of abstraction as a mathematical concept. \\[1ex] \rightline
+  {{\rm --- Fishtoaster,
+      \href{https://softwareengineering.stackexchange.com/questions/16070/what-is-abstraction}{\underline{SE Stack Exchange}}}}
+  \end{quote}
 
-  \vspace{3ex}
+  \begin{quote}
+    A programming abstraction is a simplified model of a problem. \\[1ex] \rightline
+  {{\rm --- C. Ross,
+      \href{https://softwareengineering.stackexchange.com/questions/16070/what-is-abstraction}{\underline{SE Stack Exchange}}}}
+  \end{quote}
+
   \pause
 
-  \begin{block}{}
-  \texttt{\LARGE{We are so bad at abstraction!}}
+  \begin{block}{These are not abstraction}
+  \begin{itemize}
+    \item Inheritance.
+    \item Factoring out common code to a function.
+    \item Passing to functions only what they need.
+  \end{itemize}
   \end{block}
+
+  Really, how abstract is your code?
+
+  \begin{center}
+    \LARGE
+    \bfseries
+  We suck at abstraction!
+  \end{center}
 
 \end{frame}
 
@@ -150,28 +163,40 @@ has \alert{wider applications.}\\[2pt] \rightline{{\rm --- Wikipedia}}
   \frametitle{Standing On the Shoulders of Giants}
   Mathematicians are the \alert{masters of abstraction.}
   \begin{itemize}
-  \item Finding the minimum set of requirements,
-  \item the maximum generality of the result,
-  \item analogies and analogies between analogies,
-  \item reusing results from different areas of math.
+  \item Maximize generality.
+  \item Analogies and analogies between analogies.
+  \item Reusing whole theories.
+  \item Finding ``the right'' level of abstraction.
   \end{itemize}
 
-  \begin{block}{}
-  This is exactly what they do.
-  \end{block}
+  \pause
+
+  \begin{center}
+    \Large
+    \bfseries
+  This is what they have been doing for centuries.
+  \end{center}
 
   \begin{block}{}
-  We, developers, should be all over their stuff!
+  copy steal copy steal copy steal
+  copy steal copy steal copy steal
+  copy steal copy steal copy steal
+  copy steal copy steal copy steal
+  copy steal copy steal copy steal
+  copy steal copy steal copy steal
+  copy steal copy steal copy steal
   \end{block}
+
 \end{frame}
 
 
 \subsection{What is a Monoid}
 
-\begin{frame}{An Example of an Algebraic Structure: Monoids}
-  \begin{block}{}
-    \alert{Monoid:} a set together with an associative binary operation
-      and an identity element.
+\begin{frame}
+  \frametitle{What Is a Monoid?}
+  \begin{block}{Monoid}
+    A \alert{set} together with an \alert{associative} \alert{operation}
+    and an \alert{identity} element.
   \end{block}
 
   \pause
@@ -179,9 +204,10 @@ has \alert{wider applications.}\\[2pt] \rightline{{\rm --- Wikipedia}}
   \begin{block}{Components - A Triplet \((A, \bullet, u)\)}
   \begin{itemize}
     \item A [carrier] set (\(A\))
-    \item A binary associative operation (\(\bullet\))
-    \item An identity for the operation (\(u\))
+    \item A binary operation (\(\bullet\))
+    \item An element of the set \(u\)
   \end{itemize}
+  We sometimes say ``\(A\) \emph{has} a Monoid''.
   \end{block}
 
   \pause
@@ -197,19 +223,20 @@ has \alert{wider applications.}\\[2pt] \rightline{{\rm --- Wikipedia}}
 \end{frame}
 
 
-\subsection{Examples in Math}
-\begin{frame}{A Monoid in ``Real Life''}
-  \alert{Color addition}
+\subsection{Examples in math}
+\begin{frame}\frametitle{A Monoid in ``Real Life''}
+  Color addition
+
   \begin{columns}[c]
-    \column{0.5\textwidth}
+    \column{0.7\textwidth}
       \begin{itemize}
         \item \(A\): the set of all colors
-        \item \(a, b\): particular colors
-        \item \(a \bullet b\): the color formed with light from \(a\) and \(b\)
+        \item \(a \bullet b\): color formed adding light of color \(b\) on top
+          of light of color \(a\)
         \item \(u\): transparent color
       \end{itemize}
 
-    \column{0.5\textwidth}
+    \column{0.3\textwidth}
 
     \begin{figure}
         \centering
@@ -218,127 +245,143 @@ has \alert{wider applications.}\\[2pt] \rightline{{\rm --- Wikipedia}}
     \end{figure}
   \end{columns}
 
-  \alert{What does associativity mean?}
+  \begin{block}{Quiz}
+  What does associativity mean?
+  \end{block}
 
-  \alert{Is it a commutative monoid?}
+  \begin{block}{Quiz}
+  Is it a commutative monoid?
+  \end{block}
+
 \end{frame}
 
-\begin{frame}{Examples of Monoids in Math}
+\begin{frame}\frametitle{Examples of Monoids in Math}
   \begin{itemize}
     \item Integers under addition with zero identity.
-      \[(a + b) + c = a + (b + c)\]
+      \[
+      (a + b) + c = a + (b + c) \qquad a + 0 = 0 + a = a
+      \]
     \item Reals under multiplication with 1 identity.
-      \[(a b) c = a (b c)\]
+      \[
+        (a b) c = a (b c) \qquad a \times 1 = 1 \times a = a\]
     \item Subsets of a set under union with empty identity.
-      \begin{eqnarray*}
-      (a \cup b)\cup  c = a\cup  (b\cup  c) & a \cup \emptyset =
-        \emptyset \cup a = a
-      \end{eqnarray*}
+      \[
+        \mathcal
+        (\mathcal{A} \cup \mathcal{B})\cup  \mathcal{C} = \mathcal{A}\cup  (\mathcal{B}\cup  \mathcal{C}) \qquad
+        \mathcal{A} \cup \emptyset = \emptyset \cup \mathcal{A} = \mathcal{A}
+      \]
     \item Spatial transformations
-    \item Integers under division?
   \end{itemize}
+  \begin{block}{Quiz}
+    Positive integers under division?
+  \end{block}
 \end{frame}
 
-\subsection{Examples in Programming}
+\subsection{Examples in code}
 
-\begin{frame}{Basic Monoids in Programming}
-  Back to code.
-
+\begin{frame}\frametitle{Basic Monoids in Programming}
   \begin{itemize}
-    \item \texttt{Integer} under \texttt{(+)} with \texttt{0}
-    \item \texttt{Double} under \texttt{(+)} with \texttt{0}?
-      \pause
-      \[ (0.1+0.2)+0.3 \neq 0.1+(0.2+0.3)\]
-      \pause
-    \item \texttt{Boolean} under \texttt{||} with \texttt{False}.
-    \item \texttt{Boolean} under \texttt{\&\&} with \texttt{True}.
-    \item Sets under union. Is it commutative?
+    \item<1-> \texttt{Integer} under \texttt{(+)} with \texttt{0}.
+    \item<1-> \texttt{Integer} under \texttt{(*)} with \texttt{1}.
+    \item\only<1>{\texttt{Double} under \texttt{(+)} with \texttt{0}?}
+         \only<2->{\alert{\sout{\texttt{Double} under \texttt{(+)} with \texttt{0}}}
+           \hspace{2em}
+      \( (0.1+0.2)+0.3 \neq 0.1+(0.2+0.3)\).}
+    \item<3-> \texttt{Boolean} under \texttt{||} with \texttt{False}.
+    \item<3-> \texttt{Boolean} under \texttt{\&\&} with \texttt{True}.
+    \item<3-> \texttt{Set[A]} under \texttt{union}.
   \end{itemize}
-\end{frame}
 
-\begin{frame}[fragile]{Modeling Monoids in Scala}
-  If the type \texttt{M} \emph{has} a monoid we have:
+  \begin{block}{Quiz}<3->
+    \begin{itemize}
+    \item Is \texttt{Set[A]/union} commutative?
+    \item How about \texttt{Map[K,V]/++}?
+    \end{itemize}
+  \end{block}
+  \end{frame}
+
+\begin{frame}[fragile]\frametitle{Modeling Monoids in Scala}
+  If the type \texttt{A} \emph{has} a monoid we need:
   \begin{itemize}
-    \item a way to create an \texttt{M} from nothing and,
-    \item a way to combine two \texttt{M}s.
+    \item a way to create an \texttt{A} from nothing,
+    \item a way to combine two \texttt{A}s.
   \end{itemize}
 
   \begin{block}{}
   \begin{lstlisting}
-trait Monoid[M] {
+trait Monoid[A] {
 
   // The associative operation
-  def append(a: M, b: => M): M
+  def append(a: A, b: => A): A
 
   // The identity
-  def zero: M
-
+  def zero: A
 }
   \end{lstlisting}
   \end{block}
 
-  We can have more than one Monoid for the same \texttt{M}
+  We can have more than one Monoid for the same \texttt{A}
 \end{frame}
 
-\begin{frame}[fragile]{Two Monoids for Ints}
+\begin{frame}[fragile]\frametitle{Two Monoids for Ints}
   \begin{block}{}
   \begin{lstlisting}
-implicit val sumMon = new Monoid[Int] {
-  def zero = 0
+val sumMon = new Monoid[Int] {
+  def zero: Int = 0
 
-  def append(a: Int, b: => Int) =
+  def append(a: Int, b: => Int): Int =
     a + b
 }
 
 val mulMon = new Monoid[Int] {
-  def zero = 1
+  def zero: Int = 1
 
-  def append(a: Int, b: => Int) =
+  def append(a: Int, b: => Int): Int =
     a * b
 }
   \end{lstlisting}
   \end{block}
-  These monoids are first class citizens, we can pass them to
-  functions, put them in containers, etc.
+  These Monoid \alert{instances} are first class citizens
 \end{frame}
 
-\begin{frame}[fragile]{The List Monoid}
+\begin{frame}[fragile]\frametitle{The List Monoid}
   \begin{block}{}
 
   \begin{lstlisting}
 implicit val freeMon[A] = new Monoid[List[A]] {
 
-  def zero = List()
+  def zero: List[A] = List()
 
-  def append(as: List[A], bs: => List[A]) =
+  def append(as: List[A], bs: => List[A]): List[A] =
     a ++ b
 
 }
   \end{lstlisting}
   \end{block}
+
+  \begin{block}{Quiz}
 Is it a commutative monoid?
+  \end{block}
 \end{frame}
 
-\begin{frame}[fragile]{Monoid for Tuples}
-  How to combine two tuples?
+\begin{frame}[fragile]\frametitle{Monoid for Tuples}
+  How can we combine two tuples \texttt{(A,B)}?
   \pause
 
-  If the elements of the tuple have monoids themselves,
-  we can
+  If \texttt{A} and \texttt{B} have monoids themselves, we can \alert{combine componentwise}.
 
-  \alert{combine componentwise}.
-
-  \pause
   \begin{block}{}
   \begin{lstlisting}
-implicit def pairMon[A, B]
-  (implicit am: Monoid[A], implicit bm: Monoid[B]) =
+def pairMon[A: Monoid, B: Monoid]: Monoid[(A,B)] =
+  //(implicit am: Monoid[A], implicit bm: Monoid[B])
 
   new Monoid[(A, B)] {
+    val am = implicitly[Monoid[A]]
+    val bm = implicitly[Monoid[B]]
 
     def zero: (A,B) = (am.zero, bm.zero)
 
-    def append(a: (A, B) , b: => (A, B)): (A,B) =
+    def append(a: (A, B), b: => (A, B)): (A,B) =
       (am.append(a.fst, b.fst), bm.append(a.fst, b.fst))
   }
   \end{lstlisting}
@@ -349,74 +392,70 @@ implicit def pairMon[A, B]
 \end{frame}
 
 
-\begin{frame}[fragile]{Is There a Monoid for Functions?}
-  Not arbitrary functions \texttt{A => B}.
+\begin{frame}[fragile]\frametitle{Is There a Monoid for Functions?}
+  It seems hard for arbitrary functions \texttt{A => B}.
+  \pause
+  But how about \alert{\texttt{A => A}}?
 
-  But what if they are functions \texttt{A => A}?
-
-  How can we create a function \texttt{A => A} given two others?
   \pause
   \begin{block}{Functions that take and return the same type}
 
   \begin{lstlisting}
-def endoMon[A] = Monoid[A => A] {
+def endoMon[A]: Monoid[A => A] = Monoid[A => A] {
 
   def zero: A => A = identity
 
   def append(f: A => A, g: => (A => A)): A => A =
-    g andThen f
+    g andThen f  // function composition is associative
 
 }
   \end{lstlisting}
   \end{block}
-Is it a commutative monoid?
+  \begin{block}{Quiz}
+    \begin{itemize}
+      \item Is it a commutative Monoid?
+      \item Can we do \texttt{(f andThen g)} instead?
+    \end{itemize}
+  \end{block}
 \end{frame}
 
 
-\begin{frame}[fragile]{A Different Monoid for Functions}
-  What happens if the \alert{return type has a Monoid?}
-
-  How can we use it to write a Monoid for \texttt{A => M}?
+\begin{frame}[fragile]
+  \frametitle{A Different Monoid for Functions}
+  How about \texttt{A => B} where \alert{\texttt{B} has a Monoid?}
 
   \begin{block}{Functions that return a monoidal type}
-
   \begin{lstlisting}
-def monFunMon[A, M]
-    (implicit mMon: Monoid[M]) = Monoid[A => M] {
+def monFunMon[A, B: Monoid]: Monoid[A => B] =
+    new Monoid[A => B] {
 
-    def zero: A => M = _ => mMon.zero
+      val bMon = implicitly[Monoid[B]]
 
-    def append(f: A => M, g: => (A => M)): A => M =
-      a => mMon.append(f(a), g(a))
+      def zero: A => B = _ => bMon.zero
 
+      def append(f: A => B, g: => (A => B)): A => B =
+        a => bMon.append(f(a), g(a))
   }
   \end{lstlisting}
   \end{block}
-Is it a commutative monoid?
+  Convince yourself \texttt{append} is associative.
 \end{frame}
 
 \begin{frame}[fragile]
   \frametitle{Option Monoids}
   \begin{onlyenv}<1>
-  \begin{block}{Quick Test}
+  \begin{block}{Quiz}
     Would it make sense to try to write an instance of
     \texttt{Monoid[Option]}
   \end{block}
   \end{onlyenv}
 
   \begin{onlyenv}<2>
-  \begin{block}{Quick Test}
-    Would it make sense to try to combine with a monoid
-    \texttt{Option[A]} and  \texttt{Option[B]}
-  \end{block}
-  \end{onlyenv}
-
-  \begin{onlyenv}<3>
-    There are a few ways to combine \texttt{Options[A]}
+    There are several ways to combine \texttt{Options[A]}
 
   \begin{block}{Taking the first \texttt{Some}}
   \begin{lstlisting}
-def firstMon[A] = new Monoid[Option[A]] {
+def firstMon[A]: Monoid[Option[A]] = new Monoid[Option[A]] {
 
   def zero: Option[A] = None
 
@@ -433,35 +472,31 @@ def firstMon[A] = new Monoid[Option[A]] {
 
 
 \begin{frame}[fragile]
-  \frametitle{Option Monoids}
-
-  What happens if \texttt{Option} is wrapping a monoidal type?
-
+  \frametitle{Option Wrapping a Monoidal Type}
   \begin{block}{Using the wrapped monoid}
   \begin{lstlisting}
-def discardMon[M](implicit m: Monoid[M]) =
-  new Monoid[Option[M]] {
-
-    // this is weird
-    def zero: Option[M] = None
-
-    def append(a: Option[M], b: => Option[M]): Option[M] =
-      (a,b) match {
-        case (a, None) => a
-        case (None, b) => b
-        case (Some(a), Some(b)) => Some(m.append(a, b))
+def weird[M: Monoid]: Monoid[Option[M]] = new Monoid[Option[M]] {
+  def zero: Option[M] = None  // weird!
+  def append(a: Option[M], b: => Option[M]): Option[M] =
+    (a,b) match {
+      case (a, None) => a
+      case (None, b) => b
+      case (Some(a),Some(b)) =>
+        Some(implicitly[Monoid[M]].append(a, b))
       }
-  }
+}
   \end{lstlisting}
   \end{block}
 
-  Why is \texttt{zero} weird?
-  \pause
-  Can we do \texttt{zero = Some(m.zero)} instead?
+  \begin{block}{Quiz}
+    \begin{itemize}
+      \item Why is \texttt{zero} weird?
+      \item Can we do \texttt{zero = Some(m.zero)} instead?
+    \end{itemize}
+  \end{block}
 \end{frame}
 
-\begin{frame}
-  \frametitle{Recap}
+\begin{frame} \frametitle{Recap}
   We have seen:
   \begin{itemize}
     \item Monoid definition (binary assoc operation with identity).
@@ -469,11 +504,9 @@ def discardMon[M](implicit m: Monoid[M]) =
       two methods: \texttt{zero, append})
     \item Monoids for:
       \begin{itemize}
-      \item Numbers,
-      \item lists, sequences
-      \item tuples (if members have monoids)
+      \item Numbers, lists, tuples (if members have monoids)
       \item \texttt{A => A} and \texttt{A => M} where \texttt{M} has a monoid
-      \item \texttt{Options} (first, last and monoid wrapper)
+      \item \texttt{Options} (first, last and Monoid wrapper)
       \item There are many, many more.
       \end{itemize}
   \end{itemize}
@@ -484,14 +517,18 @@ def discardMon[M](implicit m: Monoid[M]) =
   \end{block}
 \end{frame}
 
+\subsection{Usage}
 \begin{frame}[fragile]
   \frametitle{Simple usage examples}
 
-  \begin{block}{A helpful function: \texttt{mconcat}}
+  \begin{block}{A useful function: \texttt{mconcat}}
   \begin{lstlisting}
-def mconcat[A](as: List[A])(implicit m: Monoid[A]): A =
+def mconcat[A: Monoid](as: List[A]): A = {
+  val m = implicitly[Monoid[A]]
+
   // fold? foldLeft? foldRight? What laws are we using?
   as.fold(m.zero)(m.append(_, _))
+}
 
 def sum(xs: List[Int]): Int = mconcat(xs)(sumMon)
 
@@ -500,13 +537,9 @@ def first[A](os: List[Option[A]]): Option[A] =
   \end{lstlisting}
   \end{block}
 
-  Almost equal implementation for \texttt{sum} and \texttt{first}
-
-  An even more useful function is:
-
-  \begin{block}{}
+  \begin{block}{Super useful. MapReduce}
   \begin{lstlisting}
-def foldMap[A,M](List[A])(f: A => M)(implicit m: Monoid[M]): M
+def foldMap[A, M: Monoid](List[A])(f: A => M): M
   \end{lstlisting}
   \end{block}
   See \texttt{Foldable}.
@@ -761,6 +794,10 @@ implicit val meanMonoid = new Monoid[Mean] {
           \item The Red Book
             \item syntax sugar for implicits
               \item lazyness, is the by name argument important?
+                \item integer overflow is a monoid?
+                  \item endo monoid composition order
+                  \item either monoid?
+                    \item monoid for config
   \end{itemize}
 \end{frame}
 
