@@ -82,8 +82,9 @@ mecanismos de busca de implicitos.
   basicstyle={\small\ttfamily},
   keywordstyle=\color{keyword},
   commentstyle={\color{comments}\itshape},
-  columns=fullflexible
+  columns=fullflexible,
 }
+
 
 \begin{frame}
   \titlepage
@@ -306,11 +307,11 @@ has \alert{wider applications.}\\[2ex] \rightline
     \item a way to create an \texttt{A} from nothing,
     \item a way to combine two \texttt{A}s.
   \end{itemize}
+  \pause
 
   \begin{block}{}
   \begin{lstlisting}
 trait Monoid[A] {
-
   // The associative operation
   def append(a: A, b: => A): A
 
@@ -319,14 +320,38 @@ trait Monoid[A] {
 }
   \end{lstlisting}
   \end{block}
-
   We can have more than one Monoid for the same \texttt{A}
+\end{frame}
+
+\begin{frame}[fragile]\frametitle{Syntax Sugar}
+  \begin{block}{}
+  \begin{lstlisting}
+object Monoid {
+  def apply[A:Monoid]: Monoid[A] = implicitly[Monoid[A]]
+}
+
+object MonoidSyntax {
+  implicit def ToMonoidOps[A:Monoid](v: A): MonoidOps[A] =
+    new MonoidOps[A](v)
+
+  final class MonoidOps[A:Monoid](val self: A) {
+    def |+|(other: => A): A = Monoid[A].append(self, other)
+  }
+}
+  \end{lstlisting}
+  \end{block}
+  \begin{block}{}
+  \begin{lstlisting}
+import MonoidSyntax._
+implicitly[Monoid[A]].append(a,b) === a |+| b
+  \end{lstlisting}
+  \end{block}
 \end{frame}
 
 \begin{frame}[fragile]\frametitle{Two Monoids for Ints}
   \begin{block}{}
   \begin{lstlisting}
-val sumMon = new Monoid[Int] {
+val intAddMon = new Monoid[Int] {
   def zero: Int = 0
 
   def append(a: Int, b: => Int): Int =
@@ -372,23 +397,20 @@ Is it a commutative monoid?
 
   \begin{block}{}
   \begin{lstlisting}
-def pairMon[A: Monoid, B: Monoid]: Monoid[(A,B)] =
+implicit def pairMon[A: Monoid, B: Monoid] = new Monoid[(A, B)] {
   //(implicit am: Monoid[A], implicit bm: Monoid[B])
 
-  new Monoid[(A, B)] {
-    val am = implicitly[Monoid[A]]
-    val bm = implicitly[Monoid[B]]
+  def zero: (A,B) =
+    (Monoid[A].zero, Monoid[B].zero)
 
-    def zero: (A,B) = (am.zero, bm.zero)
-
-    def append(a: (A, B), b: => (A, B)): (A,B) =
-      (am.append(a.fst, b.fst), bm.append(a.fst, b.fst))
-  }
+  def append(a: (A, B), b: => (A, B)): (A,B) =
+    (a._1 |+| b._1, a._2 |+| b._2)
+}
   \end{lstlisting}
   \end{block}
 
-  \texttt{am} and \texttt{bm} are sometimes called \emph{evidence} or
-  \emph{witnesses} of the monoids for \texttt{A} and \texttt{B}.
+  \texttt{am} and \texttt{bm} are called \emph{evidence} or
+  \emph{witnesses} of the Monoids for \texttt{A} and \texttt{B}.
 \end{frame}
 
 
@@ -401,14 +423,13 @@ def pairMon[A: Monoid, B: Monoid]: Monoid[(A,B)] =
   \begin{block}{Functions that take and return the same type}
 
   \begin{lstlisting}
-def endoMon[A]: Monoid[A => A] = Monoid[A => A] {
+implicit def endoMon[A] = new Monoid[A => A] {
 
-  def zero: A => A = identity
+    def zero: A => A = identity
 
-  def append(f: A => A, g: => (A => A)): A => A =
-    g andThen f  // function composition is associative
-
-}
+    def append(f: A => A, g: => (A => A)): A => A =
+      g andThen f
+  }
   \end{lstlisting}
   \end{block}
   \begin{block}{Quiz}
@@ -426,16 +447,15 @@ def endoMon[A]: Monoid[A => A] = Monoid[A => A] {
 
   \begin{block}{Functions that return a monoidal type}
   \begin{lstlisting}
-def monFunMon[A, B: Monoid]: Monoid[A => B] =
-    new Monoid[A => B] {
+implicit def monFunMon[A, B:Monoid]: Monoid[A => B] =
+  new Monoid[A => B] {
 
-      val bMon = implicitly[Monoid[B]]
+    def zero: A => B =
+      _ => Monoid[B].zero
 
-      def zero: A => B = _ => bMon.zero
-
-      def append(f: A => B, g: => (A => B)): A => B =
-        a => bMon.append(f(a), g(a))
-  }
+    def append(f: A => B, g: => (A => B)): A => B =
+      a => f(a) |+| g(a)
+}
   \end{lstlisting}
   \end{block}
   Convince yourself \texttt{append} is associative.
@@ -475,14 +495,15 @@ def firstMon[A]: Monoid[Option[A]] = new Monoid[Option[A]] {
   \frametitle{Option Wrapping a Monoidal Type}
   \begin{block}{Using the wrapped monoid}
   \begin{lstlisting}
-def weird[M: Monoid]: Monoid[Option[M]] = new Monoid[Option[M]] {
-  def zero: Option[M] = None  // weird!
-  def append(a: Option[M], b: => Option[M]): Option[M] =
-    (a,b) match {
-      case (a, None) => a
-      case (None, b) => b
-      case (Some(a),Some(b)) =>
-        Some(implicitly[Monoid[M]].append(a, b))
+def optionMon[A:Monoid]: Monoid[Option[A]] =
+  new Monoid[Option[A]] {
+    def zero: Option[A] = None   // --- weird ---
+
+    def append(a: Option[A], b: => Option[A]): Option[A] =
+      (a,b) match {
+        case (a, None) => a
+        case (None, b) => b
+        case (Some(a), Some(b)) => Some(a |+| b)
       }
 }
   \end{lstlisting}
@@ -522,45 +543,106 @@ def weird[M: Monoid]: Monoid[Option[M]] = new Monoid[Option[M]] {
   \frametitle{Simple usage examples}
 
   \begin{block}{A useful function: \texttt{mconcat}}
-  \begin{lstlisting}
-def mconcat[A: Monoid](as: List[A]): A = {
-  val m = implicitly[Monoid[A]]
+  \begin{lstlisting}[escapechar=\|]
+def mconcat[A:Monoid](as: Traversable[A]): A =
+  as.fold(Monoid[A].zero)(_ |+| _)|\pause|
 
-  // fold? foldLeft? foldRight? What laws are we using?
-  as.fold(m.zero)(m.append(_, _))
-}
+def sum(xs: Traversable[Int]): Int = mconcat(xs)(intAddMon)|\pause|
 
-def sum(xs: List[Int]): Int = mconcat(xs)(sumMon)
-
-def first[A](os: List[Option[A]]): Option[A] =
-  mconcat(os)(firstMon)
+def ???[A](xs: Traversable[Option[A]]): Option[A] =
+  mconcat(xs)(firstMon)
   \end{lstlisting}
   \end{block}
 
+  \pause
   \begin{block}{Super useful. MapReduce}
   \begin{lstlisting}
-def foldMap[A, M: Monoid](List[A])(f: A => M): M
+def foldMap[A, M:Monoid](f: A => M)(as: Traversable[A]): M =
+  as.foldRight(Monoid[M].zero) { (x,res) => f(x) |+| res }
   \end{lstlisting}
   \end{block}
   See \texttt{Foldable}.
 \end{frame}
 
-\begin{frame}[fragile]{Composing Monoids}
+\begin{frame}[fragile]
+  \frametitle{Composing Monoids}
+  \begin{block}{\texttt{Min} monoid}
+  \begin{lstlisting}[escapechar=\|]
+sealed abstract class Min[A]
+final case class EmptyMin[A]() extends Min[A]
+final case class MinValue[A](value: A) extends Min[A]
 
+object Min {
+  def apply[A](a: A): Min[A] = MinValue(a)|\pause|
+
+  implicit def minMonoid[A:Ordering] = new Monoid[Min[A]] {
+    def zero = EmptyMin()
+
+    def append(a: Min[A], b: => Min[A]): Min[A] = (a, b) match {
+      case (EmptyMin(), x) => x
+      case (x, EmptyMin()) => x
+      case (MinValue(x), MinValue(y)) => Min(List(x,y).min)
+    }
+  }
+}
+  \end{lstlisting}
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Composing Monoids}
+  \begin{block}{Calculate min \& max in a single pass}
+  \begin{lstlisting}[escapechar=\|]
+def minmax[A: Ordering](as: Traversable[A]): Option[(A,A)] = {
+  def mapper(a: A) = (Min(a), Max(a))
+
+  // reduce
+  foldMap(mapper)(as) match {
+    case (MinValue(x), MaxValue(y)) => Some((x,y))
+    case _ => None
+  }
+}
+  \end{lstlisting}
+  \end{block}
+
+  \begin{itemize}
+    \item \texttt{Min} and \texttt{Max} are hidden from the user.
+    \item Note how easily the Monoids compose.
+    \item We could extend to larger tuples \texttt{(min,max,sum,count)}.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Composing Monoids}
+  \framesubtitle{Combining predicates}
+  \begin{block}{Boolean has Monoids}
+  \begin{lstlisting}[escapechar=~]
+  implicit val allMonoid: Monoid[Boolean] = new Monoid[Boolean] {
+    def zero: Boolean = true
+    def append(a: Boolean, b: => Boolean): Boolean = a && b
+  }
+  \end{lstlisting}
+  \end{block}
+  \pause
+  Then predicates have Monoids.
+  \begin{block}{}
+  \begin{lstlisting}[escapechar=~]
+  val numbers = 1.to(100).filter(
+    // type annotations needed
+    (_ % 2 == 0) |+| (_ >= 10) |+| (_ < 20)
+  )
+  \end{lstlisting}
+  \end{block}
+\end{frame}
+
+\iffalse
+\begin{frame}[fragile]
+  \frametitle{Composing Monoids}
   \begin{block}{Define a comparison}
-  \begin{onlyenv}<1>
   \begin{lstlisting}[escapechar=\|]
 sealed trait Ord[A] {
-  def compare(a: A,  b:A): |\fbox{\texttt{???}}|
-}
-\end{lstlisting}
-\end{onlyenv}
-
-\begin{onlyenv}<2>
-\begin{lstlisting}[escapechar=\|]
-sealed trait Ord[A] {
-  def compare(a: A,  b:A): |\fbox{\texttt{Ordering}}|
-}
+  def compare(a: A,  b:A): |\alert{\texttt{\only<1>{??? // Scala uses Int}\only<2>{Ordering}}}|
+}|\pause|
 
 sealed trait Ordering
 
@@ -569,18 +651,12 @@ object Ordering {
   case object GT extends Ordering
   case object EQ extends Ordering
 }
-
   \end{lstlisting}
-  \end{onlyenv}
   \end{block}
-
-  \only<1>{What should we use for \fbox{???} here?}
 \end{frame}
 
 \begin{frame}[fragile]
   \frametitle{Composing Monoids}
-  It turns out \texttt{Ordering} has a monoid:
-
   \begin{block}{An \texttt{Ordering} monoid}
   \begin{lstlisting}
 val ordMon = new Monoid[Ordering] {
@@ -599,14 +675,12 @@ val ordMon = new Monoid[Ordering] {
 \begin{frame}[fragile]
   \frametitle{Composing Monoids}
   \begin{block}{}
-  \begin{lstlisting}
-def sortBy(as: Array[A])(by: A => A => Ordering): Array[A] = ...
-def comparing[A, B](f: B => A)(b1: B, b2: B)(implicit o: Ord[A]): Ordering
+  \begin{lstlisting}[escapechar=\|]
+def sortBy(as: Array[A])(by: (A,A) => Ordering): Array[A] = ... |\pause|
+def comparing[A: Ord, B](f: B => A)(b1: B, b2: B): Ordering |\pause|
 
 case class Person(addr: Address, name: String, dob: Date)
-case class Address(zip: Int, street: String)
-
-val people: Array[Person] = ...
+case class Address(zip: Int, street: String) |\pause|
 
 val sorted = sortBy(people)(mconcat(List(
   comparing(_.address.zip),
@@ -614,6 +688,30 @@ val sorted = sortBy(people)(mconcat(List(
   comparing(_.dob)))
 
   \end{lstlisting}
+  \end{block}
+\end{frame}
+\fi
+
+\begin{frame}
+  \frametitle{Composing Monoids}
+  Monoids compose extremely well.
+  \begin{itemize}
+    \item \texttt{A: Monoid}
+    \item \texttt{B: Monoid}
+      \pause
+    \item \texttt{Option[B]: Monoid}
+      \pause
+    \item \texttt{(A, Option[B]): Monoid}
+    \item \texttt{List[(A, Option[B])]: Monoid}
+      \pause
+    \item \texttt{Y => List[(A, Option[B])]: Monoid}
+      \pause
+    \item \texttt{X => Y => List[(A, Option[B])]: Monoid}
+    \item \texttt{Map[String, X => Y => List[(A, Option[B])]]: Monoid}
+  \end{itemize}
+  \begin{block}{}
+    \centering
+    \Large \textbf{Sign of a good abstraction}
   \end{block}
 \end{frame}
 
@@ -628,7 +726,6 @@ val sorted = sortBy(people)(mconcat(List(
 \include{tree}
 
 \begin{block}{Quiz}
-  \pause
   Can we swap the two red root branches in the last tree?
 \end{block}
 
@@ -782,22 +879,29 @@ implicit val meanMonoid = new Monoid[Mean] {
     \item mconcat can be parallelized, incrementally, cached
     \item dual monoid
     \item summaries
-      \item substracition not a monoid
-      \item where to find code/presentation
-        \item mathematical building, is elegant, if you don't care about
+    \item substracition not a monoid
+    \item where to find code/presentation
+    \item mathematical building, is elegant, if you don't care about
           elegance in software what do you care about? elegance is simple (not easy)
     \item level of the talk, audience
     \item accent
     \item quizes to keep awake
-      \item scalaz to try things
-        \item grammarly
-          \item The Red Book
-            \item syntax sugar for implicits
-              \item lazyness, is the by name argument important?
-                \item integer overflow is a monoid?
-                  \item endo monoid composition order
-                  \item either monoid?
-                    \item monoid for config
+    \item scalaz to try things
+    \item grammarly
+    \item The Red Book
+    \item syntax sugar for implicits
+    \item lazyness, is the by name argument important?
+    \item integer overflow is a monoid?
+    \item endo monoid composition order
+    \item either monoid?
+    \item monoid for config
+    \item in the incremental example, generalize to group, to remove points
+    \item grothendieck on finding the right level of abstraction
+    \item mconcat can't be defined properly without associativity
+      \item mention semigroup
+        \item using equality when defining monoids for functions, what it means
+          equal functions
+          \item monoids capture *the escence* of combining things associatively
   \end{itemize}
 \end{frame}
 
