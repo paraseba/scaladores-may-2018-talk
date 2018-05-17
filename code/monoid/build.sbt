@@ -1,5 +1,3 @@
-import Dependencies._
-
 val flags = Seq(
   "-deprecation",                      // Emit warning and location for usages of deprecated APIs.
   "-encoding", "utf-8",                // Specify character encoding used by source files.
