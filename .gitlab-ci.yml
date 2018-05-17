@@ -16,4 +16,4 @@ before_script:
 test:
   stage: test
   script:
-    - cd code/monoid && sbt clean coverage test coverageReport
+    - cd code/monoid && sbt 'inspect sbtVersion' clean test
