@@ -43,6 +43,14 @@ matematica ou programacao funcional. Todos os exemplos serao em Scala, voce deve
 conhecer a linguagem para entende-los. Particularmente, se voce nao sabe o que sao os parametros
 implicitos, gaste 10 minutos aprendedo-os. Nao precisa saber os detalhes dos
 mecanismos de busca de implicitos.
+
+Bio:
+
+Depois de quase uma década trabalhando em linguagens imperativas, Sebastian
+abraçou a programação funcional e nunca mais olhou para atrás. Nos últimos oito anos
+ele tem trabalhado nas áreas de data science, infraestrutura de Big Data e
+enterprise software, em linguagens como Scala, Haskell e Clojure. Cuidado! O Sebastian vai tentar trazer você para o mundo da programação funcional.
+
 \fi
 
 \documentclass{beamer}
@@ -83,6 +91,8 @@ mecanismos de busca de implicitos.
   keywordstyle=\color{keyword},
   commentstyle={\color{comments}\itshape},
   columns=fullflexible,
+  escapechar=~,
+  showlines=false,
 }
 
 
@@ -93,7 +103,12 @@ mecanismos de busca de implicitos.
 % Uncomment these lines for an automatically generated outline.
 \begin{frame}
   \frametitle{Outline}
- \tableofcontents
+  \begin{columns}[c]
+    \column{0.6\textwidth}
+      \tableofcontents
+    \column{0.4\textwidth}
+      \rotatebox{45}{\Large \textcolor{blue}{\texttt{There will be quizzes}}}
+  \end{columns}
 \end{frame}
 
 
@@ -104,7 +119,7 @@ mecanismos de busca de implicitos.
 
   \begin{itemize}
   \item \alert{Functional Programming} for a while.
-  \item Mostly big data and enterprise.
+  \item Mostly \structure{big} data and enterprise.
   \item People are still scared of FP.
   \item You or your team want to learn FP?
   \color{blue}\texttt{paraseba@gmail.com}
@@ -312,38 +327,38 @@ has \alert{wider applications.}\\[2ex] \rightline
   \begin{block}{}
   \begin{lstlisting}
 trait Monoid[A] {
-  // The associative operation
-  def append(a: A, b: => A): A
-
   // The identity
   def zero: A
+
+  // The associative operation
+  def append(a: A, b: => A): A
 }
   \end{lstlisting}
   \end{block}
   We can have more than one Monoid for the same \texttt{A}
 \end{frame}
 
-\begin{frame}[fragile]\frametitle{Syntax Sugar}
+\begin{frame}[fragile]\frametitle{Optional Syntax Sugar}
   \begin{block}{}
+  \begin{lstlisting}
+import MonoidSyntax._  // assume this in all slides
+
+a |+| b === implicitly[Monoid[A]].append(a,b)
+  \end{lstlisting}
+  \end{block}
+
+  \begin{block}{No need to understand this code}
   \begin{lstlisting}
 object Monoid {
   def apply[A:Monoid]: Monoid[A] = implicitly[Monoid[A]]
 }
 
 object MonoidSyntax {
-  implicit def ToMonoidOps[A:Monoid](v: A): MonoidOps[A] =
-    new MonoidOps[A](v)
-
+  implicit def ToMonoidOps[A:Monoid](v: A) = new MonoidOps[A](v)
   final class MonoidOps[A:Monoid](val self: A) {
     def |+|(other: => A): A = Monoid[A].append(self, other)
   }
 }
-  \end{lstlisting}
-  \end{block}
-  \begin{block}{}
-  \begin{lstlisting}
-import MonoidSyntax._
-implicitly[Monoid[A]].append(a,b) === a |+| b
   \end{lstlisting}
   \end{block}
 \end{frame}
@@ -370,22 +385,20 @@ val mulMon = new Monoid[Int] {
 \end{frame}
 
 \begin{frame}[fragile]\frametitle{The List Monoid}
-  \begin{block}{}
-
+  \begin{block}{A default (?) Monoid for Lists}
   \begin{lstlisting}
-implicit val freeMon[A] = new Monoid[List[A]] {
+implicit def freeMon[A]: Monoid[List[A]] = new Monoid[List[A]] {
 
   def zero: List[A] = List()
 
   def append(as: List[A], bs: => List[A]): List[A] =
-    a ++ b
-
+    as ++ bs
 }
   \end{lstlisting}
   \end{block}
 
   \begin{block}{Quiz}
-Is it a commutative monoid?
+Is \texttt{freeMon} a commutative monoid?
   \end{block}
 \end{frame}
 
@@ -398,7 +411,8 @@ Is it a commutative monoid?
   \begin{block}{}
   \begin{lstlisting}
 implicit def pairMon[A: Monoid, B: Monoid] = new Monoid[(A, B)] {
-  //(implicit am: Monoid[A], implicit bm: Monoid[B])
+  /* ~\phantom{cit def pairMon[A: Mon}\rotatebox[origin=c]{90}{$\Rsh$}~ syntax sugar for:
+     (implicit am: Monoid[A], implicit bm: Monoid[B]) */
 
   def zero: (A,B) =
     (Monoid[A].zero, Monoid[B].zero)
@@ -409,8 +423,8 @@ implicit def pairMon[A: Monoid, B: Monoid] = new Monoid[(A, B)] {
   \end{lstlisting}
   \end{block}
 
-  \texttt{am} and \texttt{bm} are called \emph{evidence} or
-  \emph{witnesses} of the Monoids for \texttt{A} and \texttt{B}.
+  \texttt{am} and \texttt{bm} are called \alert{evidence} or
+  \alert{witnesses} of the Monoids for \texttt{A} and \texttt{B}.
 \end{frame}
 
 
@@ -419,20 +433,19 @@ implicit def pairMon[A: Monoid, B: Monoid] = new Monoid[(A, B)] {
   \pause
   But how about \alert{\texttt{A => A}}?
 
-  \pause
   \begin{block}{Functions that take and return the same type}
 
   \begin{lstlisting}
 implicit def endoMon[A] = new Monoid[A => A] {
 
-    def zero: A => A = identity
+    def zero: A => A = ~\only<3->{identity}~
 
     def append(f: A => A, g: => (A => A)): A => A =
-      g andThen f
+      ~\only<3->{g andThen f}~
   }
   \end{lstlisting}
   \end{block}
-  \begin{block}{Quiz}
+  \begin{block}<3->{Quiz}
     \begin{itemize}
       \item Is it a commutative Monoid?
       \item Can we do \texttt{(f andThen g)} instead?
@@ -443,7 +456,7 @@ implicit def endoMon[A] = new Monoid[A => A] {
 
 \begin{frame}[fragile]
   \frametitle{A Different Monoid for Functions}
-  How about \texttt{A => B} where \alert{\texttt{B} has a Monoid?}
+  How about \texttt{(A => B)} where \alert{\texttt{B} has a Monoid?}
 
   \begin{block}{Functions that return a monoidal type}
   \begin{lstlisting}
@@ -466,12 +479,12 @@ implicit def monFunMon[A, B:Monoid]: Monoid[A => B] =
   \begin{onlyenv}<1>
   \begin{block}{Quiz}
     Would it make sense to try to write an instance of
-    \texttt{Monoid[Option]}
+    \texttt{Monoid[Option]?}
   \end{block}
   \end{onlyenv}
 
   \begin{onlyenv}<2>
-    There are several ways to combine \texttt{Options[A]}
+    There are several ways to combine two \texttt{Option[A]}
 
   \begin{block}{Taking the first \texttt{Some}}
   \begin{lstlisting}
@@ -486,6 +499,12 @@ def firstMon[A]: Monoid[Option[A]] = new Monoid[Option[A]] {
   \end{block}
 
   Similarly taking the last \texttt{Some}
+  \begin{block}{Quiz}
+    \begin{itemize}
+    \item What does \texttt{firstMon} do when combining a bunch of \texttt{Options}?
+    \item Is it commutative?
+    \end{itemize}
+  \end{block}
   \end{onlyenv}
 
 \end{frame}
@@ -541,41 +560,96 @@ def optionMon[A:Monoid]: Monoid[Option[A]] =
 \subsection{Usage}
 \begin{frame}[fragile]
   \frametitle{Simple usage examples}
+  \framesubtitle{\texttt{mconcat}}
 
-  \begin{block}{A useful function: \texttt{mconcat}}
-  \begin{lstlisting}[escapechar=\|]
+  \begin{block}{A useful little function}
+  \begin{lstlisting}
 def mconcat[A:Monoid](as: Traversable[A]): A =
-  as.fold(Monoid[A].zero)(_ |+| _)|\pause|
+  as.foldLeft(Monoid[A].zero)(_ |+| _)~\pause~
 
-def sum(xs: Traversable[Int]): Int = mconcat(xs)(intAddMon)|\pause|
+def sum(xs: Traversable[Int]): Int = mconcat(xs)(intAddMon)~\pause~
 
-def ???[A](xs: Traversable[Option[A]]): Option[A] =
+def ~\alert{xyz}~[A](xs: Traversable[Option[A]]): Option[A] =
   mconcat(xs)(firstMon)
   \end{lstlisting}
   \end{block}
+  \begin{block}<3->{Quiz}
+    What does \texttt{xyz} do?
+  \end{block}
+\end{frame}
 
-  \pause
-  \begin{block}{Super useful. MapReduce}
+\begin{frame}[fragile]
+  \frametitle{Simple usage examples}
+  \framesubtitle{Functional MapReduce}
+  \begin{block}{Super useful: \texttt{foldMap}}
   \begin{lstlisting}
 def foldMap[A, M:Monoid](f: A => M)(as: Traversable[A]): M =
   as.foldRight(Monoid[M].zero) { (x,res) => f(x) |+| res }
   \end{lstlisting}
   \end{block}
-  See \texttt{Foldable}.
+
+  \texttt{f} acts as the mapping phase in a MapReduce, the monoidal
+  operation is the reduction step.
+
+  \vspace{6ex}
+
+  See \texttt{Foldable} typeclass.
 \end{frame}
 
 \begin{frame}[fragile]
   \frametitle{Composing Monoids}
-  \begin{block}{\texttt{Min} monoid}
-  \begin{lstlisting}[escapechar=\|]
+  \framesubtitle{Combining predicates}
+  \begin{block}{Boolean has Monoids}
+  \begin{lstlisting}
+  implicit val allMonoid: Monoid[Boolean] = new Monoid[Boolean] {
+    def zero: Boolean = true
+    def append(a: Boolean, b: => Boolean): Boolean = a && b
+  }
+  \end{lstlisting}
+  \end{block}
+
+  \begin{onlyenv}<1>
+  \begin{block}{Quiz}
+    \begin{itemize}
+      \item What does \texttt{allMonoid} do?
+      \item Is it really associative?
+      \item Is commutative?
+    \end{itemize}
+  \end{block}
+  \end{onlyenv}
+
+  \begin{onlyenv}<2->
+    Then predicates have Monoids remember?
+
+    \texttt{def monFunMon[A, B:Monoid]: Monoid[A => B]}
+  \end{onlyenv}
+
+  \begin{onlyenv}<3->
+  \begin{block}{}
+  \begin{lstlisting}
+  val numbers = 1.to(100).filter(
+    // type annotations needed
+    (_ % 2 == 0) |+| (_ >= 10) |+| (_ < 20)
+  )
+  \end{lstlisting}
+  \end{block}
+  \end{onlyenv}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Composing Monoids}
+  \framesubtitle{A Monoid to compute min/max. A technique based on types.}
+  \begin{block}{}
+  \begin{lstlisting}
 sealed abstract class Min[A]
 final case class EmptyMin[A]() extends Min[A]
 final case class MinValue[A](value: A) extends Min[A]
 
 object Min {
-  def apply[A](a: A): Min[A] = MinValue(a)|\pause|
+  def apply[A](a: A): Min[A] = MinValue(a)
 
-  implicit def minMonoid[A:Ordering] = new Monoid[Min[A]] {
+  // ~\phantom{   }~ Why do we need this?   ~\rotatebox[origin=c]{-90}{$\Rsh$}~
+  implicit def minMonoid[A:Ordering] = new Monoid[Min[A]] {~\pause~
     def zero = EmptyMin()
 
     def append(a: Min[A], b: => Min[A]): Min[A] = (a, b) match {
@@ -583,21 +657,45 @@ object Min {
       case (x, EmptyMin()) => x
       case (MinValue(x), MinValue(y)) => Min(List(x,y).min)
     }
-  }
-}
   \end{lstlisting}
   \end{block}
 \end{frame}
 
 \begin{frame}[fragile]
   \frametitle{Composing Monoids}
-  \begin{block}{Calculate min \& max in a single pass}
-  \begin{lstlisting}[escapechar=\|]
+  \framesubtitle{A Monoid to compute min/max}
+
+  \begin{onlyenv}<1>
+  \begin{block}{Calculate \texttt{min}}
+  \begin{lstlisting}
+def min[A: Ordering](as: Traversable[A]): Option[A] = {
+  def mapper(a: A) = Min(a)
+
+  foldMap(mapper)(as) match {  // map and reduce
+    case MinValue(x) => Some(x)
+    case _ => None
+  }
+}
+  \end{lstlisting}
+  \end{block}
+  \end{onlyenv}
+
+  \begin{itemize}
+    \item \texttt{Min} type is hidden from \texttt{min} user.
+    \item We can do the same for \texttt{Max}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{Composing Monoids}
+  \framesubtitle{A Monoid to compute min/max}
+  \begin{block}{Calculate \texttt{min} \& \texttt{max} in a \alert{single pass}}
+  \begin{lstlisting}
 def minmax[A: Ordering](as: Traversable[A]): Option[(A,A)] = {
   def mapper(a: A) = (Min(a), Max(a))
 
-  // reduce
-  foldMap(mapper)(as) match {
+  foldMap(mapper)(as) match {  // map and reduce
     case (MinValue(x), MaxValue(y)) => Some((x,y))
     case _ => None
   }
@@ -606,43 +704,19 @@ def minmax[A: Ordering](as: Traversable[A]): Option[(A,A)] = {
   \end{block}
 
   \begin{itemize}
-    \item \texttt{Min} and \texttt{Max} are hidden from the user.
-    \item Note how easily the Monoids compose.
-    \item We could extend to larger tuples \texttt{(min,max,sum,count)}.
+    \item Note how easily the Monoids \alert{compose}.
+    \item Can extend to more \alert{aggregates} \texttt{(min,max,sum,size)}.
   \end{itemize}
-\end{frame}
-
-\begin{frame}[fragile]
-  \frametitle{Composing Monoids}
-  \framesubtitle{Combining predicates}
-  \begin{block}{Boolean has Monoids}
-  \begin{lstlisting}[escapechar=~]
-  implicit val allMonoid: Monoid[Boolean] = new Monoid[Boolean] {
-    def zero: Boolean = true
-    def append(a: Boolean, b: => Boolean): Boolean = a && b
-  }
-  \end{lstlisting}
-  \end{block}
-  \pause
-  Then predicates have Monoids.
-  \begin{block}{}
-  \begin{lstlisting}[escapechar=~]
-  val numbers = 1.to(100).filter(
-    // type annotations needed
-    (_ % 2 == 0) |+| (_ >= 10) |+| (_ < 20)
-  )
-  \end{lstlisting}
-  \end{block}
 \end{frame}
 
 \iffalse
 \begin{frame}[fragile]
   \frametitle{Composing Monoids}
   \begin{block}{Define a comparison}
-  \begin{lstlisting}[escapechar=\|]
+  \begin{lstlisting}
 sealed trait Ord[A] {
-  def compare(a: A,  b:A): |\alert{\texttt{\only<1>{??? // Scala uses Int}\only<2>{Ordering}}}|
-}|\pause|
+  def compare(a: A,  b:A): ~\alert{\texttt{\only<1>{??? // Scala uses Int}\only<2>{Ordering}}}~
+}~\pause~
 
 sealed trait Ordering
 
@@ -675,12 +749,12 @@ val ordMon = new Monoid[Ordering] {
 \begin{frame}[fragile]
   \frametitle{Composing Monoids}
   \begin{block}{}
-  \begin{lstlisting}[escapechar=\|]
-def sortBy(as: Array[A])(by: (A,A) => Ordering): Array[A] = ... |\pause|
-def comparing[A: Ord, B](f: B => A)(b1: B, b2: B): Ordering |\pause|
+  \begin{lstlisting}
+def sortBy(as: Array[A])(by: (A,A) => Ordering): Array[A] = ... ~\pause~
+def comparing[A: Ord, B](f: B => A)(b1: B, b2: B): Ordering ~\pause~
 
 case class Person(addr: Address, name: String, dob: Date)
-case class Address(zip: Int, street: String) |\pause|
+case class Address(zip: Int, street: String) ~\pause~
 
 val sorted = sortBy(people)(mconcat(List(
   comparing(_.address.zip),
@@ -718,29 +792,75 @@ val sorted = sortBy(people)(mconcat(List(
 \begin{frame}
   \frametitle{Larger Use Cases}
   \framesubtitle{Parallelization}
-  \[a_1 \bullet a_2 \bullet a_3 \dotsb \bullet a_n\]
-
-  What happens if \texttt{append} for \texttt{Monoid[E]} is CPU expensive?
+  \begin{block}{The Problem}
+    \begin{itemize}
+      \item \texttt{append} for \texttt{Monoid[E]} is CPU expensive?
+      \item We need to \texttt{mconcat} many \texttt{E}'s.: \(a_1 \bullet a_2 \bullet a_3 \dotsb \bullet a_n\)
+    \end{itemize}
+  \end{block}
 
 \pause
 \include{tree}
 
 \begin{block}{Quiz}
-  Can we swap the two red root branches in the last tree?
+  Can we swap the two red branches in the last tree?
 \end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Larger Use Cases}
+  \framesubtitle{Parallelization}
+
+  \begin{block}{}
+  \begin{lstlisting}
+object Parallel {
+
+  def mconcat[A:Monoid](as: Traversable[A]): A =
+    ~\alt<1>{as.foldLeft(Monoid[A].zero)(\_ |+| \_)}{}\alt<2>{as.\alert{fold}(Monoid[A].zero)(\_ |+| \_)}{}\alt<3->{as.\textcolor{blue}{par}.\alert{fold}(Monoid[A].zero)(\_ |+| \_)}{}~
+}
+  \end{lstlisting}
+  \end{block}
+
+  \invisible<1>{
+    \texttt{fold[A1 >: A](z: A1)(op: (A1, A1) => A1): A1}
+    \vspace{2ex}
+
+    \texttt{z}: a \alert{neutral} element for the fold operation;
+    may be added to the result an arbitrary number of times, and \alert{must not change the result.}
+
+    \texttt{op}: a binary operator that must be \alert{associative.}
+    \begin{block}{}
+      \centering
+      \large \textbf{But, but... That's just a Monoid!}
+    \end{block}
+  }
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Larger Use Cases}
+  \framesubtitle{Parallelization}
+  \begin{itemize}
+    \item You could have \emph{invented} the Monoid trying to write a parallel \texttt{fold}.
+    \item This is how you \emph{discover} the laws for an algebraic structure.
+    \item If you have a Monoid, you can \alert{fold it in parallel.}
+    \item But pay attention to the \alert{monoid laws!!!}
+    \item Huge performance win (in certain situations).
+    \item Base of several parallel and distributed frameworks.
+  \end{itemize}
 
 \end{frame}
+
 
 \begin{frame}
   \frametitle{Larger Use Cases}
   \framesubtitle{Incremental updates}
-  The Problem:
-
-  \begin{itemize}
-    \item System measures a magnitude (e.g. latency)
-    \item Compute and store daily means, variances, etc.
-    \item Events arrive at high rate (millions per hour)
-  \end{itemize}
+  \begin{block}{The Problem}
+    \begin{itemize}
+      \item System measures a magnitude (e.g. latency)
+      \item Compute and store daily means, variances, etc.
+      \item Events arrive at high rate (millions per hour)
+    \end{itemize}
+  \end{block}
 
 
 \end{frame}
@@ -752,8 +872,8 @@ val sorted = sortBy(people)(mconcat(List(
     \column{0.6\textwidth}
       \begin{block}{Naive approach}
         \begin{itemize}
-        \item On event load all previous measurements,
-        \item recompute meand/variance,
+        \item On each measurement load all history,
+        \item recompute mean/variance/etc.,
         \item store.
         \end{itemize}
       \end{block}
@@ -770,29 +890,43 @@ val sorted = sortBy(people)(mconcat(List(
       \begin{block}{Unsound approach}
         \begin{itemize}
         \item Store previous mean/variance,
-        \item on event, average previous and current,
+        \item on measurement average previous and current,
         \item store.
         \end{itemize}
       \end{block}
 
     \column{0.3\textwidth}
-    Fast, low memory. But, if we got \(2,1\) and then \(0\):
+    Fast, low memory, but \alert{incorrect}.
+    \begin{align*}
+      \mu[1,0,0] & = 1/3 \\
+      \mu[\mu[1,0], 0] &= 1/4
+    \end{align*}
 
-    \alert{\(\frac{(2 + 1) / 2 + 0}{3} \neq 1\).}
   \end{columns}
 \end{frame}
 
 \begin{frame}
   \frametitle{Larger Use Cases}
   \framesubtitle{Incremental updates}
-  A better approach (showed for mean but easy to generalize):
-
+  \begin{block}{A better approach}
   \begin{itemize}
-  \item Store mean and number of measurements
-  \item accumulate several (or 1) new events,
-  \item combine the old and new means using the right \alert{monoid},
-  \item store.
+    \item Find a \alert{Monoid for mean/variance/etc} of \(n\) samples.
+    \item Serialize the Monoid to storage.
+    \item Accumulate several (or 1) new measurements.
+    \item \alert{Combine} the old and new results using the monoid.
+    \item Store.
   \end{itemize}
+  \end{block}
+
+  \pause
+
+  \begin{block}{How is it better?}
+  \begin{itemize}
+    \item \alert{Exact} if we can find the right Monoid.
+    \item \alert{\(O(1)\) updates} (independent of sample size).
+    \item Trade off performance for freshness.
+  \end{itemize}
+  \end{block}
 
 \end{frame}
 
@@ -800,78 +934,175 @@ val sorted = sortBy(people)(mconcat(List(
   \frametitle{Larger Use Cases}
   \framesubtitle{Incremental updates}
   What to store?
-  \[
-  \begin{split}
-    \mu = \sum_{i=0}^{n-1} x_i \qquad  \nu = \sum_{i=0}^{m-1} x_{i+n} \\
-    \frac{1}{n+m} \sum_{i=0}^{n+m-1} x_i = \frac{n\mu + m\nu} {n+m}
-  \end{split}
-  \]
+  \begin{block}{Weighted average of the means}
+    \[
+    \begin{split}
+      n\cdot \mu = \sum_{i=0}^{n-1} x_i \qquad  m\cdot \nu = \sum_{i=0}^{m-1} x_{i+n} \\
+      \frac{1}{n+m} \sum_{i=0}^{n+m-1} x_i = \frac{n\mu + m\nu} {n+m}
+    \end{split}
+    \]
+  \end{block}
 
-  \pause
+  We need previous \alert{mean} and \alert{sample size.}
 
-  \begin{itemize}
-  \item Store mean and number of measurements
-  \item accumulate several (or 1) new events,
-  \item combine the old and new means using the right \alert{monoid},
-  \item store.
-  \end{itemize}
+  Generalizing, to compute the nth-moment, we need to store n+1 values.
 \end{frame}
 
 \begin{frame}[fragile]
   \frametitle{Larger Use Cases}
   \framesubtitle{Incremental updates}
-  \begin{block}{The mean monoid}
+  \begin{block}{A data type for mean and variance}
   \begin{lstlisting}
-case class Mean(mu: Double, n: Int)
+sealed abstract class MeanVar
 
-implicit val meanMonoid = new Monoid[Mean] {
-  def zero: Mean = Mean(0,0)
+final case object EmptyMeanVar extends MeanVar
 
-  def append(a: Mean, b: => Mean): Mean = (a, b) match {
-     case (Mean(mua, na), Mean(mub, nb)) =>
-       Mean((mua * na + mub * nb) / (na + nb), na + nb)
+final case class MeanVarV(
+  m1: Double,
+  m2: Double,
+  n: Long) extends MeanVar
+  \end{lstlisting}
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Larger Use Cases}
+  \framesubtitle{Incremental updates}
+  \begin{block}{Utility functions: creating \texttt{MeanVars}}
+  \begin{lstlisting}
+object MeanVar {
+
+  def singleton(x: Double): MeanVar = MeanVarV(x, 0, 1)
+
+  def sample(xs: Traversable[Double]): MeanVar = ~\pause~
+    foldMap(singleton(_))(xs)
+}
+  \end{lstlisting}
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Larger Use Cases}
+  \framesubtitle{Incremental updates}
+  \begin{block}{Utility functions: extracting from \texttt{MeanVars}}
+  \begin{lstlisting}
+object MeanVar {
+  def sampleSize: MeanVar => Long = {
+    case MeanVarV(_, _, n) => n
+    case _ => 0
+  }
+  def mean: MeanVar => Option[Double] = {
+    case MeanVarV(m1, _, _) => Some(m1)
+    case _ => None
+  }
+  def variance: MeanVar => Option[Double] = {
+    case MeanVarV(_, _, 1) => Some(0)
+    case MeanVarV(_, m2, n) => Some(m2/(n - 1.0))
+    case _ => None
   }
 }
   \end{lstlisting}
   \end{block}
-  Now we can accumulate measurements for some time, and then easily
-  combine the previous stored averages with new ones.
 \end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Larger Use Cases}
+  \framesubtitle{Incremental updates}
+  \begin{block}{The Monoid}
+  \begin{lstlisting}
+val meanVarMonoid: Monoid[MeanVar] = new Monoid[MeanVar] {
+  def zero: MeanVar = EmptyMeanVar
+
+  def append(a: MeanVar, b: => MeanVar): MeanVar = (a, b) match {
+    case (EmptyMeanVar, a) => a
+    case (a, EmptyMeanVar) => a ~\pause~
+    case (MeanVarV(m1a, m2a, na), MeanVarV(m1b, m2b, nb)) => {
+      val nt = na + nb
+      val delta = m1b - m1a
+      MeanVarV(~\alert{(na * m1a + nb * m1b ) / nt}~,
+                m2a + m2b + delta * delta * na * nb / nt,
+                ~\alert{nt}~)
+    }
+  }
+}
+  \end{lstlisting}
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Larger Use Cases}
+  \framesubtitle{Incremental updates}
+  \begin{block}{Updating the statistics (pseudocode)}
+  \begin{lstlisting}
+     // Define a time resolution (accumulate for 1sec? 100ms?)
+     val newData: Vector[Double] = getNewMeasurements(...)
+
+     // Compute mean/var of the new data (incremental work)
+     val newStats: MeanVar = MeanVar.sample(newData)
+
+     // This is an O(1) op
+     // In our example this loads 3 numbers,
+     // doesn't matter how many samples we have processed before
+     val oldStats: MeanVar = loadStats(...)
+
+     // Another O(1) operation
+     storeStats(oldStats |+| newStats)
+  \end{lstlisting}
+  \end{block}
+\end{frame}
+
 
 \begin{frame}
   \frametitle{Larger Use Cases}
   \framesubtitle{Incremental updates}
-  Few more details:
   \begin{itemize}
-    \item How about \texttt{Double} under sum not being a monoid?
-  \item We saw mean, but same is extensible to variance.
-  \item In fact, it's extensible to any higher moment.
-  \item In fact, you can extend it to do approximate histograms and other fun stuff.
+    \item You could have \emph{invented} the Monoid trying to write incremental updates.
+    \item This is how you \emph{discover} the laws for an algebraic structure.
+    \item Didn't we say \texttt{Double} under \texttt{(+)} is not a Monoid?
+    \item Extensible to higher momenta.
+    \item Extensible to approximate histograms and other fun stuff.
   \end{itemize}
-
+  \begin{block}{Take-home quiz}
+    How can we do rolling averages? We would need to \emph{delete} the older
+    accumulated data.
+  \end{block}
 \end{frame}
 
 \subsection{References}
+\begin{frame}
+  \frametitle{References}
+  \begin{columns}[c]
+    \column{0.7\textwidth}
+      \begin{itemize}
+
+        \item This talk: slides, all the \alert{code and many tests} \\
+          \href{https://github.com/paraseba/}{\underline{https://github.com/paraseba/}} % fixme
+
+        \item \textit{Functional Programming in Scala.}\\ Paul Chiusano \& Runar Bjarnason
+
+        \item \textit{Why Functional Programming Matters} \\
+          John Hughes.
+
+        \item \textit{Computing skewness and kurtosis in one pass.} \\
+          {\footnotesize \href{https://www.johndcook.com/blog/skewness\_kurtosis/}{\underline{https://www.johndcook.com/blog/skewness\_kurtosis/}}}
+
+        \item Scalaz library \\
+          {\href{https://github.com/scalaz/scalaz}{\underline{https://github.com/scalaz/scalaz}}}
+      \end{itemize}
+
+    \column{0.3\textwidth}
+
+    \begin{figure}
+        \centering
+        \includegraphics[width=\textwidth]{functional-programming-in-scala.png}
+    \end{figure}
+  \end{columns}
+\end{frame}
 
 \section{Monoids in Design \color[rgb]{0.5,0.1,0.9}[next session]}
 
 
-
-% \begin{frame}{Functional Programming in Scala}
-%   reading the book as a group?
-% \end{frame}
-
-% \begin{frame}{Figures as Monoids Paper}
-% \end{frame}
-
-% \begin{frame}{Why functional programming matters}
-% \end{frame}
-
-% \begin{frame}{Scalaz}
-% \end{frame}
-
-
-
+\iffalse
 \begin{frame}{ToDo / Fixme}
   \begin{itemize}
     \item what happens with broken rules
@@ -883,26 +1114,23 @@ implicit val meanMonoid = new Monoid[Mean] {
     \item where to find code/presentation
     \item mathematical building, is elegant, if you don't care about
           elegance in software what do you care about? elegance is simple (not easy)
-    \item level of the talk, audience
     \item accent
     \item quizes to keep awake
-    \item scalaz to try things
     \item grammarly
-    \item The Red Book
-    \item syntax sugar for implicits
     \item lazyness, is the by name argument important?
     \item integer overflow is a monoid?
-    \item endo monoid composition order
     \item either monoid?
     \item monoid for config
-    \item in the incremental example, generalize to group, to remove points
     \item grothendieck on finding the right level of abstraction
     \item mconcat can't be defined properly without associativity
-      \item mention semigroup
-        \item using equality when defining monoids for functions, what it means
-          equal functions
-          \item monoids capture *the escence* of combining things associatively
+    \item mention semigroup
+    \item using equality when defining monoids for functions, what it means
+      equal functions
+    \item monoids capture *the escence* of combining things associatively
+    \item laws must be probed by hand, type system not enough
+    \item topic for design session: aggregations (a la beautiful folds)
   \end{itemize}
 \end{frame}
+\fi
 
 \end{document}
