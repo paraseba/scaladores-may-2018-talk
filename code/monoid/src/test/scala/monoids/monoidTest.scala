@@ -13,7 +13,7 @@ import Arbitrary.arbitrary
 import SimpleMonoids._
 
 
-class HelloSpec extends FunSuite with Checkers with Matchers {
+class MonoidSpec extends FunSuite with Checkers with Matchers {
   import MonoidSyntax._
 
   def assoc[M:Monoid](f: (M,M) => Boolean)(a: M, b: M, c: M): Boolean =
