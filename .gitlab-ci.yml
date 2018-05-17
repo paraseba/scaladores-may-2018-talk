@@ -1,4 +1,5 @@
 before_script:
+  - uname -a
   - apt-get update -y
   - apt-get install apt-transport-https -y
   # Install SBT
