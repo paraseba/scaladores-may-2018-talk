@@ -271,7 +271,6 @@ class HelloSpec extends FunSuite with Checkers with Matchers {
           val expectedKurtosis = 6.0/5
           val varianceEstimatorDispersion =
             math.sqrt(math.abs(expectedKurtosis - 1) * expectedVar * expectedVar / MeanVar.sampleSize(mv))
-          println(s"${MeanVar.variance(mv).get},${MeanVar.mean(mv).get}")
           MeanVar.mean(mv).get === expectedMean +- 6*meanEstimatorDispersion &&
             MeanVar.variance(mv).get === expectedVar +- 8*varianceEstimatorDispersion
         }
