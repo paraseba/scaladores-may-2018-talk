@@ -102,10 +102,19 @@ object SimpleMonoids {
   def first[A](xs: Traversable[Option[A]]): Option[A] =
     mconcat(xs)(firstMon)
 
+  def concat[A](xs: Traversable[List[A]]): List[A] =
+    mconcat(xs)(freeMon)
+
+  def sumO[A](xs: Traversable[Option[Int]]): Option[Int] =
+    mconcat(xs)(optionMon(intAddMon))
+
   def foldMap[A, M:Monoid](f: A => M)(as: Traversable[A]): M =
     as.foldRight(Monoid[M].zero) { (x,res) =>
       f(x) |+| res
     }
+
+  def filter[A](f: A => Boolean)(as: List[A]): List[A] =
+    foldMap((a:A) => if (f(a)) List(a) else List())(as)(freeMon)
 
   val allMonoid: Monoid[Boolean] = new Monoid[Boolean] {
     def zero: Boolean = true

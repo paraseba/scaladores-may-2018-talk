@@ -94,6 +94,43 @@ class MonoidSpec extends FunSuite with Checkers with Matchers {
     )
   }
 
+  test("concat same result as scala's") {
+    check((as: List[List[Int]]) =>
+      concat(as) === List.concat(as:_*)
+    )
+  }
+
+  test("sumO of empty is None") {
+    check(sumO[Int](List()) === None)
+  }
+
+  test("sumO filters ignore Nothings") {
+    check((as: Vector[Option[Int]]) =>
+      sumO[Int](as) === sumO[Int](as.filter(_.isDefined))
+    )
+  }
+
+  test("sumO adds Somes") {
+    check(forAll(Gen.nonEmptyListOf[Int](arbitrary[Int]))(as =>
+      sumO[Int](as.map(Some(_))) === Some(as.sum)
+    ))
+  }
+
+  test("sumO example") {
+    check(sumO[Int](Vector(Some(5), Some(1), None, Some(3))) === Some(9))
+  }
+
+  def sumO[A](xs: Traversable[Option[Int]]): Option[Int] =
+    mconcat(xs)(optionMon(intAddMon))
+
+  def concat[A](xs: Traversable[List[A]]): List[A] =
+    mconcat(xs)(freeMon)
+  test("filter same results as scala's") {
+    check((as: List[Int], pred: Int => Boolean) =>
+      filter(pred)(as) === as.filter(pred)
+    )
+  }
+
   test("allMonoid is a lawful monoid") {
     check((a: Boolean, b: Boolean, c: Boolean) =>
       monoidLaws(a,b,c)(allMonoid))
