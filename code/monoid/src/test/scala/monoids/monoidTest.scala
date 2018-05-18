@@ -90,8 +90,13 @@ class MonoidSpec extends FunSuite with Checkers with Matchers {
 
   test("foldMap maps and reduces") {
     check((as: List[Int]) =>
-      foldMap((a: Int) => List(a,a))(as) === as.flatMap(a => List(a,a))
+      foldMap(as, (a: Int) => List(a,a)) === as.flatMap(a => List(a,a))
     )
+  }
+
+  test("foldMap2 same as foldMap") {
+    check((as: Vector[Int]) =>
+      foldMap(as, (a: Int) => List(a,a)) === foldMap2(as, (a: Int) => List(a,a)))
   }
 
   test("concat same result as scala's") {
@@ -149,51 +154,16 @@ class MonoidSpec extends FunSuite with Checkers with Matchers {
       .filter(_ < 20)
   }
 
-  def minGenerator[A:Arbitrary]: Gen[Min[A]] = arbitrary[Option[A]].map {
-    case None => EmptyMin()
-    case Some(n) => Min(n)
-  }
-
-  def maxGenerator[A:Arbitrary]: Gen[Max[A]] = arbitrary[Option[A]].map {
-    case None => EmptyMax()
-    case Some(n) => Max(n)
-  }
-
-  implicit def arbMin[A:Arbitrary]: Arbitrary[Min[A]] = Arbitrary(minGenerator)
-  implicit def arbMax[A:Arbitrary]: Arbitrary[Max[A]] = Arbitrary(maxGenerator)
-
-
-  test("minMonoid is a lawful monoid") {
-    check((a: Min[Int], b: Min[Int], c: Min[Int]) =>
-      monoidLaws(a,b,c)(Min.minMonoid))
-  }
-
-  test("minMonoid computes minimum") {
-    check((a: Min[Int], b: Min[Int]) => (a,b) match {
-            case (MinValue(aa), MinValue(bb)) => (a |+| b) === Min(List(aa,bb).min)
-            case (EmptyMin(), b) => (a |+| b) === b
-            case (a, EmptyMin()) => (a |+| b) === a
-          }
-    )
-  }
-
-  test("maxMonoid is a lawful monoid") {
-    check((a: Max[Int], b: Max[Int], c: Max[Int]) =>
-      monoidLaws(a,b,c)(Max.maxMonoid))
-  }
-
-  test("maxMonoid computes maximum") {
-    check((a: Max[Int], b: Max[Int]) => (a,b) match {
-            case (MaxValue(aa), MaxValue(bb)) => (a |+| b) === Max(List(aa,bb).max)
-            case (EmptyMax(), b) => (a |+| b) === b
-            case (a, EmptyMax()) => (a |+| b) === a
-          }
-    )
-  }
-
   test("min computes minimum") {
     check((as: Vector[Int]) => min(as) match {
             case Some(m) => m === as.min
+            case None => as.isEmpty
+          })
+  }
+
+  test("max computes maximum") {
+    check((as: Vector[Int]) => max(as) match {
+            case Some(m) => m === as.max
             case None => as.isEmpty
           })
   }
@@ -302,7 +272,7 @@ class MonoidSpec extends FunSuite with Checkers with Matchers {
     check(
       forAll(batchGen)(
         groups => {
-          val mv = foldMap(MeanVar.sample)(groups)
+          val mv = foldMap(groups, MeanVar.sample)
           val (expectedMean, expectedVar) = (0.0, 2000*2000/12.0)
           val meanEstimatorDispersion = math.sqrt(expectedVar/MeanVar.sampleSize(mv))
           val expectedKurtosis = 6.0/5

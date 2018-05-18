@@ -108,13 +108,16 @@ object SimpleMonoids {
   def sumO[A](xs: Traversable[Option[Int]]): Option[Int] =
     mconcat(xs)(optionMon(intAddMon))
 
-  def foldMap[A, M:Monoid](f: A => M)(as: Traversable[A]): M =
-    as.foldRight(Monoid[M].zero) { (x,res) =>
-      f(x) |+| res
+  def foldMap[A, M:Monoid](as: Traversable[A], f: A => M): M =
+    as.foldLeft(Monoid[M].zero) { (res,x) =>
+      res |+| f(x)
     }
 
+  def foldMap2[A, M:Monoid](as: Traversable[A], f: A => M): M =
+    mconcat(as.map(f))
+
   def filter[A](f: A => Boolean)(as: List[A]): List[A] =
-    foldMap((a:A) => if (f(a)) List(a) else List())(as)(freeMon)
+    foldMap(as, (a:A) => if (f(a)) List(a) else List())(freeMon)
 
   val allMonoid: Monoid[Boolean] = new Monoid[Boolean] {
     def zero: Boolean = true
@@ -129,63 +132,39 @@ object SimpleMonoids {
     ((n:Int) => n % 2 == 0) |+| ((n:Int) => n >= 10) |+| ((n:Int) => n < 20)
   )
 
+  def minMon[A:Ordering]: Monoid[Option[A]] = new Monoid[Option[A]] {
+    def zero = None
 
-  sealed abstract class Min[A]
-  final case class EmptyMin[A]() extends Min[A]
-  final case class MinValue[A](value: A) extends Min[A]
-
-  object Min {
-    def apply[A](a: A): Min[A] = MinValue(a)
-
-
-    implicit def minMonoid[A:Ordering]: Monoid[Min[A]] = new Monoid[Min[A]] {
-      def zero = EmptyMin()
-
-      def append(a: Min[A], b: => Min[A]): Min[A] = (a, b) match {
-        case (EmptyMin(), x) => x
-        case (x, EmptyMin()) => x
-        case (MinValue(x), MinValue(y)) => Min(List(x,y).min)
-      }
+    def append(a: Option[A], b: => Option[A]): Option[A] = (a, b) match {
+      case (None, x) => x
+      case (x, None) => x
+      case (Some(x), Some(y)) => Some(List(x,y).min)
     }
   }
 
-  sealed abstract class Max[A]
-  final case class EmptyMax[A]() extends Max[A]
-  final case class MaxValue[A](value: A) extends Max[A]
+  def maxMon[A:Ordering]: Monoid[Option[A]] = new Monoid[Option[A]] {
+    def zero = None
 
-  object Max {
-    def apply[A](a: A): Max[A] = MaxValue(a)
-
-    implicit def maxMonoid[A:Ordering]: Monoid[Max[A]] = new Monoid[Max[A]] {
-      def zero = EmptyMax()
-
-      def append(m1: Max[A], m2: => Max[A]): Max[A] = (m1, m2) match {
-        case (EmptyMax(), x) => x
-        case (x, EmptyMax())=> x
-        case (MaxValue(x), MaxValue(y)) => Max(List(x,y).max)
-      }
+    def append(a: Option[A], b: => Option[A]): Option[A] = (a, b) match {
+      case (None, x) => x
+      case (x, None) => x
+      case (Some(x), Some(y)) => Some(List(x,y).max)
     }
   }
 
-  def min[A: Ordering](as: Traversable[A]): Option[A] = {
-    def mapper(a: A) = Min(a)
+  def min[A: Ordering](as: Traversable[A]): Option[A] =
+    foldMap(as, (a:A) => Option(a))(minMon) // map and reduce
 
-    foldMap(mapper)(as) match {  // map and reduce
-      case MinValue(x) => Some(x)
+  def max[A: Ordering](as: Traversable[A]): Option[A] =
+    foldMap(as, (a:A) => Option(a))(maxMon) // map and reduce
+
+  def minmax[A: Ordering](as: Traversable[A]): Option[(A,A)] =
+    foldMap(as, (a:A) => (Option(a), Option(a)))(pairMon(minMon, maxMon)) match {
+      case (Some(mi), Some(ma)) => Some((mi,ma))
       case _ => None
     }
-  }
-
-  def minmax[A: Ordering](as: Traversable[A]): Option[(A,A)] = {
-    def mapper(a: A) = (Min(a), Max(a))
-
-    foldMap(mapper)(as) match {
-      case (MinValue(x), MaxValue(y)) => Some((x,y))
-      case _ => None
-    }
-  }
-
 }
+
 
 object Parallel {
 
@@ -207,7 +186,7 @@ object Stats {
     def singleton(x: Double): MeanVar = MeanVarV(x, 0, 1)
 
     def sample(xs: Traversable[Double]): MeanVar =
-      foldMap(singleton(_))(xs)
+      foldMap(xs, singleton(_))
 
     def mean: MeanVar => Option[Double] = {
       case MeanVarV(m1, _, _) => Some(m1)
