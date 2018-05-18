@@ -60,7 +60,7 @@ lazy val root = (project in file(".")).
     libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.5",
     libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.5" % "test",
 
-    scalacOptions ++= flags,
+    scalacOptions in (Compile, compile) ++= flags,
 
     wartremoverWarnings in (Compile, compile)  ++= Warts.all,
     wartremoverWarnings in (Test) ++= Warts.allBut(Wart.Any, Wart.OptionPartial)
