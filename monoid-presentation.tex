@@ -43,6 +43,9 @@
 % implicitos, gaste 10 minutos aprendedo-os. Nao precisa saber os detalhes dos
 % mecanismos de busca de implicitos.
 
+% https://www.theguardian.com/info/developer-blog/2016/dec/22/parental-advisory-implicit-content
+% https://docs.scala-lang.org/tutorials/FAQ/context-bounds.html
+
 % Bio:
 
 % Depois de quase uma década trabalhando em linguagens imperativas, Sebastian
@@ -119,6 +122,16 @@
 
 % Uncomment these lines for an automatically generated outline.
 \begin{frame} \frametitle{OUTLINE}
+  \begin{columns}[c]
+    \column{0.6\textwidth}
+      \tableofcontents
+    \column{0.4\textwidth}
+      \rotatebox{45}{\Large \textcolor{blue}{\texttt{There will be quizzes}}}
+  \end{columns}
+  \begin{block}{}
+    \centering
+    \Large \textbf{Ask questions as we go!}
+  \end{block}
 
   \note{
     Hoje vamos falar sobre Monoides. Depois de uma breve introducao
@@ -135,20 +148,20 @@
     portugues, espanhol e ingles vamos nos entender.
   }
 
-  \begin{columns}[c]
-    \column{0.6\textwidth}
-      \tableofcontents
-    \column{0.4\textwidth}
-      \rotatebox{45}{\Large \textcolor{blue}{\texttt{There will be quizzes}}}
-  \end{columns}
-  \begin{block}{}
-    \centering
-    \Large \textbf{Ask questions as we go!}
-  \end{block}
 \end{frame}
 
 
 \begin{frame} \frametitle{ABOUT ME}
+  {\LARGE Sebastian Galkin}
+
+  \begin{itemize}
+  \item \alert{Functional Programming} for a while.
+  \item Mostly big data and enterprise.
+  \item People are still scared of FP.
+  \item You or your team want to learn FP?
+  \color{blue}\texttt{paraseba@gmail.com}
+  \end{itemize}
+
   \note {
     Um pouco acerca de mim: faco programacao funcional exclusivamente
     a ums 8 anos. Scala, Haskell, Clojure e outros. Trabalho em data
@@ -165,18 +178,6 @@
     Se voce quer aprender, ou se voce quer que seu teame aprenda FP? me
     contata. Vamos conversar.
   }
-
-  {\LARGE Sebastian Galkin}
-
-  \begin{itemize}
-  \item \alert{Functional Programming} for a while.
-  \item Mostly big data and enterprise.
-  \item People are still scared of FP.
-  \item You or your team want to learn FP?
-  \color{blue}\texttt{paraseba@gmail.com}
-  \end{itemize}
-
-
 \end{frame}
 
 \section{Monoids in Code}
@@ -192,7 +193,7 @@ has \alert{wider applications.}\\[2ex] \rightline
 
   \note {
     Eu peguei essa cita da pagina da wikipedia dedicada a abstracao em
-    matematica. Toma um tempo para ler [esperar 15 segundos].
+    matematica. Pega um tempo para ler [esperar 15 segundos].
 
     Se nao chegou a ler, olha so as partes em vermelho: esencia do conceito,
     dependencias, generalizar, reusar. Sao as mesmas palavras que usamos para
@@ -260,18 +261,6 @@ has \alert{wider applications.}\\[2ex] \rightline
   \item Finding ``the right'' level of abstraction.
   \end{itemize}
 
-  \note {
-    Na verdade os maiores expertos em abstracao sao os matematicos. Eles, por
-exemplo, consiguem ``reusar'' nao so teoremas, mas teorias completas! Quando foi
-a ultima vez que voce reusou uma coisa tao simples como um mecanismo de signup?
-
-Os caras sao incansavels na hora de generalizar os resultados, e o mais
-importante, sabem achar o nivel certo de abstracao para cada tarefa. Eu acho que
-uma das caracteristicas que mais valore em um desenvolvedor e se ele percebe
-quando o nivel de abstracao esta errado.
-
-  }
-
   \pause
 
   \begin{block}
@@ -290,6 +279,18 @@ quando o nivel de abstracao esta errado.
   \end{block}
 
   \note {
+
+    Na verdade os maiores expertos em abstracao sao os matematicos. Eles, por
+    exemplo, consiguem ``reusar'' nao so teoremas, mas teorias completas! Quando foi
+    a ultima vez que voce reusou uma coisa tao simples como um mecanismo de signup?
+
+    Os caras sao incansavels na hora de generalizar os resultados, e o mais
+    importante, sabem achar o nivel certo de abstracao para cada tarefa. Eu acho que
+    uma das caracteristicas que mais valore em um desenvolvedor e se ele percebe
+    quando o nivel de abstracao esta errado.
+
+    \hrulefill
+
     Em definitiva, os matematicos arrasam em abstracao a seculos! Precisamos
     aprender e imitar.
 
@@ -308,15 +309,6 @@ quando o nivel de abstracao esta errado.
     and an \alert{identity} element.
   \end{block}
 
-  \note {
-    O monoide eh um conceito muito simples na verdade. Os  matematicos chamam a
-    este tipo de conceito uma estrutura algebraica, mas no caso do monoide eh
-    simplesmente uma generalizacao de
-    operacoes algebraicas como a soma, que sao binarias e tem um zero. Vamos ver
-    em mais detalhe:
-
-  }
-
   \pause
 
   \begin{block}{Components - A Triplet \((A, \bullet, u)\)}
@@ -328,28 +320,6 @@ quando o nivel de abstracao esta errado.
   We sometimes say ``\(A\) \emph{has} a Monoid''.
   \end{block}
 
-  \note {
-    Para apresentar um Monoide em matematica voce precisa dar tres coisas:
-
-    A primeria eh um conjunto, que pode estar formado por cualquer numero e
-    tipo de elementos. Por exemplo, o conjunto dos numeros positivos, ou o
-    conjunto dos temes de futbol, ou o conjunto dos cabalos com cabeca de homem
-    (que eh o conjunto vazio.). Cuando falamos em software, esse conjunto vai se
-    convertir em um tipo, vamos pensar um tipo como o conjunto de todos os
-    valores possivels desse tipo. Boolean por exemplo, eh um conjunto com dois
-    elementos, true e false.
-
-    A segunda coisa que voce precisa apresentar para ter um monoide eh uma
-    operacao binaria em esse conjunto, que chamamos com esse simbolo de bolinha.
-    Ou seja uma operacao que toma dois
-    elementos do conjunto e devolve um outro elemento desse mesmo conjunto. Se
-    continuamos com o essemplo do conjunto de numeros positivos, a soma, toma
-    dois numeros positivos e devolve outro numero positivo.
-
-    Finalmente, o tercer componente, voce precisa escolher um elemento do conjunto
-    que vamos chamar \(u\).
-
-  }
 
   \pause
   \begin{block}{Laws (\(a,b,c \in A\))}
@@ -363,6 +333,37 @@ quando o nivel de abstracao esta errado.
   \end{block}
 
   \note {
+
+    O monoide eh um conceito muito simples na verdade. Os  matematicos chamam a
+    este tipo de conceito uma estrutura algebraica, mas no caso do monoide eh
+    simplesmente uma generalizacao de
+    operacoes algebraicas como a soma, que sao binarias e tem um zero. Vamos ver
+    em mais detalhe:
+
+    \hrulefill
+
+    Para apresentar um Monoide em matematica voce precisa dar tres coisas:
+
+    A primeria eh um conjunto, que pode estar formado por cualquer numero e
+    tipo de elementos. Por exemplo, o conjunto dos numeros positivos, ou o
+    conjunto dos temes de futbol, ou o conjunto dos cabalos com cabeca de homem
+    (que eh o conjunto vazio.). Cuando falamos em software, esse conjunto vai se
+    convertir em um tipo, vamos pensar um tipo como o conjunto de todos os
+    valores possivels desse tipo. Boolean por exemplo, eh um conjunto com dois
+    elementos, true e false.
+
+    A segunda coisa que voce precisa apresentar para ter um monoide eh uma
+    operacao binaria em esse conjunto, que chamamos com esse simbolo de bolinha.
+    Ou seja uma operacao que recebe dois
+    elementos do conjunto e devolve um outro elemento desse mesmo conjunto. Se
+    continuamos com o essemplo do conjunto de numeros positivos, a soma, recebe
+    dois numeros positivos e devolve outro numero positivo.
+
+    Finalmente, o tercer componente, voce precisa escolher um elemento do conjunto
+    que vamos chamar \(u\).
+
+    \hrulefill
+
     Mas para que essas 3 coisas realmente formem um monoide, eh precisso
     elas  cumplir com certas reglas ou leis. Se voce tem os treis componentes
     mas eles nao cumplem as leis, voce nao tem um monoide, tem uma porcaria que
@@ -503,22 +504,6 @@ quando o nivel de abstracao esta errado.
 \subsection{Examples in programming}
 
 \begin{frame}\frametitle{BASIC MONOIDS IN PROGRAMMING}
-  \note {
-    Vamos a falar de programacao agoa. Como falamos antes, agora a conjunto do
-    monoid vai a ser um tipo. Entao para identificar um monoide precisamos um
-    tipo A, uma funcao de A a A, e um valor ou termino de tipo A que sera a identidade.
-
-    Igual que na matematica inteiros com adicao ou multiplicacao formam
-    monoides. A operacao eh asociativa, para todo pair de inteiros obtenho um
-    outro inteiro sumando ou multiplicando, e tem uma identidade.
-
-    Interesante que ja vemos que o mesmo tipo pode ter mais de um monoid, de
-    fato tem muitos monoides interessantes nos inteiros.
-
-    O que voces acham da soma nos numeros de ponto flutuante. Pareceria que
-    forma um monoide, mas, viola alguma das leis? [esperar]
-
-  }
   \begin{itemize}
     \item<1-> \texttt{Integer} under \texttt{(+)} with \texttt{0}.
     \item<1-> \texttt{Integer} under \texttt{(*)} with \texttt{1}.
@@ -545,6 +530,22 @@ quando o nivel de abstracao esta errado.
   \end{block}
 
   \note {
+    Vamos a falar de programacao agoa. Como falamos antes, agora a conjunto do
+    monoid vai a ser um tipo. Entao para identificar um monoide precisamos um
+    tipo A, uma funcao de A a A, e um valor ou termino de tipo A que sera a identidade.
+
+    Igual que na matematica inteiros com adicao ou multiplicacao formam
+    monoides. A operacao eh asociativa, para todo pair de inteiros obtenho um
+    outro inteiro sumando ou multiplicando, e tem uma identidade.
+
+    Interesante que ja vemos que o mesmo tipo pode ter mais de um monoid, de
+    fato tem muitos monoides interessantes nos inteiros.
+
+    O que voces acham da soma nos numeros de ponto flutuante. Pareceria que
+    forma um monoide, mas, viola alguma das leis? [esperar]
+
+    \hrulefill
+
    E tem mais exemplos de monoides. Por exemplo los booleanos com OR e False,
    formam um monoide. Porque a || false eh igual a false || a = a
 
@@ -556,14 +557,6 @@ quando o nivel de abstracao esta errado.
   \end{frame}
 
 \begin{frame}[fragile]\frametitle{MODELING MONOIDS IN SCALA}
-  \note {
-    Vamos ver agora como escribir monoides em scala, como modelar eles. Que
-    vamos precisar? um tipo A, uma funcao que recebe dois A e devolve outro A. E
-    uma identidade, que eh un valor de tipo A. Correto? Os treis componentes do monoide.
-    Como escrebemos isso em scala?
-
-  }
-
   If the type \texttt{A} \emph{has} a monoid we need:
   \begin{itemize}
     \item a way to create an \texttt{A} from nothing,
@@ -583,7 +576,21 @@ trait Monoid[A] {
   \end{lstlisting}
   \end{block}
 
-  \note{
+  \pause
+
+  We can have more than one Monoid for the same \texttt{A}
+  \begin{block}{But wait}
+    What happened to the laws?
+  \end{block}
+
+  \note {
+    Vamos ver agora como escribir monoides em scala, como modelar eles. Que
+    vamos precisar? um tipo A, uma funcao que recebe dois A e devolve outro A. E
+    uma identidade, que eh un valor de tipo A. Correto? Os treis componentes do monoide.
+    Como escrebemos isso em scala?
+
+    \hrulefill
+
     Bom, podemos usar um trait. O jeito de ler isso seria: para um tipo A, posso
     ter um monoide se eu implementar duas funcoes: uma a funcao que me devolve a
     identidade do monoide (aqui chamamos de zero), e outra que eh a operacao
@@ -594,16 +601,8 @@ trait Monoid[A] {
 
     Correto? parece uma codificacao razoavel do conceito de monoide? Simples neh?
 
-  }
+  \hrulefill
 
-  \pause
-
-  We can have more than one Monoid for the same \texttt{A}
-  \begin{block}{But wait}
-    What happened to the laws?
-  \end{block}
-
-  \note {
     Interessante perceber que com esse trait, podemos ter muitas instancias
     diferentes, que eh o que queriamos verdade? Um inteiro pode ter muitos
     monoides differentes, com differentes identidades e operacoes.
@@ -626,7 +625,7 @@ trait Monoid[A] {
   \begin{lstlisting}
 import MonoidSyntax._  // assume this in all slides
 
-a |+| b === implicitly[Monoid[A]].append(a,b)
+a |+| b === implicitly[Monoid[A]].append(a,b)  // nicer syntax
   \end{lstlisting}
   \end{block}
 
@@ -644,13 +643,6 @@ object MonoidSyntax {
 }
   \end{lstlisting}
   \end{block}
-  \note {
-    Uma coisa que vou adicionar agora, so para deixar mais curtos os slides eh
-    uma syntaxe optional. Ao embez de ter que ussar o metodo append do trait que
-    acabamos de definir, posso usar esse operador de soma com barras de modulo,
-    que fica mais curto. Nao precisa entender o codigo, so saibam que se tem um
-    monoide que posso achar implicitamente, posso usar o operador soma modulo.
-  }
 \end{frame}
 
 \begin{frame}[fragile]\frametitle{TWO MONOIDS FOR INTS}
@@ -671,9 +663,17 @@ val mulMon = new Monoid[Int] {
 }
   \end{lstlisting}
   \end{block}
-  These Monoid \alert{instances} are first class citizens
+  Monoid \alert{instances} are first class citizens
 
   \note {
+    Uma coisa que vou adicionar agora, so para deixar mais curtos os slides eh
+    uma syntaxe optional. Ao embez de ter que ussar o metodo append do trait que
+    acabamos de definir, posso usar esse operador de soma com barras de modulo,
+    que fica mais curto. Nao precisa entender o codigo, so saibam que se tem um
+    monoide que posso achar implicitamente, posso usar o operador soma modulo.
+
+    \hrulefill
+
     Pronto! vamos a escreber uns monoids entao!
 
     Os dois mais facis que vimos, inteiros com soma e inteiros com multiplicacao.
@@ -727,23 +727,10 @@ Is \texttt{freeMon} a commutative monoid?
 
   {\small \texttt{(4, List('H','e','l','l','o')) |+| (2, List('W','o','r','l','d'))}}
 
-  \note {
-    Podemos criar um monoide para pares? como combinamos dois pares (a,b)? por
-    exemplo, te dou dois pares de um inteiro e uma lista. [esperar]
-
-  }
   \pause
 
   If \texttt{A} and \texttt{B} have Monoids themselves, we can \alert{combine componentwise}.
 
-  \note {
-    Teriamos que combinar cada componente neh? o 4 com o 8 e a lista hello com a
-    lista world. Mas como combinamos esses componentes? Alguma ideia? [esperar]
-
-    Bom, se os componentes tiveram eles mesmos monoids, poderiamos usar o
-    monoid para combina-los neh?
-
-  }
 
   \pause
 
@@ -763,6 +750,19 @@ implicit def pairMon[A: Monoid, B: Monoid] = new Monoid[(A, B)] {
   \end{block}
 
   \note {
+    Podemos criar um monoide para pares? como combinamos dois pares (a,b)? por
+    exemplo, te dou dois pares de um inteiro e uma lista. [esperar]
+
+    \hrulefill
+
+    Teriamos que combinar cada componente neh? o 4 com o 8 e a lista hello com a
+    lista world. Mas como combinamos esses componentes? Alguma ideia? [esperar]
+
+    Bom, se os componentes tiveram eles mesmos monoids, poderiamos usar o
+    monoid para combina-los neh?
+
+    \hrulefill
+
     Entao vamos la para escriber o metodo append do monoid de pares,
     simplesmente uso o monoide dos elementos. Da para ver? o primeiro mais na
     definicao de append corresponde a o monoid do tipo A, e o segundo mais ao
@@ -785,19 +785,9 @@ implicit def pairMon[A: Monoid, B: Monoid] = new Monoid[(A, B)] {
 \begin{frame}[fragile]\frametitle{IS THERE A MONOID FOR FUNCTIONS?}
   It seems hard for arbitrary functions \texttt{A => B}.
 
-  \note{
-    Continuando para coisas mais dificis. Como voces combinariam funcoes de A a B?
-
-  }
-
   \pause
   But how about \alert{\texttt{A => A}}?
 
-  \note {
-    Parece dificil, mas e se foram funcoes de A a A. Como podemos combinar duas
-    funcoes de A a A e obter outra funcao de A a A?
-
-  }
   \pause
 
   \begin{block}{Functions that take and return the same type}
@@ -820,6 +810,16 @@ implicit def endoMon[A] = new Monoid[A => A] {
   \end{block}
 
   \note {
+
+    Continuando para coisas mais dificis. Como voces combinariam funcoes de A a B?
+
+    \hrulefill
+
+    Parece dificil, mas e se foram funcoes de A a A. Como podemos combinar duas
+    funcoes de A a A e obter outra funcao de A a A?
+
+    \hrulefill
+
     Bom, posso simplesmente compor as duas funcoes neh? Isso me da uma nova
     funcao que tambem vai de A a A. E qual eh a identidade da composicao de
     funcoes? a funcao identidade justamente. Si compongo cualquer funcao com a
@@ -876,75 +876,74 @@ implicit def monFunMon[A, B:Monoid]: Monoid[A => B] =
   }
 \end{frame}
 
-\begin{frame}[fragile] \frametitle{OPTION MONOIDS}
-  % \begin{block}{Quiz}
-  %   Would it make sense to try to write an instance of
-  %   \texttt{Monoid[Option]?}
-  % \end{block}
+% \begin{frame}[fragile] \frametitle{OPTION MONOIDS}
+%   % \begin{block}{Quiz}
+%   %   Would it make sense to try to write an instance of
+%   %   \texttt{Monoid[Option]?}
+%   % \end{block}
 
-  % \note {
-  %   Vamos escreber monoide para Option agora. Faiz sentido um Monoid[Option]?
-  %   [esperar]. Por que nao? Porque option nao eh um tipo, eh um construtor de
-  %   tipos! Nao posso devolver uma valor de tipo Option, tem que ser Option de
-  %   alguma  coisa, Option[Int], Option[String], etc.
+%   % \note {
+%   %   Vamos escreber monoide para Option agora. Faiz sentido um Monoid[Option]?
+%   %   [esperar]. Por que nao? Porque option nao eh um tipo, eh um construtor de
+%   %   tipos! Nao posso devolver uma valor de tipo Option, tem que ser Option de
+%   %   alguma  coisa, Option[Int], Option[String], etc.
 
-  % }
+%   % }
 
-    There are several ways to combine two \texttt{Option[A]}
+%     There are several ways to combine two \texttt{Option[A]}
 
-  \begin{block}{Taking the first \texttt{Some}}
-  \begin{lstlisting}
-def firstMon[A]: Monoid[Option[A]] = new Monoid[Option[A]] {
+%   \begin{block}{Taking the first \texttt{Some}}
+%   \begin{lstlisting}
+% def firstMon[A]: Monoid[Option[A]] = new Monoid[Option[A]] {
 
-  def zero: Option[A] = None
+%   def zero: Option[A] = None
 
-  def append(a: Option[A], b: => Option[A]): Option[A] =
-    a orElse b
-}
-  \end{lstlisting}
-  \end{block}
+%   def append(a: Option[A], b: => Option[A]): Option[A] =
+%     a orElse b
+% }
+%   \end{lstlisting}
+%   \end{block}
 
-  Similarly taking the last \texttt{Some}
-  \begin{block}{Quiz}
-    \begin{itemize}
-    \item What does \texttt{firstMon} do when combining a bunch of \texttt{Options}?
-    \item Is it commutative?
-    \end{itemize}
-  \end{block}
+%   Similarly taking the last \texttt{Some}
+%   \begin{block}{Quiz}
+%     \begin{itemize}
+%     \item What does \texttt{firstMon} do when combining a bunch of \texttt{Options}?
+%     \item Is it commutative?
+%     \end{itemize}
+%   \end{block}
 
-  \note {
-    Vamos escreber um monoid para Option[A]. Que posso devolver no zero? Tem que
-    ser um option de A. Bom, posso devolver None, sem problema.
+%   \note {
+%     Vamos escreber um monoid para Option[A]. Que posso devolver no zero? Tem que
+%     ser um option de A. Bom, posso devolver None, sem problema.
 
-    E como combino dois Option[A] para obter outro Option[A]? Bom, posso ficar
-    com o primeiro que nao seja None. Se a eh um Some, usso a, e se nao uso b.
-    Ou tambem poderia fazer no contrario se quiser.
+%     E como combino dois Option[A] para obter outro Option[A]? Bom, posso ficar
+%     com o primeiro que nao seja None. Se a eh um Some, usso a, e se nao uso b.
+%     Ou tambem poderia fazer no contrario se quiser.
 
-    Que voces acham que o monoide esse faiz, se eu combinar um monte de
-    Option[A] usando append? [esperar] vai me devolver o primeiro que esteja
-    definido, que nao seja vazio.
+%     Que voces acham que o monoide esse faiz, se eu combinar um monte de
+%     Option[A] usando append? [esperar] vai me devolver o primeiro que esteja
+%     definido, que nao seja vazio.
 
-    Eh commutativo? [esperar]. Nao, se falamos que devolve o primeiro Option que
-    nao eh vazio, o da izquerda, se agora eu chamar com os argumentos no
-    contrario, o resultado em geral sera diferente.
-  }
+%     Eh commutativo? [esperar]. Nao, se falamos que devolve o primeiro Option que
+%     nao eh vazio, o da izquerda, se agora eu chamar com os argumentos no
+%     contrario, o resultado em geral sera diferente.
+%   }
 
-\end{frame}
+% \end{frame}
 
 
 \begin{frame}[fragile] \frametitle{OPTION WRAPPING A MONOIDAL TYPE}
-  \begin{block}{Using the wrapped monoid}
+  \begin{block}{Using the wrapped monoid (one of several monoids for \texttt{Option[A]})}
   \begin{lstlisting}
-def optionMon[A:Monoid]: Monoid[Option[A]] =
-  new Monoid[Option[A]] {
-    def zero: Option[A] = None   // --- weird ---
+def optionMon[A:Monoid]: Monoid[Option[A]] = new Monoid[Option[A]] {
+  def zero: Option[A] = None   // --- weird ---
 
-    def append(a: Option[A], b: => Option[A]): Option[A] =
-      (a,b) match {
-        case (a, None) => a
-        case (None, b) => b
-        case (Some(a), Some(b)) => Some(a |+| b)
-      }
+  def append(a: Option[A], b: => Option[A]): Option[A] =
+    (a,b) match {
+      case (a, None) => a
+      case (None, b) => b
+      case (Some(a), Some(b)) => Some(a |+| b)
+    }
 }
   \end{lstlisting}
   \end{block}
@@ -952,9 +951,39 @@ def optionMon[A:Monoid]: Monoid[Option[A]] =
   \begin{block}{Quiz}
     \begin{itemize}
       \item Why is \texttt{zero} weird?
-      \item Can we do \texttt{zero = Some(m.zero)} instead?
+      \item Can we do \texttt{zero = Some(Monoid[A].zero)} instead?
     \end{itemize}
   \end{block}
+
+  \note {
+    Tem muitas formas de crear monoids para Option[A], aqui vemos uma que eh
+    util, mas na verdade todas as outras tambem sao utis.
+
+    Aqui vamos a usar o mesmo truque que usamos para funcoes. Vamos a pedir que
+    o tipo A, de noso monoid de Option[A] tenha um Monoide tambem. Entao, como
+    vamos combinar dois Option[A] para obter um outro Option[A]? Como o A tem um
+    monoide, podemos usa-lo para a combinacao. Entao, se os Option que
+    recebemos sao os dois Some de alguma coisa combinamos essas coisas usando a
+    operacao do monoide de A, se temos so um so Some, e o outro e None,
+    simplesmente retornamos o que tem informacao.
+
+    E para o zero? Para o zero precisamos devolver None, porque lembramos que
+    tem que ser uma identidade do append, e quando o apend recebe um None,
+    devolve o outro elemento sem modificar.
+
+    Mas eu marquei ai que a implementacao de zero esta estranha. Por que voces
+    acham que esta estranha essa implementacao, mesmo que esteja correta, todas
+    as leis se cumplem. [esperar] O segundo ponto do exercicio pode ajuda-los.
+    [esperar]. A racao pela qual essa implementacao eh estranha eh porque nao
+    usamos o metodo zero do monoide de A. Podemos usa-lo? que acontece se
+    devolvemos Some(m.zero)? Nao  podemos, isso violaria a lei de identidade
+    porque zero com None daria zero, ao envez de none.
+
+    A solucao de esse problema aparece com uma outra estrutura algebraica, mais
+    simples do que o monoid, que se chama semigroup. Um semigroup eh
+    simplesmente um monoide sem zero. Mas vamos deixar isso para uma outra vez,
+    ou voces podem ler ao respeito.
+  }
 \end{frame}
 
 \begin{frame} \frametitle{RECAP}
@@ -965,9 +994,9 @@ def optionMon[A:Monoid]: Monoid[Option[A]] =
       two methods: \texttt{zero, append})
     \item Monoids for:
       \begin{itemize}
-      \item Numbers, lists, tuples (if members have monoids)
-      \item \texttt{A => A} and \texttt{A => M} where \texttt{M} has a monoid
-      \item \texttt{Options} (first, last and Monoid wrapper)
+      \item Numbers, lists, tuples (if components have Monoids)
+      \item \texttt{A => A} and \texttt{A => M} where \texttt{M} has a Monoid
+      \item \texttt{Options}
       \item There are many, many more.
       \end{itemize}
   \end{itemize}
@@ -976,6 +1005,16 @@ def optionMon[A:Monoid]: Monoid[Option[A]] =
     \centering
     But we haven't seen \alert{why} or \alert{how} to use monoids.
   \end{block}
+
+  \note {
+    Recapitulando: ja Vimos o que eh um monoide, ja vimos como modelar um
+    monoide em scala, usando um trait com os dois metodos zero e append. E ja
+    vimos varios monoides implementados, para numeros, listas, pares, funciones, etc
+
+    Mas o que nao vimos eh como usar os monoides, para que eles servem o como
+    usal-os. O resto da palestra vai ser exemplos de como usar monoides em
+    codigo, para resolver problemas. Vamos la!
+  }
 \end{frame}
 
 \subsection{Usage}
@@ -984,17 +1023,17 @@ def optionMon[A:Monoid]: Monoid[Option[A]] =
 
   \begin{block}{A useful little function}
   \begin{lstlisting}
+// mconcat( List(a1, a2, a3) ) === a1 |+| a2 |+| a3
 def mconcat[A:Monoid](as: Traversable[A]): A =
   as.foldLeft(Monoid[A].zero)(_ |+| _)~\pause~
 
-def sum(xs: Traversable[Int]): Int =
-  ~\alert{mconcat}~(xs)(intAddMon)
+def sum(xs: Traversable[Int]): Int = ~\alert{mconcat}~(xs)(intAddMon)
 
 def concat[A](xs: Traversable[List[A]]): List[A] =
   ~\alert{mconcat}~(xs)(freeMon) // or get the Monoid implicitly
 
 def sumO[A](xs: Traversable[Option[Int]]): Int =
-  ~\alert{mconcat}~(xs)(optionMon(IntAddMon))
+  ~\alert{mconcat}~(xs)(optionMon(intAddMon))
 
 sumO(Vector()) = Nothing
 sumO(Vector(Some(5), Some(1), None, Some(3))) === Some(9)
@@ -1008,14 +1047,44 @@ sumO(Vector(Some(5), Some(1), None, Some(3))) === Some(9)
   %   What does \texttt{xyz} do?
   % \end{block}
 
+  \note {
+    O primeiro que vamos fazer eh escribir uma funcao muito util, chamada de
+    mconcat. Essa funcao recebe uma lista ou sequencia de elementos, e usa um
+    monoide implicito para comprimir, o juntar,o colapsar todos eles em um elemento so.
+    Entao recebe uma lista de A e develve um unico A.
+
+    Como implementamos mconcat? Simplesmente temos que por um |+| entre cada umo
+    dos elementos da lista. E isso eh essatamente o que os folds fazem. Nesse
+    caso estou implementando com foldLeft, mas foldRight daria o mesmo resultado.
+    A unica diferenca entre usar foldLeft e foldRight seria como os parentesis
+    sao colocados, e se o zero do monoide se combina com o primeiro o ultimo
+    elemento, mas ja sabemos que essas duas coisas, para um monoide, e so para
+    um monoide, nao importam.
+
+    \hrulefill
+
+    Agora que temos a funcao mconcat, vemos que ela eh muito util, nos permite
+    implementar funcoes bem utis como essas 3 aqui. Podemos somar uma lista de
+    inteiros, simplesmente passando um monoide de soma que ja vimos. Podemos
+    concatenar listas, pasando o monoide de listas. E podemos hacer coisas mais
+    interessantes como sumo Options[Int], ignorando os que estajam vazios.
+    Podem ver o monoid que estou usando em sumO, eh o monoide de Option
+    que vimos, que precisa de um outro monoid para combinar. Aqui tambem podemos
+    ver aquela coisa estranha que tinhamos visto nesse monoid, quando a lista
+    esta vazia a funcao devolve None, ao en vez de cero. Porque o zero do monoid
+    de Option era None.
+  }
+
 \end{frame}
 
 \begin{frame}[fragile] \frametitle{SIMPLE USAGE EXAMPLES}
   \framesubtitle{Functional MapReduce}
   \begin{block}{Super useful: \texttt{foldMap}}
   \begin{lstlisting}
-def foldMap[A, M:Monoid](f: A => M)(as: Traversable[A]): M =
-  as.foldRight(Monoid[M].zero) { (x,res) => f(x) |+| res }
+def foldMap[A, M:Monoid](as: Traversable[A], f: A => M): M =
+  //  === mconcat(as.map(f))
+
+  as.foldLeft(Monoid[M].zero) { (res,x) => res |+| f(x) }
   \end{lstlisting}
   \end{block}
 
@@ -1024,15 +1093,35 @@ def foldMap[A, M:Monoid](f: A => M)(as: Traversable[A]): M =
 
   \begin{block}{}
   \begin{lstlisting}
-def filter[A](f: A => Boolean)(as: List[A]): List[A] =
-  foldMap((a:A) => if (f(a)) List(a) else List())(as)(freeMon)
+def filter[A](as: List[A], f: A => Boolean): List[A] =
+  foldMap(as, (a:A) => if (f(a)) List(a) else List())(freeMon)
   \end{lstlisting}
   \end{block}
 
-  %\vspace{6ex}
+  \note {
+    Mais uma funcao muito util que podemos definir eh foldMap, essa funcao
+    aparece muito, eh super util, e se comporta mais ou menos como um mini
+    MapReduce. foldMap procesa uma sequencia de As e recebe uma funcao que sabe
+    convertir um A em um outro tipo cualquer M, mas com a condicao de que o M
+    precisa ter um Monoid
 
-  See \texttt{Foldable} typeclass.
+    Para implementa-la, podemos fazer como no comentario, simplesmente mapear
+    com a funcao f, e depois chamar mconcat para colapsar todos os M com o
+    monoide. Isso funciona sem problema mais faze duas passadas pela sequencia,
+    entoa tem uma outra implementacao tambem simples usando foldLeft ou
+    foldRight. Mas quando pensar em foldMap, convein imaginar ela como map,
+    seguido de mconcat: map seguido de reduce.
+
+    Tendo foldMap podemos implementar uma grande lista de funcoes, em
+    particular, tendo foldMap podemos implementar foldLeft, foldRight etc. Como
+    exemplo aqui vemos a funcao filter implementada como um foldMap. o que
+    fazemos eh convirtir cada elemento da lista em uma lista, e depois deixar
+    que o monoide de listas (que so concatena) junte as listinhas de um
+    elemento. A lista que devolvemos eh uma lista que esta vazia para os
+    elementos que nao cumplem o predicado, e contem o elemento se o predicado se satisface.
+  }
 \end{frame}
+
 
 \begin{frame}[fragile] \frametitle{COMPOSING MONOIDS}
   \framesubtitle{Combining predicates}
@@ -1045,80 +1134,93 @@ def filter[A](f: A => Boolean)(as: List[A]): List[A] =
   \end{lstlisting}
   \end{block}
 
-  \begin{onlyenv}<1>
-  \begin{block}{Quiz}
-    \begin{itemize}
-      \item What does \texttt{allMonoid} do?
-      \item Is it really associative?
-      \item Is it commutative?
-    \end{itemize}
-  \end{block}
-  \end{onlyenv}
-
-  \begin{visibleenv}<2->
     Then predicates have Monoids remember?
 
     \texttt{def monFunMon[A, B:Monoid]: Monoid[A => B]}
-  \end{visibleenv}
 
-  \begin{visibleenv}<3->
+  \begin{visibleenv}<2->
   \begin{block}{}
   \begin{lstlisting}
-  val numbers = 1.to(100).filter(
-    // type annotations needed
+  val numbers = (1 to 100).filter(   // type annotations needed
     (_ % 2 == 0) |+| (_ >= 10) |+| (_ < 20)
   )
+
+  === Vector(10, 12, 14, 16, 18)
   \end{lstlisting}
   \end{block}
   \end{visibleenv}
-\end{frame}
+  \note {
 
-\begin{frame}[fragile] \frametitle{COMPOSING MONOIDS}
-  \framesubtitle{A Monoid to compute min/max. A technique based on types.}
-  \begin{block}{}
-  \begin{lstlisting}
-sealed abstract class Min[A]
-final case class EmptyMin[A]() extends Min[A]
-final case class MinValue[A](value: A) extends Min[A]
+    Uma das grandes ventagems dos monoides eh que eles se componem muito bem.
+    Vamos ver 2 exemplos do que significa ``componer''.
 
-object Min {
-  def apply[A](a: A): Min[A] = MinValue(a)
+    Nesse primeiro exemplo vamos a escribir um Monoide para booleanos. Podemos
+    ver que o unico que o monoide faz eh faver o AND dos dois booleanos, e o
+    zero eh claro que eh true, porque true AND x = x para todo x. Entao muito
+    bem, AND eh uma operacao asociativa, true eh a identidade, entao boolean tem um monoide.
 
-  // ~\phantom{   }~ Why do we need this?   ~\rotatebox[origin=c]{-90}{$\Rsh$}~
-  implicit def minMonoid[A:Ordering] = new Monoid[Min[A]] {~\pause~
-    def zero = EmptyMin()
+    Mas se voces recordarem, tinhamos escribido um monoide para funcoes que
+    devolvem um monoide. Lembra? combinaba funcoes chamando as duas funcoes e
+    combinando os resultados com o monoide. Isso significa que se temos um
+    monoide para booleanos, tambem temos um monoides para funcoes que devolvem
+    booleanos, ou seja, para predicados.
 
-    def append(a: Min[A], b: => Min[A]): Min[A] = (a, b) match {
-      case (EmptyMin(), x) => x
-      case (x, EmptyMin()) => x
-      case (MinValue(x), MinValue(y)) => Min(List(x,y).min)
-    }
-  \end{lstlisting}
-  \end{block}
-\end{frame}
+    \hrulefill
 
-\begin{frame}[fragile] \frametitle{COMPOSING MONOIDS}
-  \framesubtitle{A Monoid to compute min/max}
+    E que podemos fazer com esse Monoide? bom, por exemplo podemos combinar
+    predicados para chamar a filter. Esses 3 predicados estao sendo combinados
+    com AND pelo monoide, isso vai devolver so os elementos que cumplem os treis
+    predicados.
 
-  \begin{onlyenv}<1>
-  \begin{block}{Calculate \texttt{min}}
-  \begin{lstlisting}
-def min[A: Ordering](as: Traversable[A]): Option[A] = {
-  def mapper(a: A) = Min(a)
-
-  foldMap(mapper)(as) match {  // map and reduce
-    case MinValue(x) => Some(x)
-    case _ => None
+    Nos nao escrebemos um monoide para predicados, mas esse monoide veio de
+    graca, porque escrebemos monoides para funcoes e para booleanos, e os
+    monoides se componem muito bem.
   }
+\end{frame}
+
+\begin{frame}[fragile] \frametitle{COMPOSING MONOIDS}
+  \framesubtitle{A Monoid to compute min/max.}
+  \begin{block}{A monoid for minimum}
+  \begin{lstlisting}
+def minMon[A:Ordering]: Monoid[Option[A]] =
+  new Monoid[Option[A]] {~\pause~
+    def zero: Option[A] = ~\pause~None
+
+    def append(a: Option[A], b: => Option[A]): Option[A] =
+      (a, b) match {
+        case (None, x) => x
+        case (x, None) => x
+        case (Some(x), Some(y)) => Some(List(x,y).min)
+      }
 }
   \end{lstlisting}
   \end{block}
-  \end{onlyenv}
+  We can do the same for \texttt{maxMon}
 
-  \begin{itemize}
-    \item \texttt{Min} type is hidden from \texttt{min} user.
-    \item We can do the same for \texttt{Max}
-  \end{itemize}
+  \note {
+    Mais um exemplo de composicao. Vamos tentar escreber uma funcao que computa
+    o minimo e o maximo de uma lista numa passada so. Para isso vamos a precisar
+    monoides que computem min e max.
+
+    Entao, para poder calcura o minimo de dois tipos A, preciso alguma forma de
+    comparar os A, por isso na definicao de minMon pedimos que A tenha um
+    Ordering. Agora, por que escrebimos um monoide para Option[A] e nao para A
+    diretamente? [esperar]. O problema eh como escreber o zero. O zero de um
+    monoide que calcula minimos de tipo A deveria ser o maximo valor possivel de
+    A, desta forma se combino um a qualquer, vamos chama-lo x, com o maximo A
+    possivel, sempre x vai ser o resultado. Mas em geral, nao sabemos qual eh o
+    maximo A, ou poderia nem ter um maximo. Isso se resolve fazendo o monoide
+    para Option, e devolvendo None em zero
+
+    \hrulefill
+
+    Agora para implementar append, se temos dois Some, devolvemos o Some do
+    minimo, e se temos um None, devolvemos o outro option.
+
+    Pronto?
+
+    Claro que podemos fazer o mesmo para max
+  }
 \end{frame}
 
 
@@ -1126,21 +1228,56 @@ def min[A: Ordering](as: Traversable[A]): Option[A] = {
   \framesubtitle{A Monoid to compute min/max}
   \begin{block}{Calculate \texttt{min} \& \texttt{max} in a \alert{single pass}}
   \begin{lstlisting}
-def minmax[A: Ordering](as: Traversable[A]): Option[(A,A)] = { ~\pause~
-  def mapper(a: A) = (Min(a), Max(a))
+def min[A: Ordering](as: Traversable[A]): Option[A] =
+  foldMap(as, (a:A) => Option(a))(minMon) // map and reduce ~\pause~
 
-  foldMap(mapper)(as) match {  // map and reduce
-    case (MinValue(x), MaxValue(y)) => Some((x,y))
+def minMaxMon[A:Ordering] = ~\alt<2>{???}{\alert{pairMon(minMon, maxMon)}}~
+
+def minmax[A: Ordering](as: Traversable[A]): Option[(A,A)] =  ~\pause~
+  foldMap(as, (a:A) => (Option(a), Option(a)))(minMaxMon) match {
+
+    case (Some(mi), Some(ma)) => Some((mi,ma))
     case _ => None
   }
-}
   \end{lstlisting}
   \end{block}
 
+  \visible<3->{
   \begin{itemize}
     \item Note how easily the Monoids \alert{compose}.
-    \item Can extend to more \alert{aggregates} \texttt{(min,max,sum,size)}.
+    \item Can extend to more \alert{aggregates} \texttt{(min, max, sum, size)}.
   \end{itemize}
+  }
+
+  \note {
+    Agora que temos o monoid para calcular minimo, escreber a funcao min eh
+    muito facil. Recebemos uma lista de A, e fazemos um map-reduce com foldMap:
+    convertimos cada A em um Option[A] porque isso eh o que nosso monoide de
+    minimo quer, e depois deixamos o monoide colapsar todos os option num so.
+
+    Obviamente, min vai retornar None se a lista estava vazia porque o zero de
+    noso monoide retorna None
+
+    Mas agora, como escrebemos uma funcao que faza min e max ao mesmo tempo?
+    Logico que podemos fazer foldMap duas vezes, uma com o monoide de minimo e
+    outra com o de maximo, mas queremos so uma passada.
+
+    \hrulefill
+
+    Vamos precisar um monoide para computar as duas coisas. E uma funcao que
+    devolva um option de um par (A,A), vai devolver None para lista vazia e o
+    minimo e maximo se tiver elementos. Como construimos o Monoid? Precisamos
+    escreber um monoid novo?
+
+    \hrulefill
+
+    Nao. Monoides se componem lembra? Temos um monoide para pares, temos um
+    monoide para min e outro para max. Entao, podemos compone-los e criar um
+    monoide para minimo e maximo. Isso seria um monoide de um par de Option[A].
+
+    Entao, so temos que chamar a foldMap, convirtindo cada elemento a um par de
+    Option e no final temos que convertir o par de Option em um Option de um par.
+  }
 \end{frame}
 
 % \begin{frame}[fragile] \frametitle{COMPOSING MONOIDS}
@@ -1209,29 +1346,78 @@ def minmax[A: Ordering](as: Traversable[A]): Option[(A,A)] = { ~\pause~
     \item \texttt{Y => List[(A, Option[B])]: Monoid}
       \pause
     \item \texttt{X => Y => List[(A, Option[B])]: Monoid}
-    \item \texttt{Map[String, X => Y => List[(A, Option[B])]]: Monoid}
+    \item \texttt{Set[X => Y => List[(A, Option[B])]]: Monoid}
   \end{itemize}
   \begin{block}{}
     \centering
     \Large \textbf{Sign of a good abstraction}
   \end{block}
+  \note {
+    Entao lembre, os monoides se componem muito bem. Por exemplo, se temos
+    monoides para os tipos A e B
+
+    \hrulefill
+
+    Entao podemos ter monoide para Option[B]
+
+    \hrulefill
+
+    E para o par de A e Option[B]. E para as listas desses pares.
+
+    \hrulefill
+
+    E para as funcoes que retornam esses pares
+
+    \hrulefill
+
+    E para as funcoes que retornam esas funcoes que rotornam esses pares
+    E para os Sets de essas funcoes. etc
+  }
 \end{frame}
 
 \begin{frame} \frametitle{LARGER USE CASES}
   \framesubtitle{Parallelization}
   \begin{block}{The Problem}
     \begin{itemize}
-      \item \texttt{append} for \texttt{Monoid[E]} is CPU expensive?
-      \item We need to \texttt{mconcat} many \texttt{E}'s.: \(a_1 \bullet a_2 \bullet a_3 \dotsb \bullet a_n\)
+      \item We need to combine \texttt{A}'s with an operation:
+       \(a_1 \bullet a_2 \bullet a_3 \dotsb \bullet a_n\)
+      \item The operation \(\bullet\) is CPU expensive.
     \end{itemize}
   \end{block}
 
-\pause
-\include{tree}
+  \pause
+  \include{tree}
 
-\begin{block}{Quiz}
-  Can we swap the two red branches in the last tree?
-\end{block}
+  \note{
+    Esses foram algums exemplos de de uso de Monoides, mas exemplos reducidos a
+    pedacinhos de codigo. Poderiamos ter escrito esse codigo sem usar monoides,
+    e nao seria grave. Mas vamos ver agora dois exemplos maiores, donde o monoide
+    tem um rol muito mais importante na solucao.
+
+    O primeiro eh um problema muito geral: precisamos combinar um monte de
+    elementos a1, a2, etc. usando uma operacao que eh muito cara no CPU. Tem
+    muitos exemplos disso, por exemplo, tem duas listas ordenadas, que quer
+    fazer o merge e ficar com uma lista ordenada.
+
+    \hrulefill
+
+    Entao, como nos ajudams os monoides aqui? Se a operacao bullet fora um
+    monoide, ou seja fora asociativa com identidade, sabemos que calcular
+    qualquer um desses arbores dara o mesmo resultado. Cada um desses arbores
+    equivale a colocar os parenteses de algum jeito diferente na expresao a1
+    bullet a2 bullet a2 etc. e sabemos que como colocar os parenteses nao
+    importa num monoide. Entao podemos por exemplo, escolher a arbore da
+    dereita, evaluar as operacoes na sub-arbore vermelha num thread, e a azul
+    num outro thread, e quando elas terminam, combinar os dois resultados. Mas
+    tambem podemos fazer isso recursivamente e continuar dividindo a arbore e
+    usar tantos threads como for melhor.
+
+    De novo, isso so pode ser feito porque temos um monoide, uma operacao asociativa.
+
+    O que temos que ter cuidado eh a ordem dos nodos, lembrando que nao todos os
+    monoides sao asociativos, entao temos que combinar o resultado da arbore
+    vermelha, a izquerda e a azul a direita cuando os combinamos com bullet.
+  }
 \end{frame}
 
 \begin{frame}[fragile] \frametitle{LARGER USE CASES}
@@ -1260,50 +1446,67 @@ object Parallel {
       \large \textbf{But, but... That's just a Monoid!}
     \end{block}
   }
+
+
+  \note {
+    Bom, como implementamos isso em paralelo? O unico que precisamos fazer
+    eh reimplementar a funcao mconcat para correr em paralelo. Essa aqui e a
+    implementacao que a gente tem. Como a transformamos em paralela?
+
+    \hrulefill
+
+    o primeiro que podemos fazer eh utilizar o metodo fold ao envez de foldLeft.
+    Se olham a documentacao do scala, o metodo fold mala isso que esta ai
+    embaixo. a operacao que passamos a fold deve ser asociativa e ter uma
+    identidade. Ta vendo? eles nao falam em Monoide, mas isso eh exatamente um
+    Monoide! E eles so podem implementar join para monoides pelos motivos que
+    vimos.
+
+    Join nao da garantia de em que ordem vai se fazer as evaluacoes, mas ainda
+    nao eh paralela, so poderia correr em paralelo, eh a mesma coisa que
+    foldLeft (um pouco menos geral no tipo), mas com limitacoes de que operacao
+    e neutro pode se passar.
+
+    \hrulefill
+
+    Agora para convertir esse codigo em paralelo, so precissamos fazer uma coisa:
+    convertir nosso traversable em um traversable paralelo. Pronto. Esse codigo
+    vai correr em tantos threads como tenha disponivel o CPU.
+  }
 \end{frame}
 
-\begin{frame}[fragile] \frametitle{LARGER USE CASES}
-  \framesubtitle{Parallelization}
-  \begin{itemize}
-    \item You could have \emph{invented} the Monoid trying to write a parallel \texttt{fold}.
-    \item This is how you \emph{discover} the laws for an algebraic structure.
-    \item If you have a Monoid, you can \alert{fold it in parallel.}
-    \item But pay attention to the \alert{monoid laws!!!}
-    \item Huge performance win (in certain situations).
-    \item Base of several parallel and distributed frameworks.
-  \end{itemize}
+% \begin{frame}[fragile] \frametitle{LARGER USE CASES}
+%   \framesubtitle{Parallelization}
+%   \begin{itemize}
+%     \item You could have \emph{invented} the Monoid trying to write a parallel \texttt{fold}.
+%     \item This is how you \emph{discover} the laws for an algebraic structure.
+%     \item If you have a Monoid, you can \alert{fold it in parallel.}
+%     \item But pay attention to the \alert{monoid laws!!!}
+%     \item Huge performance win (in certain situations).
+%     \item Base of several parallel and distributed frameworks.
+%   \end{itemize}
 
-\end{frame}
+% \end{frame}
 
 
 \begin{frame} \frametitle{LARGER USE CASES}
   \framesubtitle{Incremental updates}
   \begin{block}{The Problem}
-    \begin{itemize}
-      \item System measures a magnitude (e.g. latency)
-      \item Compute and store daily means, variances, etc.
-      \item Events arrive at high rate (millions per hour)
-    \end{itemize}
-  \end{block}
-
-
-\end{frame}
-
-\begin{frame} \frametitle{LARGER USE CASES}
-  \framesubtitle{Incremental updates}
+    For some measured magnitude (e.g. latency), \alert{compute and store mean and
+    variance} Events arrive at high rate, \alert{millions per hour.}
+  \end{block} \pause
   \begin{columns}[c]
     \column{0.6\textwidth}
       \begin{block}{Naive approach}
         \begin{itemize}
-        \item On each measurement load all history,
-        \item recompute mean/variance/etc.,
-        \item store.
+        \item Store all measurements,
+        \item compute \(\mu, \sigma^2\) on demand, or
+          precompute at certain interval.
         \end{itemize}
       \end{block}
 
     \column{0.3\textwidth}
-  Too much \alert{memory}, to much compute \alert{time}, not able to \alert{catch up}
-  to the stream.
+  Too much \alert{space}, too much \alert{time}. \(\mathcal{O}(N)\)
   \end{columns}
 
   \pause
@@ -1312,27 +1515,59 @@ object Parallel {
     \column{0.6\textwidth}
       \begin{block}{Unsound approach}
         \begin{itemize}
-        \item Store previous mean/variance,
+        \item Store previous \(\mu\) and \(\sigma^2\)
         \item on measurement average previous and current,
         \item store.
         \end{itemize}
       \end{block}
 
     \column{0.3\textwidth}
-    Fast, low memory, but \alert{incorrect}.
+    Fast, low memory, \(\mathcal{O}(1)\) but \alert{incorrect}.
     \begin{align*}
       \mu[1,0,0] & = 1/3 \\
       \mu[\mu[1,0], 0] &= 1/4
     \end{align*}
 
   \end{columns}
+
+  \note {
+    Vamos agora para o ultimo problema que vamos estudar. Temos um sistema que
+    mede alguma certa variable, por exemplo, o tempo que demora um request HTTP,
+    ou cualquer outra coisa do tipo. Nosso sistema precisa calcular a media e
+    variancia das medicoes. O que faz o problema mais complexo eh que as
+    medicoes chegam muito rapidamente, vamos supor milhoes de medicoes por hora.
+    Entao, chegam muitas medicoes, precisamos manter um computo da media e a
+    variancia em algum tipo de banco de dados o store.
+
+    \hrulefill
+
+    A primeira ideia eh a mais simples. Cada vez que chega uma nova medicao,
+    simplesmente guarda-la no banco de dados. Quando precisamos calcular a media
+    ou variancia, carregamos todas as medicoes e calculamos. Se nao queremos
+    esperar tanto quando precisamos a media, podemos precalcular ela a
+    intervalos regulares e guardar. O problema eh que esse sistema eh de ordem N
+    em espaco e tempo. Quantas mais medicoes temos mais lento fica, e com
+    milhoes de medicoes por hora, nao vai funcionar.
+
+    \hrulefill
+
+    Uma ideia mais pratica seria ao envez de guardar no banco todas as medicoes,
+    guardar so a media e a variancia. Depois, quando chega uma nova medicao, ou
+    grupo de medicoes, calcular media e variancia e combinar com as anteriores.
+    Esse algoritmo eh de ordem 1, nao precisso guardar as medicoes, mas para
+    calcular medias, nao podo fazer a media das medias. Simplesmente a
+    matematica nao funciona.
+
+    Mas a ideia eh boa... combinar os resultados velhos com os novos... tem
+    cheiro de monoide. So temos que arrumar a matematica.
+  }
 \end{frame}
 
 \begin{frame} \frametitle{LARGER USE CASES}
   \framesubtitle{Incremental updates}
   \begin{block}{A better approach}
   \begin{itemize}
-    \item Find a \alert{Monoid for mean/variance/etc} of \(n\) samples.
+    \item Find a \alert{Monoid for mean/variance} of \(n\) samples.
     \item Serialize the Monoid to storage.
     \item Accumulate several (or 1) new measurements.
     \item \alert{Combine} the old and new results using the monoid.
@@ -1340,15 +1575,27 @@ object Parallel {
   \end{itemize}
   \end{block}
 
-  \pause
-
   \begin{block}{How is it better?}
   \begin{itemize}
     \item \alert{Exact} if we can find the right Monoid.
-    \item \alert{\(O(1)\) updates} (independent of sample size).
-    \item Trade off performance for freshness.
+    \item \alert{\(\mathcal{O}(1)\) updates} (independent of sample size).
+    \item Trade off freshness by scale.
   \end{itemize}
   \end{block}
+
+  \note {
+    Entao, como podemos fazer? O primeiro sera encontrar um monoide que consiga
+    combinar os resultados de media e variancia anteriores com os novos. Depois,
+    vamos acumulando medicoes, calculamos, e vamos guardando os resultados.
+    Quando chegam novos resultados, o monoide sabe como combinar os velhos com
+    os novos.
+
+    Com esse algoritme vamos ter resultados exatos, se conseguimos escreber um
+    monoide correto, as atualizacoes nao dependem da cantidad de dados. Outra
+    ventagem eh que podemos decidir a cada quanto tempo combinar as medicoes,
+    dependendo de que resolucao precisamos nos resultados. Podemos acumular
+    medicoes por 1 segundo, ou 1 minuto, e so depois combinar com as velhas.
+  }
 
 \end{frame}
 
@@ -1367,6 +1614,19 @@ object Parallel {
   We need previous \alert{mean} and \alert{sample size.}
 
   Generalizing, to compute the nth-moment, we need to store n+1 values.
+
+  \note {
+    Entao, temos que desenhar nosso monoide. O que precisamos para conseguir
+    combinar a media e variancia velhas com as novas? Essas equacoes ai, o que
+    estao dizendo eh basicamente, que se eu tenho duas meias, que quero calcular
+    a meia real dos dados, preciso calcular a meia mas usando pesos, o peso eh o
+    tamanho de cada mostra. Entao multiplico a meia velha pelo seu tamanho e a
+    nova tambem, somo e depois divido pela quantidade total de mostras.
+
+    A formula da variancia eh mais complexa mas similar. Conclucao, para
+    combinar meias e variancias, preciso guardar a meia, a variancia e o numero
+    de mostras velhas.
+  }
 \end{frame}
 
 \begin{frame}[fragile] \frametitle{LARGER USE CASES}
@@ -1383,44 +1643,17 @@ final case class MeanVarV(
   n: Long) extends MeanVar
   \end{lstlisting}
   \end{block}
-\end{frame}
 
-\begin{frame}[fragile] \frametitle{LARGER USE CASES}
-  \framesubtitle{Incremental updates}
-  \begin{block}{Utility functions: creating \texttt{MeanVars}}
-  \begin{lstlisting}
-object MeanVar {
+  \note {
+    Entao, agora que sabemos o que guardar, vamos escreber um tipo. Meu tipo
+    MeanVar aqui, eh um tipo soma. Pode ter duas formas: ou eh um Empty, no
+    casso em que estou querendo computar a meia de 0 mostras, obviamente nao
+    posso, entao a meia eh Empty. Ou posso calcular e nesse caso guardo 3
+    valores: a meia m1, a variancia m2 e o tamanho da mostra n.
 
-  def singleton(x: Double): MeanVar = MeanVarV(x, 0, 1)
+    Certo? Nada demais.
 
-  def sample(xs: Traversable[Double]): MeanVar = ~\pause~
-    foldMap(singleton(_))(xs)
-}
-  \end{lstlisting}
-  \end{block}
-\end{frame}
-
-\begin{frame}[fragile] \frametitle{LARGER USE CASES}
-  \framesubtitle{Incremental updates}
-  \begin{block}{Utility functions: extracting from \texttt{MeanVars}}
-  \begin{lstlisting}
-object MeanVar {
-  def sampleSize: MeanVar => Long = {
-    case MeanVarV(_, _, n) => n
-    case _ => 0
   }
-  def mean: MeanVar => Option[Double] = {
-    case MeanVarV(m1, _, _) => Some(m1)
-    case _ => None
-  }
-  def variance: MeanVar => Option[Double] = {
-    case MeanVarV(_, _, 1) => Some(0)
-    case MeanVarV(_, m2, n) => Some(m2/(n - 1.0))
-    case _ => None
-  }
-}
-  \end{lstlisting}
-  \end{block}
 \end{frame}
 
 \begin{frame}[fragile] \frametitle{LARGER USE CASES}
@@ -1444,17 +1677,96 @@ val meanVarMonoid: Monoid[MeanVar] = new Monoid[MeanVar] {
 }
   \end{lstlisting}
   \end{block}
+
+  \note {
+    Agora vamos a escreber o monoide para MeanVar. A identidade que seria? Tem
+    que ser um MeanVar que nao mude os outros MeanVars quando se combina, entao
+    vai ser o EmptyMeanVar. Podem pensar que estaria combinando uma mostra com
+    uma mostra vazia, isso nao vai alterar a mostra.
+
+    Otimo. O append agora, tenho dois MeanVar e perciso devolver um outro. Se um
+    dos dois eh o EmptyMeanVar, nao preciso fazer nada, eh a identidade, entao
+    simplesmente devolvo o outro MeanVar.
+
+    E para o caso em que realmente preciso combinar dois MeanVars com dados, eh
+    so aplicar a formula que vimos antes. Se olham a parte em vermelho, estou
+    aplicando a formula, o promedio pesado pelo tamanho da mostra. A formula da
+    variancia eh um pouco mais complicada, mas nada demais.
+
+    Pronto, temos um monoide que sabe combinar medias e variancias.
+  }
 \end{frame}
+
+\begin{frame}[fragile] \frametitle{LARGER USE CASES}
+  \framesubtitle{Incremental updates}
+  \begin{block}{Utility functions: creating \texttt{MeanVars}}
+  \begin{lstlisting}
+object MeanVar {
+
+  def singleton(x: Double): MeanVar = MeanVarV(x, 0, 1)
+
+  def sample(xs: Traversable[Double]): MeanVar = ~\pause~
+    foldMap(xs, singleton(_))
+}
+  \end{lstlisting}
+  \end{block}
+
+  \note {
+    So faltaria agora escreber umas funcoes para poder criar esses objetos
+    MeanVar, vamos coloca-las no objeto companion
+
+    Primeiro uma funcao chamada singleton para crear um MeanVar quando a mostra tem um unico
+    valor. Se quero calcular a media de uma mostra com um unico ponto,
+    obviamente a media eh o valor do ponto, a variancia cero, e o numero de
+    mostras 1.
+
+    Agora vamos ao caso mais interessante, calcular o MeanVar para uma mostra.
+    Como podemos fazer? [esperar]
+
+    \hrulefill
+
+    Bom, tem muitas formas possivels. Mas a mais
+    facil eh, convertir a cada ponto em um MeanVar com 1 dato so, e depois
+    combinar todos eles com o monoide. Como fazo isso? Com nossa querida
+    foldMap. Mapeio todos os pontos aplicando a funcao singleton, e depois o
+    monoide vai combinar todos eles.
+
+    E pronto, temos todo o que precisavamos.
+  }
+\end{frame}
+
+% \begin{frame}[fragile] \frametitle{LARGER USE CASES}
+%   \framesubtitle{Incremental updates}
+%   \begin{block}{Utility functions: extracting from \texttt{MeanVars}}
+%   \begin{lstlisting}
+% object MeanVar {
+%   def sampleSize: MeanVar => Long = {
+%     case MeanVarV(_, _, n) => n
+%     case _ => 0
+%   }
+%   def mean: MeanVar => Option[Double] = {
+%     case MeanVarV(m1, _, _) => Some(m1)
+%     case _ => None
+%   }
+%   def variance: MeanVar => Option[Double] = {
+%     case MeanVarV(_, _, 1) => Some(0)
+%     case MeanVarV(_, m2, n) => Some(m2/(n - 1.0))
+%     case _ => None
+%   }
+% }
+%   \end{lstlisting}
+%   \end{block}
+% \end{frame}
 
 \begin{frame}[fragile] \frametitle{LARGER USE CASES}
   \framesubtitle{Incremental updates}
   \begin{block}{Updating the statistics (pseudocode)}
   \begin{lstlisting}
      // Define a time resolution (accumulate for 1sec? 100ms?)
-     val newData: Vector[Double] = getNewMeasurements(...)
+     val newSample: Vector[Double] = getNewMeasurements(...)
 
      // Compute mean/var of the new data (incremental work)
-     val newStats: MeanVar = MeanVar.sample(newData)
+     val newStats: MeanVar = MeanVar.sample(newSample)
 
      // This is an O(1) op
      // In our example this loads 3 numbers,
@@ -1465,26 +1777,105 @@ val meanVarMonoid: Monoid[MeanVar] = new Monoid[MeanVar] {
      storeStats(oldStats |+| newStats)
   \end{lstlisting}
   \end{block}
+
+  \note {
+    So resta escreber o algoritmo completo, que vamos fazer em pseudocodigo.
+
+    Tenho uma forma de obter as medicoes novas, chamadas aqui de newSample. Isso
+    pode ser um callback toda vez que tem uma medicao nova, o pode esperar ate
+    acumular uma certa quantidade de medicoes, ou pode esperar ate acumular por
+    certo tempo.
+
+    Depois, usando nossa funcao sample podemos convertir essas medicoes em um
+    MeanVar, chamado aqui de newStats.
+
+    Depois, vou no banco de dados e obtenho o MeanVar antigo. Percebam que isso
+    eh uma operacao muito simples, so preciso trazer 3 numeros do banco.
+
+    Finalmente, uso o monoide de MeanVar para combinar a velha com a nova, e
+    guardo no banco de dados.
+
+  }
 \end{frame}
 
 
 \begin{frame} \frametitle{LARGER USE CASES}
   \framesubtitle{Incremental updates}
+  \begin{block}{Some details}{}
   \begin{itemize}
-    \item You could have \emph{invented} the Monoid trying to write incremental updates.
-    \item This is how you \emph{discover} the laws for an algebraic structure.
-    \item Didn't we say \texttt{Double} under \texttt{(+)} is not a Monoid?
     \item Extensible to higher momenta.
     \item Extensible to approximate histograms and other fun stuff.
+    \item We never wrote an alg. to compute mean/var, only to
+      combine them.
+    \item Didn't we say \texttt{Double} under \texttt{(+)} is not a Monoid?
   \end{itemize}
-  \begin{block}{Take-home quiz}
-    \begin{itemize}
-    \item How can we do rolling averages? We would need to \emph{delete} the older
-    accumulated data.
-    \item Write two different Monoids for \texttt{Map[K, V]}. Do you need to
-      impose restrictions on \texttt{V}?
-    \end{itemize}
   \end{block}
+  % \begin{block}{Take-home quiz}
+  %   \begin{itemize}
+  %   \item How can we do rolling averages? We would need to \emph{delete} the older
+  %   accumulated data.
+  %   \item Write two different Monoids for \texttt{Map[K, V]}. Do you need to
+  %     impose restrictions on \texttt{V}?
+  %   \end{itemize}
+  % \end{block}
+
+  \note {
+    Algums detalhes.
+
+    Ese mecanismo pode ser extendido para calcular coisas mais interessantes que
+    media e variancia, pode calcular kurtosis skewness e de  fato cualquer
+    momento da distribuicao. De fato pode se calcular em aproximacao outras
+    coisas tambem usando um monoide, como histogramas por exemplo.
+
+    Eh interessante ver que nunca escribimos o algoritmo de media ou variancia,
+    so explicamos como combinar duas medias e duas variancias. Com isso eh
+    suficiente para que o monoide faza todo o trabalho. Meio magico neh?
+
+    E finalmente ... lembra que falei que os doubles com a soma nao erao um
+    monoid? como poderia ser isso que tem um monte de artimetica de monoide?
+    Bom, na verdade nao eh, mas para numeros razoavels a aproximacao eh
+    suficentemente boa.
+
+  }
+\end{frame}
+
+\begin{frame} \frametitle{CONCLUSIONS}
+  \begin{itemize}
+    \item You could have \emph{invented} the Monoid trying to write incremental
+      updates or trying to parallelize your code.
+    \item This is how you \emph{discover} the laws for an algebraic structure.
+    \item \alert{USE THE MONOID}. They are everywhere.
+    \item Don't be afraid of other algebraic structures (Functor, Monad).
+      \item \alert{Learn how to abstract}, if possible learn from the best.
+  \end{itemize}
+  % \begin{block}{Take-home quiz}
+  %   \begin{itemize}
+  %   \item How can we do rolling averages? We would need to \emph{delete} the older
+  %   accumulated data.
+  %   \item Write two different Monoids for \texttt{Map[K, V]}. Do you need to
+  %     impose restrictions on \texttt{V}?
+  %   \end{itemize}
+  % \end{block}
+
+  \note {
+    Conclusoes.
+
+    Esses dois ultimos exemplos, a parallelizacao e update incremental, sao boms
+    exemplos de como voce poderia ter inventado o monoide. Tentando escreber o
+    algoritmo paralelo, voce tevese descoberto que ia funcionar so, se a
+    operacao eh asociativa, e so se a identidade se pode combinar sem
+    consequencias. Tevesse chamado isso de algum outro jeito, por exemplo como a
+    documentacao de scala faz, mas ... voce tevera reinventado o monoide.
+
+    No contrario, se voce ja sabe do monoide, recomendo que voce pense neles
+    quando esta tentando resolver um problema, vai perceber que ajuda muito a
+    resolver problemas e para abstraer suas solucoes.
+
+    Finalmente, aprenda abstracao, aprenda de onde puder, mas se um dia tiver
+    vontades, da uma leida em algum tema de matematica abstrata, vais se
+    surprender com quanto se parece com programacao.
+
+  }
 \end{frame}
 
 \subsection*{References}
@@ -1515,11 +1906,29 @@ val meanVarMonoid: Monoid[MeanVar] = new Monoid[MeanVar] {
         \includegraphics[width=\textwidth]{functional-programming-in-scala.png}
     \end{figure}
   \end{columns}
+
+  \note {
+    Se voces querem ver os slides, ou o codigo que tem testes  poder achar no
+    meu github
+
+    Se voces querem aprender mais, recomendo muito o livro Functional
+    Programming in Scala. Eh uma des melhores introducoes a PF que ja vi, em
+    cualquer linguagem.
+
+    Se querem uma coisa mais basica e curta de programacao funcional, em haskell
+    ao envez de scala, o paper why functional programming matters eh
+    maravilhoso, recomendo ler tudo ano.
+
+    Se querem brincar com PF em scala, tem muitas bibliotecas muito boas. Mas
+    para nombra uma, podem olhar scalaz, que eh muito completa. A documentacao
+    deixa bastante a desejar mas, acompanhando com o livro e trabalho, pode ser feito.
+
+  }
 \end{frame}
 
 \section{Monoids in Design \color[rgb]{0.5,0.1,0.9}[next session]}
 
-\begin{frame}{ToDo}
+\begin{frame}{Monoids in Design (ToDo)}
 \end{frame}
 
 
@@ -1551,6 +1960,7 @@ val meanVarMonoid: Monoid[MeanVar] = new Monoid[MeanVar] {
 %     \item topic for design session: aggregations (a la beautiful folds)
 %       \item add filter as example of foldMap
 %         \item use palette colors
+%          \item explain we are in a functional context, nothing has sideeffects
 %   \end{itemize}
 % \end{frame}
 
