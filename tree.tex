@@ -24,16 +24,16 @@
 \begin{tikzpicture}[level distance=2em, level 3/.style={sibling distance=2em}, level 2/.style={sibling distance=1.5em}, level 1/.style={sibling distance=3em}]
   \node {\(\bullet\)}
   child { node[color=red] {\(\bullet\)}
-    child { node {\(\bullet\)}
-      child {node {\texttt{zero}}}
-      child {node {\(a_1\)}}}
-    child { node {\(a_2\)}}
+    child { node[color=red] {\(\bullet\)}
+      child {node[color=red] {\texttt{zero}}}
+      child {node[color=red] {\(a_1\)}}}
+    child { node[color=red] {\(a_2\)}}
   }
-  child { node[color=red] {\(\bullet\)}
-    child { node {\(a_3\)} }
-    child { node {\(\bullet\)}
-      child { node {\(a_4\)}}
-      child { node {\(\vdots\)}
+  child { node[color=blue] {\(\bullet\)}
+    child { node[color=blue] {\(a_3\)} }
+    child { node[color=blue] {\(\bullet\)}
+      child { node[color=blue] {\(a_4\)}}
+      child { node[color=blue] {\(\vdots\)}
       }}};
 \end{tikzpicture}
 \end{center}
