@@ -116,7 +116,7 @@ object SimpleMonoids {
   def foldMap2[A, M:Monoid](as: Traversable[A], f: A => M): M =
     mconcat(as.map(f))
 
-  def filter[A](f: A => Boolean)(as: List[A]): List[A] =
+  def filter[A](as: List[A], f: A => Boolean): List[A] =
     foldMap(as, (a:A) => if (f(a)) List(a) else List())(freeMon)
 
   val allMonoid: Monoid[Boolean] = new Monoid[Boolean] {
@@ -133,7 +133,7 @@ object SimpleMonoids {
   )
 
   def minMon[A:Ordering]: Monoid[Option[A]] = new Monoid[Option[A]] {
-    def zero = None
+    def zero: Option[A] = None
 
     def append(a: Option[A], b: => Option[A]): Option[A] = (a, b) match {
       case (None, x) => x
@@ -143,7 +143,7 @@ object SimpleMonoids {
   }
 
   def maxMon[A:Ordering]: Monoid[Option[A]] = new Monoid[Option[A]] {
-    def zero = None
+    def zero: Option[A] = None
 
     def append(a: Option[A], b: => Option[A]): Option[A] = (a, b) match {
       case (None, x) => x
@@ -158,8 +158,10 @@ object SimpleMonoids {
   def max[A: Ordering](as: Traversable[A]): Option[A] =
     foldMap(as, (a:A) => Option(a))(maxMon) // map and reduce
 
+  def minMaxMon[A:Ordering]: Monoid[(Option[A], Option[A])] = pairMon(minMon, maxMon)
+
   def minmax[A: Ordering](as: Traversable[A]): Option[(A,A)] =
-    foldMap(as, (a:A) => (Option(a), Option(a)))(pairMon(minMon, maxMon)) match {
+    foldMap(as, (a:A) => (Option(a), Option(a)))(minMaxMon) match {
       case (Some(mi), Some(ma)) => Some((mi,ma))
       case _ => None
     }

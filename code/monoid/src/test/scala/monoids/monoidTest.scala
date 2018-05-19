@@ -125,14 +125,9 @@ class MonoidSpec extends FunSuite with Checkers with Matchers {
     check(sumO[Int](Vector(Some(5), Some(1), None, Some(3))) === Some(9))
   }
 
-  def sumO[A](xs: Traversable[Option[Int]]): Option[Int] =
-    mconcat(xs)(optionMon(intAddMon))
-
-  def concat[A](xs: Traversable[List[A]]): List[A] =
-    mconcat(xs)(freeMon)
   test("filter same results as scala's") {
     check((as: List[Int], pred: Int => Boolean) =>
-      filter(pred)(as) === as.filter(pred)
+      filter(as, pred) === as.filter(pred)
     )
   }
 
@@ -148,7 +143,7 @@ class MonoidSpec extends FunSuite with Checkers with Matchers {
   }
 
   test("appending predicates is and") {
-    numbers === 1.to(100)
+    numbers === (1 to 100)
       .filter(_ % 2 === 0)
       .filter(_ >= 10)
       .filter(_ < 20)
