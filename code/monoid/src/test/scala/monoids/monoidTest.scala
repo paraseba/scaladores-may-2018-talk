@@ -175,45 +175,46 @@ class MonoidSpec extends FunSuite with Checkers with Matchers {
     check((as: Vector[List[Int]]) => Parallel.mconcat(as) === mconcat(as))
   }
 
-  test("Parallel faster") {
-    val slowMonoid = new Monoid[Int] {
-      def zero = 0
+  if (Runtime.getRuntime.availableProcessors > 1)
+    test("Parallel faster") {
+      val slowMonoid = new Monoid[Int] {
+        def zero = 0
 
-      def append(a: Int, b: => Int): Int = {
-        val startTime = System.nanoTime();
+        def append(a: Int, b: => Int): Int = {
+          val startTime = System.nanoTime();
 
-        @tailrec
-        def spin(ms: Int): Unit = {
-          val sleepTime = ms*1000000L;
-          if ((System.nanoTime() - startTime) < sleepTime) spin(ms)
+          @tailrec
+          def spin(ms: Int): Unit = {
+            val sleepTime = ms*1000000L;
+            if ((System.nanoTime() - startTime) < sleepTime) spin(ms)
+          }
+
+          spin(2)
+          a + b
+        }
+      }
+
+      def time[R](block: => R): Long = {
+        val t0 = System.nanoTime()
+        val _ = block
+        val t1 = System.nanoTime()
+        t1 - t0
+      }
+
+      val longVectors: Gen[Traversable[Int]] =
+        Gen.choose(300, 600).flatMap {n =>
+          Gen.containerOfN[Traversable, Int](n, arbitrary[Int])
         }
 
-        spin(2)
-        a + b
+      check(
+        forAll(longVectors)(
+          as => {
+            val timeSeq = time(mconcat(as)(slowMonoid))
+            val timePar = time(Parallel.mconcat(as)(slowMonoid))
+            timeSeq > timePar
+          })
+          , minSuccessful(50))
       }
-    }
-
-    def time[R](block: => R): Long = {
-      val t0 = System.nanoTime()
-      val _ = block
-      val t1 = System.nanoTime()
-      t1 - t0
-    }
-
-    val longVectors: Gen[Traversable[Int]] =
-      Gen.choose(300, 600).flatMap {n =>
-        Gen.containerOfN[Traversable, Int](n, arbitrary[Int])
-      }
-
-    check(
-      forAll(longVectors)(
-        as => {
-          val timeSeq = time(mconcat(as)(slowMonoid))
-          val timePar = time(Parallel.mconcat(as)(slowMonoid))
-          timeSeq > timePar
-        })
-        , minSuccessful(50))
-    }
 
   import Stats._
 
