@@ -311,8 +311,6 @@ has \alert{wider applications.}\\[2ex] \rightline
     and an \alert{identity} element.
   \end{block}
 
-  \pause
-
   \begin{block}{Components - A Triplet \((A, \bullet, u)\)}
   \begin{itemize}
     \item A [carrier] set (\(A\))
@@ -323,7 +321,6 @@ has \alert{wider applications.}\\[2ex] \rightline
   \end{block}
 
 
-  \pause
   \begin{block}{Laws (\(a,b,c \in A\))}
 
   \begin{description}[Commutativity:]
@@ -339,7 +336,7 @@ has \alert{wider applications.}\\[2ex] \rightline
     O monoide eh um conceito muito simples na verdade. Os  matematicos chamam a
     este tipo de conceito uma estrutura algebraica, mas no caso do monoide eh
     simplesmente uma generalizacao de
-    operacoes algebraicas como a soma, que sao binarias e tem um zero. Vamos ver
+    operacoes algebraicas como a soma. Vamos ver
     em mais detalhe:
 
     \hrulefill
@@ -364,12 +361,15 @@ has \alert{wider applications.}\\[2ex] \rightline
     Finalmente, o tercer componente, voce precisa escolher um elemento do conjunto
     que vamos chamar \(u\).
 
+    Entao, um monoide tem treis componentes: um conjunto, uma operacao de dois
+    argumentos e um elemento ``especial'' chamado unidad, ou identidad, ou zero
+
     \hrulefill
 
     Mas para que essas 3 coisas realmente formem um monoide, eh precisso
     elas  cumplir com certas reglas ou leis. Se voce tem os treis componentes
     mas eles nao cumplem as leis, voce nao tem um monoide, tem uma porcaria que
-    se usar como monoide vai dar pau.
+    se usar como monoide vai dar problema.
 
     A primeira lei ja falamos: a operacao bolinha tem que dar como resultado um
     elemento do set do monoide, nao pode dar uma coisa por fora. No exemplo do conjunto
@@ -383,13 +383,15 @@ has \alert{wider applications.}\\[2ex] \rightline
 
     Finalmente, a terceira lei do monoide: o elemento ``especial'' que
     escolhemos, \(u\), tem que ser o neutro ou identidade da operacao que
-    escolhimos. Ou seja, se o combino com qualquer outro elemento do set usando
-    a operacao, nao pode modificar o resultado.
+    escolhimos. Ou seja, se o combino com qualquer outro elemento do conjunto usando
+    a operacao, nao pode modificar o resultado. No exemplo da soma nos numeros positivos, a identidade
+    eh o numero cero, porque se sumo qualquer numero positivo com cero, obtenho
+    o mesmo numero, tanto fazendo a + 0 quanto 0 + a.
 
     Importante, vejam que os monoides nao precisam ser commutativos, isso
     significa que a operacao bolinha nao necesariamente permite intercambiar os
-    argumentos. No caso da suma que falamos, a + b eh o mesmo que b + a, e isso
-    seria um monoide commutativo, mas no geral, tem muito monoide que nao eh commutativo.
+    argumentos. O unico que precisa ser comutativo eh a combinacao com a
+    identidade, na terceira lei.
 
     Como podem ver, o monoide eh super simples, uma operacao asociativa com uma
     identidade. E so. Mas a pesar de ele ser tao simples, eh extremamente
@@ -524,15 +526,15 @@ has \alert{wider applications.}\\[2ex] \rightline
 
   \begin{block}{Quiz}<3->
     \begin{itemize}
+    \item What is the identity of the \texttt{Set[A]/union} monoid?
     \item Is \texttt{Set[A]/union} commutative?
-    \item How about \texttt{Map[K,V]/++}?
     \end{itemize}
   \end{block}
 
   \note {
-    Vamos a falar de programacao agoa. Como falamos antes, agora a conjunto do
+    Vamos a falar de programacao agora. Como falamos antes, agora a conjunto do
     monoid vai a ser um tipo. Entao para identificar um monoide precisamos um
-    tipo A, uma funcao de A a A, e um valor ou termino de tipo A que sera a identidade.
+    tipo A, uma funcao que pega dois A e devolve um A, e um valor ou termino de tipo A que sera a identidade.
 
     Igual que na matematica inteiros com adicao ou multiplicacao formam
     monoides. A operacao eh asociativa, para todo pair de inteiros obtenho um
@@ -551,7 +553,7 @@ has \alert{wider applications.}\\[2ex] \rightline
 
     \hrulefill
 
-   E tem mais exemplos de monoides. Por exemplo los booleanos com OR e False,
+   E tem mais exemplos de monoides. Por exemplo os booleanos com OR e False,
    formam um monoide. Porque a || false eh igual a false || a = a
 
    Os sets formam um monoide usando a uniao como operacao. Qual eh a identidade?
@@ -597,7 +599,7 @@ trait Monoid[A] {
     \hrulefill
 
     Bom, podemos usar um trait. O jeito de ler isso seria: para um tipo A, posso
-    ter um monoide se eu implementar duas funcoes: uma a funcao que me devolve a
+    ter um monoide se eu implementar duas funcoes: uma a funcao sem argumentos que me devolve a
     identidade do monoide (aqui chamamos de zero), e outra que eh a operacao
     binaria do monoide (aqui chamamos de append).
 
@@ -1111,7 +1113,9 @@ def foldMap[A, M:Monoid](as: Traversable[A], f: A => M): M =
   \begin{block}{}
   \begin{lstlisting}
 def filter[A](as: List[A], f: A => Boolean): List[A] =
-  foldMap(as, (a:A) => if (f(a)) List(a) else List())(freeMon)
+  foldMap(as, (a:A) =>
+    if (f(a)) List(a)
+    else List())(freeMon)
   \end{lstlisting}
   \end{block}
 
@@ -1201,7 +1205,7 @@ def filter[A](as: List[A], f: A => Boolean): List[A] =
   \begin{lstlisting}
 def minMon[A:Ordering]: Monoid[Option[A]] =
   new Monoid[Option[A]] {~\pause~
-    def zero: Option[A] = ~\pause~None
+    def zero: Option[A] = None
 
     def append(a: Option[A], b: => Option[A]): Option[A] =
       (a, b) match {
@@ -1432,7 +1436,7 @@ def minmax[A: Ordering](as: Traversable[A]): Option[(A,A)] =  ~\pause~
     De novo, isso so pode ser feito porque temos um monoide, uma operacao asociativa.
 
     O que temos que ter cuidado eh a ordem dos nodos, lembrando que nao todos os
-    monoides sao asociativos, entao temos que combinar o resultado da arbore
+    monoides sao commutativos, entao temos que combinar o resultado da arbore
     vermelha, a izquerda e a verde a direita cuando os combinamos com bullet.
 
     Esse eh um bom momento para pensar que acontece se escrebemos um monoide que
@@ -1478,7 +1482,7 @@ object Parallel {
     \hrulefill
 
     o primeiro que podemos fazer eh utilizar o metodo fold ao envez de foldLeft.
-    Se olham a documentacao do scala, o metodo fold mala isso que esta ai
+    Se olham a documentacao do scala, o metodo fold fala isso que esta ai
     embaixo. a operacao que passamos a fold deve ser asociativa e ter uma
     identidade. Ta vendo? eles nao falam em Monoide, mas isso eh exatamente um
     Monoide! E eles so podem implementar join para monoides pelos motivos que
@@ -1865,7 +1869,7 @@ object MeanVar {
   \begin{itemize}
     \item You could have \emph{invented} the Monoid trying to write incremental
       updates or trying to parallelize your code.
-    \item This is how you \emph{discover} the laws for an algebraic structure.
+    \item Inventing it is how you \emph{discover} the laws for an algebraic structure.
     \item Write only \alert{lawful} Monoids.
     \item \alert{USE THE MONOID}. They are everywhere.
     \item Don't be afraid of other algebraic structures (Functor, Monad).
@@ -1928,6 +1932,7 @@ object MeanVar {
     \column{0.3\textwidth}
 
     \begin{figure}
+        \vspace{10ex}
         \centering
         \includegraphics[width=\textwidth]{functional-programming-in-scala.png}
     \end{figure}
