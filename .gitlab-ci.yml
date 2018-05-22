@@ -10,10 +10,9 @@ before_script:
   - echo "deb http://dl.bintray.com/sbt/debian /" | tee -a /etc/apt/sources.list.d/sbt.list
   - apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 642AC823
   - apt-get update -y
-  - apt-get install sbt -y
-  #- sbt sbt-version
+  - apt-get install make sbt texlive-latex-extra -y
 
 test:
   stage: test
   script:
-    - cd code/monoid && sbt 'inspect sbtVersion' clean test
+    - make test
