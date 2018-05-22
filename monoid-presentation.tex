@@ -94,6 +94,7 @@
 
 
 
+
 \title[Monoids]{MONOIDS}
 \subtitle{\textit{What}, \textit{How} and \textit{Why}}
 \author{Sebastian Galkin}
@@ -101,15 +102,12 @@
 \date[Scaladores]{Scaladores - May 2018}
 \subject{Talks}
 
-\definecolor{keyword}{rgb}{0,0.38,0}
-\definecolor{comments}{rgb}{0.4,0.1,0.1}
-
 \begin{document}
 \lstset{
   language=Scala,
   basicstyle={\small\ttfamily},
-  keywordstyle=\color{keyword},
-  commentstyle={\color{comments}\itshape},
+  keywordstyle={\usebeamercolor{example text}\color{fg}},
+  commentstyle={\usebeamercolor{palette sidebar tertiary}\color{fg!170!}\itshape},
   columns=fullflexible,
   escapechar=~,
   showlines=false,
@@ -126,7 +124,7 @@
     \column{0.6\textwidth}
       \tableofcontents
     \column{0.4\textwidth}
-      \rotatebox{45}{\Large \textcolor{blue}{\texttt{There will be quizzes}}}
+      \rotatebox{45}{\Large \usebeamercolor[fg]{structure}{\texttt{There will be quizzes}}}
   \end{columns}
   \begin{block}{}
     \centering
@@ -141,7 +139,7 @@
     e para resolver problemas concretos dificis.
 
     Para manter voces acordados, e ter certeca que estao entendendo,
-    vou fazer perguntas que completam o material (fixme).
+    vou fazer perguntas que completam o material.
 
     Podem me interromper se tever duvidas, ou nao entender. Mesmo se o
     que nao entender for o sotaque, me interrompe e com uma mistura de
@@ -256,6 +254,7 @@ has \alert{wider applications.}\\[2ex] \rightline
   Mathematicians are the \alert{masters of abstraction.}
   \begin{itemize}
   \item Maximize generality.
+  \item Maximize simplicity (elegance)
   \item Analogies and analogies between analogies.
   \item Reusing whole theories.
   \item Finding ``the right'' level of abstraction.
@@ -289,9 +288,12 @@ has \alert{wider applications.}\\[2ex] \rightline
     uma das caracteristicas que mais valore em um desenvolvedor e se ele percebe
     quando o nivel de abstracao esta errado.
 
+    Uma das caracteristicas fundamentales da matematica eh o que eles chaman de
+    elegancia, que eh muito similar ao que a gente chama de elegancia no codigo.
+
     \hrulefill
 
-    Em definitiva, os matematicos arrasam em abstracao a seculos! Precisamos
+    Em definitiva, os matematicos arrasam em abstracao ha seculos! Precisamos
     aprender e imitar.
 
     E com isso em mente, vamos pegar umo dos exemplos de abstracao inventado
@@ -388,6 +390,10 @@ has \alert{wider applications.}\\[2ex] \rightline
     significa que a operacao bolinha nao necesariamente permite intercambiar os
     argumentos. No caso da suma que falamos, a + b eh o mesmo que b + a, e isso
     seria um monoide commutativo, mas no geral, tem muito monoide que nao eh commutativo.
+
+    Como podem ver, o monoide eh super simples, uma operacao asociativa com uma
+    identidade. E so. Mas a pesar de ele ser tao simples, eh extremamente
+    importante e extremamente conveniente.
 
     Agora vamos ver muitos exemplos para clarificar, mas lembre: um set (ou
     tipo), uma operacao binaria asociativa, e um valor do set que eh neutro para
@@ -516,12 +522,6 @@ has \alert{wider applications.}\\[2ex] \rightline
     \item<3-> \texttt{Set[A]} under \texttt{union}.
   \end{itemize}
 
-  \note{
-    Viola a lei de associatividade. A soma de ponto flotante nao eh associativa,
-    entao nao temos um monoide.
-
-  }
-
   \begin{block}{Quiz}<3->
     \begin{itemize}
     \item Is \texttt{Set[A]/union} commutative?
@@ -543,6 +543,11 @@ has \alert{wider applications.}\\[2ex] \rightline
 
     O que voces acham da soma nos numeros de ponto flutuante. Pareceria que
     forma um monoide, mas, viola alguma das leis? [esperar]
+
+    \hrulefill
+
+    Viola a lei de associatividade. A soma de ponto flotante nao eh associativa,
+    entao nao temos um monoide.
 
     \hrulefill
 
@@ -643,6 +648,13 @@ object MonoidSyntax {
 }
   \end{lstlisting}
   \end{block}
+  \note {
+    Uma coisa que vou adicionar agora, so para deixar mais curtos os slides eh
+    uma syntaxe optional. Ao embez de ter que ussar o metodo append do trait que
+    acabamos de definir, posso usar esse operador de soma com barras de modulo,
+    que fica mais curto. Nao precisa entender o codigo, so saibam que se tem um
+    monoide que posso achar implicitamente, posso usar o operador soma modulo.
+  }
 \end{frame}
 
 \begin{frame}[fragile]\frametitle{TWO MONOIDS FOR INTS}
@@ -666,17 +678,13 @@ val mulMon = new Monoid[Int] {
   Monoid \alert{instances} are first class citizens
 
   \note {
-    Uma coisa que vou adicionar agora, so para deixar mais curtos os slides eh
-    uma syntaxe optional. Ao embez de ter que ussar o metodo append do trait que
-    acabamos de definir, posso usar esse operador de soma com barras de modulo,
-    que fica mais curto. Nao precisa entender o codigo, so saibam que se tem um
-    monoide que posso achar implicitamente, posso usar o operador soma modulo.
-
-    \hrulefill
-
     Pronto! vamos a escreber uns monoids entao!
 
     Os dois mais facis que vimos, inteiros com soma e inteiros com multiplicacao.
+
+    Interessante perceber que esses sao monoides, ou seja, cumplem as leis do
+    monoid, mesmo que os inteiros fazem overflow quando pasa do numero maximo.
+    Pode tentar probar isso em casa.
 
     Simplesmente preciso cria uma clase anonima, que implemente as duas funcioes
     do trait Monoid.
@@ -686,6 +694,15 @@ val mulMon = new Monoid[Int] {
 
     Como voces vem, os monoides sao objetos como cualquer outro, simplemente um
     valor que posso passar a funcioes, colocar em listas, etc.
+
+    Um ponto importante. Lembram das leis dos monoides? Eu escrivi dois monoids,
+    mas cade as leis? Como sei que a operacao eh commutativa, como sei que tem
+    um neuto ou identidade? A resposta eh que nao sei. Em scala as leis tem que
+    ser probadas com papel e lapis, ou com tests, nao posso codificar as leis no
+    sistema de tipos. Outras linguagens mais complexas permitem, mas nao vamos
+    entrar nisso. O importante, toda vez que escrivir um monoide, verifique as
+    leis manualmente, idealmente escriba num comentario se foram dificis de
+    probar, e faza tests.
 
     Pronto, ja sabemos o que eh um monoide, e ja escrebimos os primeiros dois. Facil!
   }
@@ -1407,7 +1424,7 @@ def minmax[A: Ordering](as: Traversable[A]): Option[(A,A)] =  ~\pause~
     equivale a colocar os parenteses de algum jeito diferente na expresao a1
     bullet a2 bullet a2 etc. e sabemos que como colocar os parenteses nao
     importa num monoide. Entao podemos por exemplo, escolher a arbore da
-    dereita, evaluar as operacoes na sub-arbore vermelha num thread, e a azul
+    dereita, evaluar as operacoes na sub-arbore vermelha num thread, e a verde
     num outro thread, e quando elas terminam, combinar os dois resultados. Mas
     tambem podemos fazer isso recursivamente e continuar dividindo a arbore e
     usar tantos threads como for melhor.
@@ -1416,7 +1433,12 @@ def minmax[A: Ordering](as: Traversable[A]): Option[(A,A)] =  ~\pause~
 
     O que temos que ter cuidado eh a ordem dos nodos, lembrando que nao todos os
     monoides sao asociativos, entao temos que combinar o resultado da arbore
-    vermelha, a izquerda e a azul a direita cuando os combinamos com bullet.
+    vermelha, a izquerda e a verde a direita cuando os combinamos com bullet.
+
+    Esse eh um bom momento para pensar que acontece se escrebemos um monoide que
+    nao cumple com as leis do monoide. O resultado estara incorreto! Cada vez
+    que a gente correr o programa teremos um resultado diferente. Por isso,
+    nunca escreba um monoide que nao satisfaiz as leis
   }
 \end{frame}
 
@@ -1428,7 +1450,7 @@ def minmax[A: Ordering](as: Traversable[A]): Option[(A,A)] =  ~\pause~
 object Parallel {
 
   def mconcat[A:Monoid](as: Traversable[A]): A =
-    ~\alt<1>{as.foldLeft(Monoid[A].zero)(\_ |+| \_)}{}\alt<2>{as.\alert{fold}(Monoid[A].zero)(\_ |+| \_)}{}\alt<3->{as.\textcolor{blue}{par}.\alert{fold}(Monoid[A].zero)(\_ |+| \_)}{}~
+    ~\alt<1>{as.foldLeft(Monoid[A].zero)(\_ |+| \_)}{}\alt<2>{as.\alert{fold}(Monoid[A].zero)(\_ |+| \_)}{}\alt<3->{as.\usebeamercolor{structure}\textcolor{fg}{par}.\alert{fold}(Monoid[A].zero)(\_ |+| \_)}{}~
 }
   \end{lstlisting}
   \end{block}
@@ -1844,6 +1866,7 @@ object MeanVar {
     \item You could have \emph{invented} the Monoid trying to write incremental
       updates or trying to parallelize your code.
     \item This is how you \emph{discover} the laws for an algebraic structure.
+    \item Write only \alert{lawful} Monoids.
     \item \alert{USE THE MONOID}. They are everywhere.
     \item Don't be afraid of other algebraic structures (Functor, Monad).
       \item \alert{Learn how to abstract}, if possible learn from the best.
@@ -1867,6 +1890,9 @@ object MeanVar {
     consequencias. Tevesse chamado isso de algum outro jeito, por exemplo como a
     documentacao de scala faz, mas ... voce tevera reinventado o monoide.
 
+    Lembre o que acontece se seus monoides nao cumplem com as leis do monoide:
+    resultado incorreto, nunca faza isso.
+
     No contrario, se voce ja sabe do monoide, recomendo que voce pense neles
     quando esta tentando resolver um problema, vai perceber que ajuda muito a
     resolver problemas e para abstraer suas solucoes.
@@ -1885,7 +1911,7 @@ object MeanVar {
       \begin{itemize}
 
         \item This talk: slides, all the \alert{code and many tests} \\
-          \href{https://github.com/paraseba/}{\underline{https://github.com/paraseba/}} % fixme
+          \href{https://github.com/paraseba/scaladores-may-2018}{\underline{https://github.com/paraseba/scaladores-may-2018}} % fixme
 
         \item \textit{Functional Programming in Scala.}\\ Paul Chiusano \& Runar Bjarnason
 
@@ -1926,7 +1952,7 @@ object MeanVar {
   }
 \end{frame}
 
-\section{Monoids in Design \color[rgb]{0.5,0.1,0.9}[next session]}
+\section{Monoids in Design \alert{[next session]}}
 
 \begin{frame}{Monoids in Design (ToDo)}
 \end{frame}
@@ -1934,33 +1960,8 @@ object MeanVar {
 
 % \begin{frame}{ToDo / Fixme}
 %   \begin{itemize}
-%     \item what happens with broken rules
-%     \item Monoid seems too simple but it's powerful
-%     \item mconcat can be parallelized, incrementally, cached
-%     \item dual monoid
-%     \item summaries
-%     \item substracition not a monoid
-%     \item where to find code/presentation
-%     \item mathematical building, is elegant, if you don't care about
-%           elegance in software what do you care about? elegance is simple (not easy)
-%     \item accent
-%     \item quizes to keep awake
 %     \item grammarly
-%     \item lazyness, is the by name argument important?
-%     \item integer overflow is a monoid?
-%     \item either monoid?
-%     \item monoid for config
-%     \item grothendieck on finding the right level of abstraction
-%     \item mconcat can't be defined properly without associativity
-%     \item mention semigroup
-%     \item using equality when defining monoids for functions, what it means
-%       equal functions
-%     \item monoids capture *the escence* of combining things associatively
-%     \item laws must be probed by hand, type system not enough
 %     \item topic for design session: aggregations (a la beautiful folds)
-%       \item add filter as example of foldMap
-%         \item use palette colors
-%          \item explain we are in a functional context, nothing has sideeffects
 %   \end{itemize}
 % \end{frame}
 

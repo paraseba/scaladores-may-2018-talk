@@ -22,18 +22,19 @@
 \end{tikzpicture}
 \qquad
 \begin{tikzpicture}[level distance=2em, level 3/.style={sibling distance=2em}, level 2/.style={sibling distance=1.5em}, level 1/.style={sibling distance=3em}]
+  \usebeamercolor{example text}
   \node {\(\bullet\)}
-  child { node[color=red] {\(\bullet\)}
-    child { node[color=red] {\(\bullet\)}
-      child {node[color=red] {\texttt{zero}}}
-      child {node[color=red] {\(a_1\)}}}
-    child { node[color=red] {\(a_2\)}}
+  child { node[color=fg] {\(\bullet\)}
+    child { node[color=fg] {\(\bullet\)}
+      child {node[color=fg] {\texttt{zero}}}
+      child {node[color=fg] {\(a_1\)}}}
+    child { node[color=fg] {\(a_2\)}}
   }
-  child { node[color=blue] {\(\bullet\)}
-    child { node[color=blue] {\(a_3\)} }
-    child { node[color=blue] {\(\bullet\)}
-      child { node[color=blue] {\(a_4\)}}
-      child { node[color=blue] {\(\vdots\)}
+  child { node[color=red] {\(\bullet\)}
+    child { node[color=red] {\(a_3\)} }
+    child { node[color=red] {\(\bullet\)}
+      child { node[color=red] {\(a_4\)}}
+      child { node[color=red] {\(\vdots\)}
       }}};
 \end{tikzpicture}
 \end{center}
