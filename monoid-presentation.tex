@@ -66,6 +66,7 @@
 \usepackage{tikz}
 \usepackage{amsmath}
 
+
 \mode<presentation>
 {
   \usetheme{Madrid}      % or try Darmstadt, Madrid, Warsaw, ...
@@ -88,9 +89,9 @@
 \logo{\pgfuseimage{assoc-logo}}
 
 \setbeameroption{show notes on second screen}
+%\setbeameroption{show only notes}
 \setbeamerfont{note page}{size=\tiny}
-
-
+\setbeamertemplate{note page}[plain]
 
 
 
@@ -396,10 +397,6 @@ has \alert{wider applications.}\\[2ex] \rightline
     Como podem ver, o monoide eh super simples, uma operacao asociativa com uma
     identidade. E so. Mas a pesar de ele ser tao simples, eh extremamente
     importante e extremamente conveniente.
-
-    Agora vamos ver muitos exemplos para clarificar, mas lembre: um set (ou
-    tipo), uma operacao binaria asociativa, e um valor do set que eh neutro para
-    a operacao.
   }
 \end{frame}
 
@@ -526,7 +523,7 @@ has \alert{wider applications.}\\[2ex] \rightline
 
   \begin{block}{Quiz}<3->
     \begin{itemize}
-    \item What is the identity of the \texttt{Set[A]/union} monoid?
+    \item What is the identity of the \texttt{Set[A]/union} Monoid?
     \item Is \texttt{Set[A]/union} commutative?
     \end{itemize}
   \end{block}
@@ -677,7 +674,7 @@ val mulMon = new Monoid[Int] {
 }
   \end{lstlisting}
   \end{block}
-  Monoid \alert{instances} are first class citizens
+  Monoids \alert{instances} are first class citizens
 
   \note {
     Pronto! vamos a escreber uns monoids entao!
