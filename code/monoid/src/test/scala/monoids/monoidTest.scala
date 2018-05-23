@@ -39,6 +39,10 @@ class MonoidSpec extends FunSuite with Checkers with Matchers {
     check((a: Int, b: Int, c: Int) => monoidLaws(a,b,c)(intAddMon))
   }
 
+  test("intAddMon adds") {
+    check((a: Int, b: Int) =>  intAddMon.append(a,b) === a + b)
+  }
+
   // This test is expected to fail, (Float, 0, +) is not a monoid
   ignore("Float Sum is not a monoid!") {
     check((a: Float, b: Float, c: Float) => monoidLaws(a,b,c)(floatAddMon))
@@ -48,18 +52,44 @@ class MonoidSpec extends FunSuite with Checkers with Matchers {
     check((a: Int, b: Int, c: Int) => monoidLaws(a,b,c)(intMulMon))
   }
 
+  test("intMulMon multiplies") {
+    check((a: Int, b: Int) =>  intMulMon.append(a,b) === a * b)
+  }
+
   test("freeMon is a lawful monoid") {
     check((a: List[Int], b: List[Int], c: List[Int]) => monoidLaws(a,b,c)(freeMon))
+  }
+
+  test("freeMon concatenates") {
+    check((a: List[Int], b: List[Int]) =>  freeMon.append(a,b) === a ++ b)
   }
 
   test("firstMon is a lawful monoid") {
     check((a: Option[Int], b: Option[Int], c: Option[Int]) => monoidLaws(a,b,c)(firstMon))
   }
 
+  test("firstMon returns first Some") {
+    check((as: List[Option[Int]]) => mconcat(as)(firstMon) === as.filter(_.isDefined).headOption.flatten)
+  }
+
   test("optionMon is a lawful monoid") {
     // use a non-commutative underlying monoid
     check((a: Option[List[Int]], b: Option[List[Int]], c: Option[List[Int]]) =>
       monoidLaws(a,b,c)(optionMon(freeMon)))
+  }
+
+  test("optionMon combines with the underlying monoid") {
+    // use a non-commutative underlying monoid
+    check((a: Option[List[Int]], b: Option[List[Int]]) => {
+            val res = optionMon(freeMon[Int]).append(a,b)
+            res === ((a,b) match {
+              case (None, Some(bb)) => Some(bb)
+              case (Some(aa), None) => Some(aa)
+              case (Some(aa), Some(bb)) => Some(aa ++ bb)
+              case _ => None
+            })
+          }
+    )
   }
 
   // fixme: missing tests for endoMon and monFunMon
@@ -70,6 +100,18 @@ class MonoidSpec extends FunSuite with Checkers with Matchers {
       monoidLaws(a,b,c)(pairMon))
   }
 
+  test("pairMon uses underlying monoid") {
+    // use a non-commutative underlying monoids
+    check((a: (List[Int], Option[Int]), b: (List[Int], Option[Int])) => (a,b) match {
+            case ((a1,a2), (b1,b2)) => {
+              val (res1,res2) = pairMon(freeMon[Int], optionMon(intAddMon)).append(a,b)
+              res1 === freeMon[Int].append(a1,b1) &&
+                res2 === optionMon(intAddMon).append(a2,b2)
+            }
+          })
+  }
+
+
   test("mconcat of Lists is flatten") {
     check((as: List[List[Int]]) =>
       mconcat(as) === as.flatten
@@ -79,12 +121,6 @@ class MonoidSpec extends FunSuite with Checkers with Matchers {
   test("sum adds") {
     check((as: List[Int]) =>
       sum(as) === as.sum
-    )
-  }
-
-  test("first returns first Some") {
-    check((as: List[Option[Int]]) =>
-      first(as) === as.find(_.isDefined).flatten
     )
   }
 
