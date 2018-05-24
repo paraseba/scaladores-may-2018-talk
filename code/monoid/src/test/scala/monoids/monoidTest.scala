@@ -243,7 +243,7 @@ class MonoidSpec extends FunSuite with Checkers with Matchers {
         def zero = 0
 
         def append(a: Int, b: => Int): Int = {
-          Thread.sleep(2*1000000L)
+          Thread.sleep(2)
           a + b
         }
       }
