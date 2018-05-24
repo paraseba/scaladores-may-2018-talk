@@ -656,7 +656,7 @@ object MonoidSyntax {
   }
 \end{frame}
 
-\begin{frame}[fragile]\frametitle{TWO MONOIDS FOR INTS}
+\begin{frame}[fragile]\frametitle{TWO MONOIDS FOR \texttt{Int}}
   \begin{block}{}
   \begin{lstlisting}
 val intAddMon = new Monoid[Int] {
@@ -1466,7 +1466,7 @@ object Parallel {
     \texttt{op}: a binary operator that must be \alert{associative.}
     \begin{block}{}
       \centering
-      \large \textbf{But, but... That's just a Monoid!}
+      \large \textbf{That's just a Monoid!}
     \end{block}
   }
 
@@ -1729,7 +1729,7 @@ object MeanVar {
   def singleton(x: Double): MeanVar = MeanVarV(x, 0, 1)
 
   def sample(xs: Traversable[Double]): MeanVar = ~\pause~
-    foldMap(xs, singleton(_))
+    foldMap(xs, singleton)
 }
   \end{lstlisting}
   \end{block}
@@ -1826,9 +1826,9 @@ object MeanVar {
   \framesubtitle{Incremental updates}
   \begin{block}{Some details}{}
   \begin{itemize}
+    \item We never wrote the alg. to compute mean/var, only to
     \item Extensible to higher momenta.
     \item Extensible to approximate histograms and other fun stuff.
-    \item We never wrote an alg. to compute mean/var, only to
       combine them.
     \item Didn't we say \texttt{Double} under \texttt{(+)} is not a Monoid?
   \end{itemize}
@@ -1866,7 +1866,7 @@ object MeanVar {
   \begin{itemize}
     \item You could have \emph{invented} the Monoid trying to write incremental
       updates or trying to parallelize your code.
-    \item Inventing it is how you \emph{discover} the laws for an algebraic structure.
+    \item \emph{Discover} the laws for an algebraic structure.
     \item Write only \alert{lawful} Monoids.
     \item \alert{USE THE MONOID}. They are everywhere.
     \item Don't be afraid of other algebraic structures (Functor, Monad).
