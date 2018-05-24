@@ -213,6 +213,10 @@ class MonoidSpec extends FunSuite with Checkers with Matchers {
 
   if (Runtime.getRuntime.availableProcessors > 1)
     test("Parallel faster") {
+
+      import org.scalacheck.Shrink
+      implicit val noShrink: Shrink[Vector[Vector[Double]]] = Shrink.shrinkAny
+
       val slowMonoid = new Monoid[Int] {
         def zero = 0
 

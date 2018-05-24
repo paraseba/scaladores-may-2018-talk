@@ -188,7 +188,7 @@ object Stats {
     def singleton(x: Double): MeanVar = MeanVarV(x, 0, 1)
 
     def sample(xs: Traversable[Double]): MeanVar =
-      foldMap(xs, singleton(_))
+      foldMap(xs, singleton)
 
     def mean: MeanVar => Option[Double] = {
       case MeanVarV(m1, _, _) => Some(m1)
