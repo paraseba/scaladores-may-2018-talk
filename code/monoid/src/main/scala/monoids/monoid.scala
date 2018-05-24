@@ -1,6 +1,7 @@
 package monoids
 
 import scala.collection.immutable._
+import scala.collection.parallel.TaskSupport
 
 
 trait Monoid[M] {
@@ -172,8 +173,12 @@ object Parallel {
 
   import MonoidSyntax._
 
-  def mconcat[A:Monoid](as: Traversable[A]): A =
-    as.par.fold(Monoid[A].zero)(_ |+| _)
+  // We receive a Task Support to make testing easier, thread pools are shared between tests
+  def mconcat[A:Monoid](as: Traversable[A])(ts: TaskSupport): A = {
+    val parAs = as.par
+    parAs.tasksupport = ts
+    parAs.fold(Monoid[A].zero)(_ |+| _)
+  }
 }
 
 object Stats {

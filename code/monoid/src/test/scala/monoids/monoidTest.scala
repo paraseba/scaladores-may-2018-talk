@@ -8,6 +8,8 @@ import org.scalacheck.Prop.{forAll}
 import org.scalactic.anyvals.PosInt
 
 import scala.collection.immutable._
+import scala.collection.parallel.ForkJoinTaskSupport
+import java.util.concurrent.ForkJoinPool
 
 import Arbitrary.arbitrary
 import SimpleMonoids._
@@ -206,30 +208,42 @@ class MonoidSpec extends FunSuite with Checkers with Matchers {
           })
   }
 
+  def mkTaskSupport(warmup: Boolean): ForkJoinTaskSupport = {
+    val pool = new java.util.concurrent.ForkJoinPool
+    val ts = new scala.collection.parallel.ForkJoinTaskSupport(pool)
+    val _: Any = if (warmup) Parallel.mconcat(1.to(100))(ts)(intAddMon)
+    ts
+  }
+
+  def shutdownTS(ts: ForkJoinTaskSupport): Unit = {
+    val _ = ts.forkJoinPool.shutdownNow
+    val _2 = ts.forkJoinPool.awaitTermination(1, java.util.concurrent.TimeUnit.SECONDS)
+  }
+
+  def withTaskSupport[A](warmup: Boolean)(task: ForkJoinTaskSupport => A): A = {
+    val ts = mkTaskSupport(warmup)
+    try { task(ts) }
+    finally { shutdownTS(ts) }
+  }
+
   test("Parallel same result") {
     // use non-commutative underlying monoid
-    check((as: Vector[List[Int]]) => Parallel.mconcat(as) === mconcat(as))
+    check((as: Vector[List[Int]]) =>
+
+      withTaskSupport(false) { ts =>
+        Parallel.mconcat(as)(ts) === mconcat(as)
+      }
+    )
   }
 
   if (Runtime.getRuntime.availableProcessors > 1)
     test("Parallel faster") {
 
-      import org.scalacheck.Shrink
-      implicit val noShrink: Shrink[Vector[Vector[Double]]] = Shrink.shrinkAny
-
       val slowMonoid = new Monoid[Int] {
         def zero = 0
 
         def append(a: Int, b: => Int): Int = {
-          val startTime = System.nanoTime();
-
-          @tailrec
-          def spin(ms: Int): Unit = {
-            val sleepTime = ms*1000000L;
-            if ((System.nanoTime() - startTime) < sleepTime) spin(ms)
-          }
-
-          spin(2)
+          Thread.sleep(2*1000000L)
           a + b
         }
       }
@@ -241,19 +255,23 @@ class MonoidSpec extends FunSuite with Checkers with Matchers {
         t1 - t0
       }
 
-      val longVectors: Gen[Traversable[Int]] =
+      val longVectors: Gen[Vector[Int]] =
         Gen.choose(300, 600).flatMap {n =>
-          Gen.containerOfN[Traversable, Int](n, arbitrary[Int])
+          Gen.containerOfN[Vector, Int](n, arbitrary[Int])
         }
+
+      import org.scalacheck.Shrink
+      implicit val noShrink: Shrink[Vector[Int]] = Shrink.shrinkAny
 
       check(
         forAll(longVectors)(
-          as => {
-            val timeSeq = time(mconcat(as)(slowMonoid))
-            val timePar = time(Parallel.mconcat(as)(slowMonoid))
-            timeSeq > timePar
-          })
-          , minSuccessful(50))
+          as =>
+            withTaskSupport(false) { ts =>
+              val timePar = time(Parallel.mconcat(as)(ts)(slowMonoid))
+              val timeSeq = time(mconcat(as)(slowMonoid))
+              timeSeq > timePar
+            }
+        ), minSuccessful(50))
       }
 
   import Stats._
@@ -314,7 +332,7 @@ class MonoidSpec extends FunSuite with Checkers with Matchers {
           val expectedKurtosis = 6.0/5
           val varianceEstimatorDispersion =
             math.sqrt(math.abs(expectedKurtosis - 1) * expectedVar * expectedVar / MeanVar.sampleSize(mv))
-          MeanVar.mean(mv).get === expectedMean +- 6*meanEstimatorDispersion &&
+          MeanVar.mean(mv).get === expectedMean +- 8*meanEstimatorDispersion &&
             MeanVar.variance(mv).get === expectedVar +- 8*varianceEstimatorDispersion
         }
       )

@@ -63,6 +63,5 @@ lazy val root = (project in file(".")).
     scalacOptions in (Compile, compile) ++= flags,
 
     wartremoverWarnings in (Compile, compile)  ++= Warts.all,
-    wartremoverWarnings in (Test) ++= Warts.allBut(Wart.Any, Wart.OptionPartial)
-
+    wartremoverWarnings in (Test) ++= Warts.allBut(Wart.Any, Wart.OptionPartial),
   )
