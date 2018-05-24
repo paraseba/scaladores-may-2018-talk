@@ -1,4 +1,4 @@
-PHONY: cleantex cleancode clean testcode testtex test all console sbt pdf
+PHONY: cleantex cleancode clean testcode testtex test all console sbt pdf coverage
 .DEFAULT_GOAL := all
 
 CODE=./code/monoid
@@ -31,3 +31,6 @@ sbt:
 	cd $(CODE) && sbt
 
 pdf: monoid-presentation.pdf
+
+coverage:
+	cd $(CODE) && sbt coverage test coverageReport

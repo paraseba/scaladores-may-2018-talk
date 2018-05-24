@@ -74,6 +74,10 @@ class MonoidSpec extends FunSuite with Checkers with Matchers {
     check((as: List[Option[Int]]) => mconcat(as)(firstMon) === as.filter(_.isDefined).headOption.flatten)
   }
 
+  test("first returns first Some") {
+    check((as: List[Option[Int]]) => first(as) === as.filter(_.isDefined).headOption.flatten)
+  }
+
   test("optionMon is a lawful monoid") {
     // use a non-commutative underlying monoid
     check((a: Option[List[Int]], b: Option[List[Int]], c: Option[List[Int]]) =>
@@ -94,7 +98,13 @@ class MonoidSpec extends FunSuite with Checkers with Matchers {
     )
   }
 
-  // fixme: missing tests for endoMon and monFunMon
+  // fixme: missing tests for endoMon and monFunMon laws
+
+  test("endoMon composes") {
+    check((f: Int => Int, g: Int => Int, ns: Vector[Int]) =>
+      ns.forall(n => (f |+| g |+| Monoid[Int => Int].zero)(n) === (f(g(n))))
+    )
+  }
 
   test("pairMon is a lawful monoid") {
     // use a non-commutative underlying monoids
@@ -287,6 +297,18 @@ class MonoidSpec extends FunSuite with Checkers with Matchers {
       na === nb && m1a === m1b +- 0.0001 && m2a === m2b +- 0.0001
     case (EmptyMeanVar, EmptyMeanVar) => true
     case _ => false
+  }
+
+  test("Can't compute mean of empty") {
+    check(MeanVar.mean(EmptyMeanVar) === None)
+  }
+
+  test("Can't compute var of empty") {
+    check(MeanVar.variance(EmptyMeanVar) === None)
+  }
+
+  test("Size of empty sample is 0") {
+    check(MeanVar.sampleSize(EmptyMeanVar) === 0)
   }
 
   test("MeanVar has a lawful monoid") {

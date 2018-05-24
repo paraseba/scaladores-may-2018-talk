@@ -130,7 +130,8 @@ object SimpleMonoids {
 
   @SuppressWarnings(Array("org.wartremover.warts.Equals"))
   val numbers: Iterable[Int] = 1.to(100).filter(
-    ((n:Int) => n % 2 == 0) |+| ((n:Int) => n >= 10) |+| ((n:Int) => n < 20)
+    // we only add zero to exercise the method, not really needed
+    ((n:Int) => n % 2 == 0) |+| ((n:Int) => n >= 10) |+| ((n:Int) => n < 20) |+| Monoid[ Int=> Boolean].zero
   )
 
   def minMon[A:Ordering]: Monoid[Option[A]] = new Monoid[Option[A]] {

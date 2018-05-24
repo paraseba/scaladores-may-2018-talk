@@ -15,4 +15,5 @@ before_script:
 test:
   stage: test
   script:
-    - make test
+    - make testtex
+    - make coverage
