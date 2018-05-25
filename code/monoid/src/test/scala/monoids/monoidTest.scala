@@ -98,11 +98,21 @@ class MonoidSpec extends FunSuite with Checkers with Matchers {
     )
   }
 
-  // fixme: missing tests for endoMon and monFunMon laws
+  test("endoMon is a lawful monoid") {
+    check((f: Int => Int, g: Int => Int, h: Int => Int, ns: Vector[Int]) =>
+      monoidLawsE[Int => Int]((f1,f2) => ns.forall(n => f1(n) === f2(n)))(f,g,h)(endoMon)
+    )
+  }
 
   test("endoMon composes") {
     check((f: Int => Int, g: Int => Int, ns: Vector[Int]) =>
       ns.forall(n => (f |+| g |+| Monoid[Int => Int].zero)(n) === (f(g(n))))
+    )
+  }
+
+  test("monFunMon is a lawful monoid") {
+    check((f: Int => List[Int], g: Int => List[Int], h: Int => List[Int], ns: Vector[Int]) =>
+      monoidLawsE[Int => List[Int]]((f1,f2) => ns.forall(n => f1(n) === f2(n)))(f,g,h)(monFunMon)
     )
   }
 
