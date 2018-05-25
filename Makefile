@@ -4,7 +4,7 @@ PHONY: cleantex cleancode clean testcode testtex test all console sbt pdf covera
 CODE=./code/monoid
 PDFLATEX=latexmk -pdf -interaction=nonstopmode -file-line-error
 
-all: monoid-presentation.pdf test
+all: slides.pdf test
 
 cleantex:
 	latexmk -C
@@ -17,11 +17,11 @@ clean: cleantex cleancode
 testcode:
 	cd $(CODE) && sbt test
 
-testtex: monoid-presentation.pdf
+testtex: slides.pdf
 
 test: testtex testcode
 
-monoid-presentation.pdf: monoid-presentation.tex additive-color.pdf_tex tree.tex functional-programming-in-scala.png assoc.png
+slides.pdf: slides.tex additive-color.pdf_tex tree.tex functional-programming-in-scala.png assoc.png
 	$(PDFLATEX) $<
 
 console:
@@ -30,7 +30,7 @@ console:
 sbt:
 	cd $(CODE) && sbt
 
-pdf: monoid-presentation.pdf
+pdf: slides.pdf
 
 coverage:
 	cd $(CODE) && sbt coverage test coverageReport
