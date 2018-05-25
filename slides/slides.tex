@@ -65,6 +65,7 @@
 \usepackage{ulem} % for \sout
 \usepackage{tikz}
 \usepackage{amsmath}
+\usepackage{upquote} % make verbatin quotes vertical
 
 
 \mode<presentation>
@@ -126,7 +127,7 @@
     \column{0.6\textwidth}
       \tableofcontents
     \column{0.4\textwidth}
-      \rotatebox{45}{\Large \usebeamercolor[fg]{structure}{\texttt{There will be quizzes}}}
+      \rotatebox{45}{\Large \usebeamercolor[fg]{structure}{\fbox{\texttt{There will be quizzes}}}}
   \end{columns}
   \begin{block}{}
     \centering
@@ -157,9 +158,16 @@
   \begin{itemize}
   \item \alert{Functional Programming} for a while.
   \item Mostly big data and enterprise.
-  \item People are still scared of FP.
   \item You or your team want to learn FP?
-  \color{blue}\texttt{paraseba@gmail.com}
+    \vspace{4mm}
+
+    {\addtolength{\parindent}{5mm}
+      {\addtolength{\parindent}{5mm}
+      e-mail: \usebeamercolor{structure}{\textcolor{fg}{\texttt{paraseba@gmail.com}}}
+
+      twitter: \usebeamercolor{structure}{\textcolor{fg}{\texttt{@paraseba}}}
+      }
+    }
   \end{itemize}
 
   \note {
@@ -185,7 +193,7 @@
 
 \begin{frame} \frametitle{WHAT IS ABSTRACTION?}
   \begin{quote}
-\textbf{Abstraction} is the process of extracting the underlying \alert{essence} of a concept,
+\textbf{Abstraction} is the process of extracting the underlying \alert{essence of a concept},
 removing any \alert{dependence} on real world objects, and \alert{generalizing} it so that it
 has \alert{wider applications.}\\[2ex] \rightline
   {{\rm --- Wikipedia, \href{https://en.wikipedia.org/wiki/Abstraction_(mathematics)}{\underline{Abstraction (mathematics)}}}}
@@ -402,7 +410,7 @@ has \alert{wider applications.}\\[2ex] \rightline
 \end{frame}
 
 
-\subsection{Some simple examples}
+\subsection{Creating Monoids}
 % \begin{frame}\frametitle{A MONOID IN ``REAL LIFE''}
 %   Color addition
 
@@ -465,18 +473,20 @@ has \alert{wider applications.}\\[2ex] \rightline
   \begin{itemize}
     \item Integers under addition with zero identity.
       \[
-      (a + b) + c = a + (b + c) \qquad a + 0 = 0 + a = a
+      a + b \in \mathbb{Z} \qquad (a + b) + c = a + (b + c) \qquad a + 0 = 0 + a = a
       \]
     \item Integers under multiplication with 1 identity.
       \[
-        (a b) c = a (b c) \qquad a \times 1 = 1 \times a = a\]
-    \item Subsets of a set under union with empty identity.
+        a \cdot b \in \mathbb{Z} \qquad (a\cdot b)\cdot c = a\cdot (b\cdot c) \qquad a \cdot 1 = 1 \cdot a = a\]
+    \item Subsets of \(\mathcal{U}\) under union with empty identity.
       \[
         \mathcal
+        \mathcal{A} \cup \mathcal{B} \in \mathcal{P}(\mathcal{U}) \qquad
         (\mathcal{A} \cup \mathcal{B})\cup  \mathcal{C} = \mathcal{A}\cup  (\mathcal{B}\cup  \mathcal{C}) \qquad
         \mathcal{A} \cup \emptyset = \emptyset \cup \mathcal{A} = \mathcal{A}
       \]
     \item Spatial transformations
+    \item Many more\ldots
   \end{itemize}
   \begin{block}{Quiz}
     Integers under division with \(1\) as identity?
@@ -506,8 +516,6 @@ has \alert{wider applications.}\\[2ex] \rightline
     3 leis, a mais obvia eh a de closure)
   }
 \end{frame}
-
-\subsection{Examples in programming}
 
 \begin{frame}\frametitle{BASIC MONOIDS IN PROGRAMMING}
   \begin{itemize}
@@ -580,8 +588,6 @@ trait Monoid[A] {
 }
   \end{lstlisting}
   \end{block}
-
-  \pause
 
   We can have more than one Monoid for the same \texttt{A}
   \begin{block}{But wait}
@@ -742,7 +748,11 @@ Is \texttt{freeMon} a commutative monoid?
 \begin{frame}[fragile]\frametitle{MONOID FOR TUPLES}
   How can we combine two tuples \texttt{(A,B)}:
 
-  {\small \texttt{(4, List('H','e','l','l','o')) |+| (2, List('W','o','r','l','d'))}}
+  \begin{block}{}
+  \begin{lstlisting}
+(4, List('H','e','l','l','o')) |+| (2, List('W','o','r','l','d'))
+  \end{lstlisting}
+  \end{block}
 
   \pause
 
@@ -1040,7 +1050,7 @@ def optionMon[A:Monoid]: Monoid[Option[A]] = new Monoid[Option[A]] {
 
   \begin{block}{A useful little function}
   \begin{lstlisting}
-// mconcat( List(a1, a2, a3) ) === a1 |+| a2 |+| a3
+// (a1 |+| a2) |+| a3 === a1 |+| (a2 |+| a3)
 def mconcat[A:Monoid](as: Traversable[A]): A =
   as.foldLeft(Monoid[A].zero)(_ |+| _)~\pause~
 
@@ -1101,7 +1111,7 @@ sumO(Vector(Some(5), Some(1), None, Some(3))) === Some(9)
 def foldMap[A, M:Monoid](as: Traversable[A], f: A => M): M =
   //  === mconcat(as.map(f))
 
-  as.foldLeft(Monoid[M].zero) { (res,x) => res |+| f(x) }
+  as.foldLeft(Monoid[M].zero) { _ |+| f(_) }
   \end{lstlisting}
   \end{block}
 
@@ -1153,7 +1163,7 @@ def filter[A](as: List[A], f: A => Boolean): List[A] =
   \end{lstlisting}
   \end{block}
 
-    Then predicates have Monoids remember?
+    Then predicates have Monoids. Remember?
 
     \texttt{def monFunMon[A, B:Monoid]: Monoid[A => B]}
 
@@ -1365,7 +1375,7 @@ def minmax[A: Ordering](as: Traversable[A]): Option[(A,A)] =  ~\pause~
     \item \texttt{Y => List[(A, Option[B])]: Monoid}
       \pause
     \item \texttt{X => Y => List[(A, Option[B])]: Monoid}
-    \item \texttt{Set[X => Y => List[(A, Option[B])]]: Monoid}
+    \item \texttt{Map[String, X => Y => List[(A, Option[B])]]: Monoid}
   \end{itemize}
   \begin{block}{}
     \centering
@@ -1400,7 +1410,9 @@ def minmax[A: Ordering](as: Traversable[A]): Option[(A,A)] =  ~\pause~
     \begin{itemize}
       \item We need to combine \texttt{A}'s with an operation:
        \(a_1 \bullet a_2 \bullet a_3 \dotsb \bullet a_n\)
-      \item The operation \(\bullet\) is CPU expensive.
+      \item The operation \(\bullet\) is expensive.
+      \item Example: combining rendered images
+      \item Obvious solution: \texttt{mconcat(List(a1, a2, ..., an))}
     \end{itemize}
   \end{block}
 
@@ -1516,8 +1528,8 @@ object Parallel {
 \begin{frame} \frametitle{LARGER USE CASES}
   \framesubtitle{Incremental updates}
   \begin{block}{The Problem}
-    For some measured magnitude (e.g. latency), \alert{compute and store mean and
-    variance} Events arrive at high rate, \alert{millions per hour.}
+    For some measured magnitude (e.g. latency), \alert{compute} and store \alert{mean} and
+    \alert{variance.} Events arrive at high rate, \alert{millions per hour.}
   \end{block} \pause
   \begin{columns}[c]
     \column{0.6\textwidth}
@@ -1530,7 +1542,7 @@ object Parallel {
       \end{block}
 
     \column{0.3\textwidth}
-  Too much \alert{space}, too much \alert{time}. \(\mathcal{O}(N)\)
+  Too much \alert{space}, too much \alert{time}. \(\mathcal{O}(N)\).
   \end{columns}
 
   \pause
@@ -1539,7 +1551,7 @@ object Parallel {
     \column{0.6\textwidth}
       \begin{block}{Unsound approach}
         \begin{itemize}
-        \item Store previous \(\mu\) and \(\sigma^2\)
+        \item Store previous \(\mu\) and \(\sigma^2\),
         \item on measurement average previous and current,
         \item store.
         \end{itemize}
@@ -1591,7 +1603,7 @@ object Parallel {
   \framesubtitle{Incremental updates}
   \begin{block}{A better approach}
   \begin{itemize}
-    \item Find a \alert{Monoid for mean/variance} of \(n\) samples.
+    \item Find a \alert{monoid} to combine \alert{mean/variance} of \(n\) samples.
     \item Serialize the Monoid to storage.
     \item Accumulate several (or 1) new measurements.
     \item \alert{Combine} the old and new results using the monoid.
@@ -1625,7 +1637,7 @@ object Parallel {
 
 \begin{frame} \frametitle{LARGER USE CASES}
   \framesubtitle{Incremental updates}
-  What to store?
+  What does the monoid need?
   \begin{block}{Weighted average of the means}
     \[
     \begin{split}
@@ -1827,10 +1839,9 @@ object MeanVar {
   \framesubtitle{Incremental updates}
   \begin{block}{Some details}{}
   \begin{itemize}
-    \item We never wrote the alg. to compute mean/var, only to
+    \item We never wrote the alg. to compute mean/var, only to combine them.
     \item Extensible to higher momenta.
     \item Extensible to approximate histograms and other fun stuff.
-      combine them.
     \item Didn't we say \texttt{Double} under \texttt{(+)} is not a Monoid?
   \end{itemize}
   \end{block}
@@ -1868,10 +1879,10 @@ object MeanVar {
     \item You could have \emph{invented} the Monoid trying to write incremental
       updates or trying to parallelize your code.
     \item \emph{Discover} the laws for an algebraic structure.
-    \item Write only \alert{lawful} Monoids.
-    \item \alert{USE THE MONOID}. They are everywhere.
+    \item Only write \alert{lawful} Monoids.
+    \item \alert{Use the monoid}. They are everywhere.
     \item Don't be afraid of other algebraic structures (Functor, Monad).
-      \item \alert{Learn how to abstract}, if possible learn from the best.
+    \item \alert{Learn how to abstract}, copy and steal.
   \end{itemize}
   % \begin{block}{Take-home quiz}
   %   \begin{itemize}
@@ -1913,7 +1924,7 @@ object MeanVar {
       \begin{itemize}
 
         \item This talk: slides, all the \alert{code and many tests} \\
-          \href{https://github.com/paraseba/scaladores-may-2018}{\underline{https://github.com/paraseba/scaladores-may-2018}} % fixme
+          \href{https://github.com/paraseba/scaladores-may-2018-talk}{\underline{https://github.com/paraseba/scaladores-may-2018-talk}} % fixme
 
         \item \textit{Functional Programming in Scala.}\\ Paul Chiusano \& Runar Bjarnason
 
