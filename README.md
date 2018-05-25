@@ -11,7 +11,9 @@ Test coverage report: https://paraseba.gitlab.io/scaladores-may-2018-talk/covera
 
 Meetup Event: https://www.meetup.com/scaladores/events/250823565/
 
-You can find all the code in [code/monoid][code/monoid]. There are lots of tests,
-you can run them with `make testcode` or `cd code/monoid && sbt test`
+You can find all the Scala code in [code/monoid](code/monoid).
+
+There are lots of tests, you can run them with `make testcode`
+or `cd code/monoid && sbt test`
 
 
