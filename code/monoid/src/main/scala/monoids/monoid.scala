@@ -110,9 +110,7 @@ object SimpleMonoids {
     mconcat(xs)(optionMon(intAddMon))
 
   def foldMap[A, M:Monoid](as: Traversable[A], f: A => M): M =
-    as.foldLeft(Monoid[M].zero) { (res,x) =>
-      res |+| f(x)
-    }
+    as.foldLeft(Monoid[M].zero) { _ |+| f(_) }
 
   def foldMap2[A, M:Monoid](as: Traversable[A], f: A => M): M =
     mconcat(as.map(f))
