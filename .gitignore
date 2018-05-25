@@ -6,4 +6,6 @@
 /slides/tree.aux
 
 /slides/slides.*
+/slides/tree.*
 !/slides/slides.tex
+!/slides/tree.tex
