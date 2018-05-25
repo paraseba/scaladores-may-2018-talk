@@ -18,6 +18,8 @@ test:
   script:
     - make testtex
     - make coverage
+    # output the coverage report to capture it with a regex and get a badge
+    - head -n 2 code/monoid/target/scala-2.12/scoverage-report/scoverage.xml | tail -n 1
 
   artifacts:
     paths:
