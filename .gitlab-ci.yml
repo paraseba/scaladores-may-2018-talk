@@ -1,20 +1,23 @@
-image: java:8
-
 stages:
   - test
   - deploy
 
-before_script:
-  - apt-get update -y
-  - apt-get install apt-transport-https -y
-  ## Install SBT
-  - echo "deb http://dl.bintray.com/sbt/debian /" | tee -a /etc/apt/sources.list.d/sbt.list
-  - apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 642AC823
-  - apt-get update -y
-  - apt-get install make sbt latexmk texlive-latex-extra -y
 
 test:
   stage: test
+
+  image: blang/latex:ubuntu
+
+  before_script:
+    - apt-get update -y
+    - apt-get install apt-transport-https -y
+    ## SBT sources
+    - echo "deb http://dl.bintray.com/sbt/debian /" | tee -a /etc/apt/sources.list.d/sbt.list
+    - apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 642AC823
+
+    - apt-get update -y
+    - apt-get install -y default-jre sbt
+
   script:
     - make testtex
     - make coverage
@@ -28,14 +31,20 @@ test:
 
 pages:
   stage: deploy
+
   dependencies:
     - test
-  script:
+
+  before_script:
     - mkdir public
+
+  script:
     - mv code/monoid/target/scala-2.12/scoverage-report/ public/coverage
     - mv slides/slides.pdf public/
+
   artifacts:
     paths:
       - public
+
   only:
     - master
