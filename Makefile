@@ -1,4 +1,5 @@
-PHONY: cleantex cleancode clean testcode testtex test all console sbt pdf coverage
+PHONY: cleantex cleancode clean testcode testtex test all console sbt pdf coverage present
+
 .DEFAULT_GOAL := all
 
 CODEDIR=./code/monoid
@@ -35,3 +36,6 @@ pdf: $(SLIDESDIR)/slides.pdf
 
 coverage:
 	cd $(CODEDIR) && sbt coverage test coverageReport
+
+present:
+	@zathura --fork slides/slides.pdf
