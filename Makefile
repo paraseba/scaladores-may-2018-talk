@@ -1,36 +1,37 @@
 PHONY: cleantex cleancode clean testcode testtex test all console sbt pdf coverage
 .DEFAULT_GOAL := all
 
-CODE=./code/monoid
+CODEDIR=./code/monoid
 PDFLATEX=latexmk -pdf -interaction=nonstopmode -file-line-error
+SLIDESDIR=slides
 
-all: slides.pdf test
+all: $(SLIDESDIR)/slides.pdf test
 
 cleantex:
-	latexmk -C
+	cd $(SLIDESDIR) && latexmk -C
 
 cleancode:
-	cd $(CODE) && sbt clean
+	cd $(CODEDIR) && sbt clean
 
 clean: cleantex cleancode
 
 testcode:
-	cd $(CODE) && sbt test
+	cd $(CODEDIR) && sbt test
 
-testtex: slides.pdf
+testtex: $(SLIDESDIR)/slides.pdf
 
 test: testtex testcode
 
-slides.pdf: slides.tex additive-color.pdf_tex tree.tex functional-programming-in-scala.png assoc.png
-	$(PDFLATEX) $<
+$(SLIDESDIR)/slides.pdf: $(SLIDESDIR)/slides.tex $(SLIDESDIR)/additive-color.pdf_tex $(SLIDESDIR)/tree.tex $(SLIDESDIR)/functional-programming-in-scala.png $(SLIDESDIR)/assoc.png
+	cd $(SLIDESDIR) && $(PDFLATEX) slides.tex
 
 console:
-	cd $(CODE) && sbt console
+	cd $(CODEDIR) && sbt console
 
 sbt:
-	cd $(CODE) && sbt
+	cd $(CODEDIR) && sbt
 
-pdf: slides.pdf
+pdf: $(SLIDESDIR)/slides.pdf
 
 coverage:
-	cd $(CODE) && sbt coverage test coverageReport
+	cd $(CODEDIR) && sbt coverage test coverageReport

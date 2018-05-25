@@ -2,3 +2,8 @@
 /code/monoid/project/target
 /code/monoid/target
 /auto
+/slides/auto
+/slides/tree.aux
+
+/slides/slides.*
+!/slides/slides.tex
