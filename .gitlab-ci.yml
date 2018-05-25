@@ -22,13 +22,16 @@ test:
   artifacts:
     paths:
       - code/monoid/target/scala-2.12/scoverage-report/
+      - slides.pdf
 
 pages:
   stage: deploy
   dependencies:
     - test
   script:
-    - mv code/monoid/target/scala-2.12/scoverage-report/ public/
+    - mkdir public
+    - mv code/monoid/target/scala-2.12/scoverage-report/ public/coverage
+    - mv slides.pdf public/
   artifacts:
     paths:
       - public
