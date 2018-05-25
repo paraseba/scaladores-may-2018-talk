@@ -2,7 +2,7 @@ image: java:8
 
 stages:
   - test
-  - publish
+  - deploy
 
 before_script:
   - apt-get update -y
@@ -24,7 +24,7 @@ test:
       - code/monoid/target/scala-2.12/scoverage-report/
 
 pages:
-  stage: publish
+  stage: deploy
   dependencies:
     - test
   script:
