@@ -37,5 +37,5 @@ pdf: $(SLIDESDIR)/slides.pdf
 coverage:
 	cd $(CODEDIR) && sbt coverage test coverageReport
 
-present:
+present: $(SLIDESDIR)/slides.pdf
 	@zathura --fork slides/slides.pdf
