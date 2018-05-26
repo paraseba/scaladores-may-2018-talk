@@ -1694,7 +1694,7 @@ final case class MeanVarV(
 
 \begin{frame}[fragile] \frametitle{LARGER USE CASES}
   \framesubtitle{Incremental updates}
-  \begin{block}{The Monoid}
+  \begin{block}{The MeanVar Monoid}
   \begin{lstlisting}
 val meanVarMonoid: Monoid[MeanVar] = new Monoid[MeanVar] {
   def zero: MeanVar = EmptyMeanVar
@@ -1703,8 +1703,7 @@ val meanVarMonoid: Monoid[MeanVar] = new Monoid[MeanVar] {
     case (EmptyMeanVar, a) => a
     case (a, EmptyMeanVar) => a ~\pause~
     case (MeanVarV(m1a, m2a, na), MeanVarV(m1b, m2b, nb)) => {
-      val nt = na + nb
-      val delta = m1b - m1a
+      val (nt, delta) = (na + nb, m1b - m1a)
       MeanVarV(~\alert{(na * m1a + nb * m1b ) / nt}~,
                 m2a + m2b + delta * delta * na * nb / nt,
                 ~\alert{nt}~)

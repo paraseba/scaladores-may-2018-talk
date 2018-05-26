@@ -210,13 +210,12 @@ object Stats {
       case _ => 0
     }
 
-    implicit val mvMonoid: Monoid[MeanVar] = new Monoid[MeanVar] {
+    implicit val meanVarMonoid: Monoid[MeanVar] = new Monoid[MeanVar] {
       def zero: MeanVar = EmptyMeanVar
 
       def append(a: MeanVar, b: => MeanVar): MeanVar = (a, b) match {
         case (MeanVarV(m1a, m2a, na), MeanVarV(m1b, m2b, nb)) => {
-          val nt = na + nb
-          val delta = m1b - m1a
+          val (nt, delta) = (na + nb, m1b - m1a)
           MeanVarV((na * m1a + nb * m1b ) / nt,
                    m2a + m2b + delta * delta * na * nb / nt,
                    nt)
