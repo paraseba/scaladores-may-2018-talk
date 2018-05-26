@@ -46,8 +46,13 @@ class MonoidSpec extends FunSuite with Checkers with Matchers {
   }
 
   // This test is expected to fail, (Float, 0, +) is not a monoid
-  ignore("Float Sum is not a monoid!") {
+  ignore("floatAddMon Sum is not a monoid!") {
     check((a: Float, b: Float, c: Float) => monoidLaws(a,b,c)(floatAddMon))
+  }
+
+  test("floatAddMon is not associative") {
+    implicit val m = floatAddMon
+    (1.0 |+| 2.0) |+| 3.0 === 1.0 |+| (2.0 |+| 3.0)
   }
 
   test("intMulMon is a lawful monoid") {
@@ -57,6 +62,7 @@ class MonoidSpec extends FunSuite with Checkers with Matchers {
   test("intMulMon multiplies") {
     check((a: Int, b: Int) =>  intMulMon.append(a,b) === a * b)
   }
+
 
   test("freeMon is a lawful monoid") {
     check((a: List[Int], b: List[Int], c: List[Int]) => monoidLaws(a,b,c)(freeMon))
