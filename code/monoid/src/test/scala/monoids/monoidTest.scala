@@ -214,10 +214,12 @@ class MonoidSpec extends FunSuite with Checkers with Matchers {
   }
 
   test("appending predicates is and") {
-    numbers === (1 to 100)
-      .filter(_ % 2 === 0)
-      .filter(_ >= 10)
-      .filter(_ < 20)
+    check(
+      numbers === (1 to 100)
+        .filter(_ % 2 === 0)
+        .filter(_ >= 10)
+        .filter(_ < 20)
+    )
   }
 
   test("min computes minimum") {
