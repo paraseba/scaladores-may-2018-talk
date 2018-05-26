@@ -47,12 +47,19 @@ class MonoidSpec extends FunSuite with Checkers with Matchers {
 
   // This test is expected to fail, (Float, 0, +) is not a monoid
   ignore("floatAddMon Sum is not a monoid!") {
-    check((a: Float, b: Float, c: Float) => monoidLaws(a,b,c)(floatAddMon))
+    check((a: Double, b: Double, c: Double) => monoidLaws(a,b,c)(floatAddMon))
   }
 
   test("floatAddMon is not associative") {
-    implicit val m = floatAddMon
-    (1.0 |+| 2.0) |+| 3.0 === 1.0 |+| (2.0 |+| 3.0)
+    check(
+      ((1.0 |+| 2.0) |+| 3.0) === (1.0 |+| (2.0 |+| 3.0))
+    )
+  }
+
+  test("floatAddMon has identity") {
+    check((a: Double) =>
+      (a |+| floatAddMon.zero) === a && (floatAddMon.zero |+| a) === a
+    )
   }
 
   test("intMulMon is a lawful monoid") {
@@ -315,15 +322,15 @@ class MonoidSpec extends FunSuite with Checkers with Matchers {
     case _ => false
   }
 
-  test("Can't compute mean of empty") {
+  test("can't compute mean of empty") {
     check(MeanVar.mean(EmptyMeanVar) === None)
   }
 
-  test("Can't compute var of empty") {
+  test("can't compute var of empty") {
     check(MeanVar.variance(EmptyMeanVar) === None)
   }
 
-  test("Size of empty sample is 0") {
+  test("size of empty sample is 0") {
     check(MeanVar.sampleSize(EmptyMeanVar) === 0)
   }
 

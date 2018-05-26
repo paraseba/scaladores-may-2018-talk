@@ -37,9 +37,9 @@ object SimpleMonoids {
 
 
   // is this really a monoid?
-  implicit def floatAddMon: Monoid[Float] = new Monoid[Float] {
-    def zero = 0
-    def append(a: Float, b: => Float): Float = a + b
+  implicit def floatAddMon: Monoid[Double] = new Monoid[Double] {
+    def zero: Double = 0
+    def append(a: Double, b: => Double): Double = a + b
   }
 
   implicit def intMulMon: Monoid[Int] = new Monoid[Int] {
