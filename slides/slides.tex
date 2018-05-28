@@ -77,10 +77,10 @@
   \setbeamertemplate{navigation symbols}{}
   \setbeamertemplate{caption}[numbered]
 
-  % \AtBeginSubsection[]
+  % \AtBeginSection[]
   % {
   %   \begin{frame}<beamer>\frametitle{OUTLINE}
-  %     \tableofcontents[currentsection,currentsubsection]
+  %     \tableofcontents[currentsection,currentsection]
   %   \end{frame}
   % }
 
@@ -121,14 +121,8 @@
   \titlepage
 \end{frame}
 
-% Uncomment these lines for an automatically generated outline.
 \begin{frame} \frametitle{OUTLINE}
-  \begin{columns}[c]
-    \column{0.6\textwidth}
-      \tableofcontents
-    \column{0.4\textwidth}
-      \rotatebox{45}{\Large \usebeamercolor[fg]{structure}{\fbox{\texttt{There will be quizzes}}}}
-  \end{columns}
+  \tableofcontents
   \begin{block}{}
     \centering
     \Large \textbf{Ask questions as we go!}
@@ -188,8 +182,7 @@
   }
 \end{frame}
 
-\section{Monoids in Code}
-\subsection{Abstraction}
+\section{Abstraction}
 
 \begin{frame} \frametitle{WHAT IS ABSTRACTION?}
   \begin{quote}
@@ -217,74 +210,20 @@ has \alert{wider applications.}\\[2ex] \rightline
   }
 \end{frame}
 
-% \begin{frame} \frametitle{YOU CALL THIS ABSTRACTION?}
-%   \begin{quote}
-%     I wouldn't really think of abstraction as a mathematical concept. \\[1ex] \rightline
-%   {{\rm --- Fishtoaster,
-%       \href{https://softwareengineering.stackexchange.com/questions/16070/what-is-abstraction}{\underline{SE Stack Exchange}}}}
-%   \end{quote}
-
-%   \begin{quote}
-%     A programming abstraction is a simplified model of a problem. \\[1ex] \rightline
-%   {{\rm --- C. Ross,
-%       \href{https://softwareengineering.stackexchange.com/questions/16070/what-is-abstraction}{\underline{SE Stack Exchange}}}}
-%   \end{quote}
-
-%   \note {
-%     Vamos ver o que pensa o pessoal da ingeniaria de software sobre abstracao.
-%     [esperar 15 segundos]
-
-%     ``Abstracao nao eh um conceito matematico''???
-
-%     ``simplified model of a problem''???
-
-%   }
-
-%   \pause
-
-%   \begin{block}{These are not abstraction}
-%   \begin{itemize}
-%     \item Indirection.
-%     \item Inheritance.
-%     \item Factoring out common code to a function.
-%     \item Passing to functions only what they need.
-%   \end{itemize}
-%   \end{block}
-
-%   Really, how abstract is your code?
-
-%   \begin{center}
-%     \LARGE
-%     \bfseries
-%   We suck at abstraction!
-%   \end{center}
-% \end{frame}
 
 \begin{frame} \frametitle{STANDING ON THE SHOULDERS OF GIANTS}
   Mathematicians are the \alert{masters of abstraction.}
   \begin{itemize}
   \item Maximize generality.
   \item Maximize simplicity (elegance)
-  \item Analogies and analogies between analogies.
-  \item Reusing whole theories.
-  \item Finding ``the right'' level of abstraction.
+  \item Analogies and ``analogies between analogies''.
+  \item Reuse whole theories.
+  \item Find the right level of abstraction.
   \end{itemize}
 
-  \pause
-
-  \begin{block}
-    \centering \Large \bfseries
-  This is what they have been doing for centuries.
-  \end{block}
-
   \begin{block}{}
-  copy steal copy steal copy steal
-  copy steal copy steal copy steal
-  copy steal copy steal copy steal
-  copy steal copy steal copy steal
-  copy steal copy steal copy steal
-  copy steal copy steal copy steal
-  copy steal copy steal copy steal
+    \centering \Large
+    \textbf{They have been doing this for centuries.}
   \end{block}
 
   \note {
@@ -313,23 +252,19 @@ has \alert{wider applications.}\\[2ex] \rightline
 \end{frame}
 
 
-\subsection{What is a Monoid}
+\section{What is a Monoid}
 
 \begin{frame} \frametitle{WHAT IS A MONOID?}
-  \begin{block}{Monoid}
-    A \alert{set} together with an \alert{associative} \alert{operation}
-    and an \alert{identity} element.
-  \end{block}
-
   \begin{block}{Components - A Triplet \((A, \bullet, u)\)}
   \begin{itemize}
-    \item A [carrier] set (\(A\))
-    \item A binary operation (\(\bullet\))
-    \item An element of the set \(u\)
+    \item A [carrier] \alert{set} (\(A\))
+    \item A binary \alert{operation} (\(\bullet\))
+    \item An \alert{element} of the set \(u\)
   \end{itemize}
   We sometimes say ``\(A\) \emph{has} a Monoid''.
   \end{block}
 
+  \pause
 
   \begin{block}{Laws (\(a,b,c \in A\))}
 
@@ -410,112 +345,7 @@ has \alert{wider applications.}\\[2ex] \rightline
 \end{frame}
 
 
-\subsection{Creating Monoids}
-% \begin{frame}\frametitle{A MONOID IN ``REAL LIFE''}
-%   Color addition
-
-%   \begin{columns}[c]
-%     \column{0.7\textwidth}
-%       \begin{itemize}
-%         \item \(A\): the set of all colors
-%         \item \(a \bullet b\): color formed adding light of color \(b\) on top
-%           of light of color \(a\)
-%         \item \(u\): transparent color
-%       \end{itemize}
-
-%     \column{0.3\textwidth}
-
-%     \begin{figure}
-%         \centering
-%         \def\svgwidth{\columnwidth}
-%         \input{additive-color.pdf_tex}
-%     \end{figure}
-%   \end{columns}
-
-%   \begin{block}{Quiz}
-%   Is it a commutative monoid?
-%   \end{block}
-
-%   \note {
-%     O primeiro exemplo que escolhi eh o menos ``matematico'': Um monoide de
-%     colores. Vamos la, para definir um monoide precisamos dos tres elementos.
-
-%     Vamos falar que nosso conjunto \(A\) eh o conjunto de todas as cores,
-%     incluida a cor transparente.
-
-%     Vamos falar que a operacao do monoide eh ``juntar as cores'', entao, se
-%     junto a cor verde com a cor vermelha como mostra na imagem, obtenho a cor amarela.
-
-%     Vamos escolher como \(u\), a identidade, a cor transparente.
-
-%     Entao que nos falta para saber se esse triplete de coisas forma um monoid?
-%     Nos falta verificar que se cumplem as leis:
-
-%     Lei 1: posso escoher cualquer duas cores, juntalas e obter outra cor? Sim,
-%     sempre vou obter alguma cor, e como o conjunto es o conjunto de \emph{todas}
-%     as cores, a lei se cumple.
-
-%     Lei 2: eh a operacao asociativa? Sim (acho, na verdade nao sei nada de
-%     cores, mas vamos supor que sim). Isso significa que se junto o vermelho com
-%     o verde, e depois adiciono azul, obtenho a mesma cor que se junto vermelho,
-%     com verde misturado com azul. Acho que isso eh verdade.
-
-%     Lei 3: escolhimos o transparente como identidade. Precisamos verificar que
-%     se misturo trasparente com cualquer cor obtenho a mesma core. Eh verdade,
-%     entao pronto, temos um monoid.
-
-%     Eh um monoide commutativo? [Esperar ou responder]
-%   }
-
-% \end{frame}
-
-\begin{frame}\frametitle{EXAMPLES OF MONOIDS IN MATH}
-  \begin{itemize}
-    \item Integers under addition with zero identity.
-      \[
-      a + b \in \mathbb{Z} \qquad (a + b) + c = a + (b + c) \qquad a + 0 = 0 + a = a
-      \]
-    \item Integers under multiplication with 1 identity.
-      \[
-        a \cdot b \in \mathbb{Z} \qquad (a\cdot b)\cdot c = a\cdot (b\cdot c) \qquad a \cdot 1 = 1 \cdot a = a\]
-    \item Subsets of \(\mathcal{U}\) under union with empty identity.
-      \[
-        \mathcal
-        \mathcal{A} \cup \mathcal{B} \in \mathcal{P}(\mathcal{U}) \qquad
-        (\mathcal{A} \cup \mathcal{B})\cup  \mathcal{C} = \mathcal{A}\cup  (\mathcal{B}\cup  \mathcal{C}) \qquad
-        \mathcal{A} \cup \emptyset = \emptyset \cup \mathcal{A} = \mathcal{A}
-      \]
-    \item Spatial transformations
-    \item Many more\ldots
-  \end{itemize}
-  \begin{block}{Quiz}
-    Integers under division with \(1\) as identity?
-  \end{block}
-  \note {
-    Vamos partir para alguns exemplos bem simples na matematica
-
-    A soma de inteiros usando zero como identidade? Eh um monoide? Vamos ver: se
-    sumo dois inteiros sempre obtenho um inteiro. Pronto lei 1. A soma eh uma
-    operacao asociativa, nao importa como eu arrumar os parentesis, sempre
-    obtenho o mesmo resultado. Pronto lei 2. Sumar cualquer numero com cero, e cero com
-    cualquer numero, sempre da o mesmo numero. Pronto lei 3. Entao, eh um
-    monoide. De fato, a suma eh uma operacao commutativa: a + b = b + a, entao
-    nao so eh um monoide, mas eh um monoide commutativo.
-
-    Do mesmo jeito, os inteiros com a multiplicacao, usando 1 como identidade
-    tambem formam um monoide. A demostracao eh igual.
-
-    Conjuntos, usando a uniao como operacao e o conjunto vacio como identidade
-    tambem formam um monoide. Cual eh o conjunto desse monoide? O conjunto de
-    todos os conjuntos (que eh uma coisa bem paradoxal mas tudo bem...deixa para
-    la)
-
-    Tem muitos muitos outros monoides na matematica.
-
-    Que voces acham dos inteiros com divisao? Formam um monoide? (nao, viola as
-    3 leis, a mais obvia eh a de closure)
-  }
-\end{frame}
+\section{Creating Monoids}
 
 \begin{frame}\frametitle{BASIC MONOIDS IN PROGRAMMING}
   \begin{itemize}
@@ -527,15 +357,8 @@ has \alert{wider applications.}\\[2ex] \rightline
       \( (0.1+0.2)+0.3 \neq 0.1+(0.2+0.3)\).}
     \item<3-> \texttt{Boolean} under \texttt{||} with \texttt{False}.
     \item<3-> \texttt{Boolean} under \texttt{\&\&} with \texttt{True}.
-    \item<3-> \texttt{Set[A]} under \texttt{union}.
+    \item<3-> \texttt{Set[A]} under \texttt{union} with \texttt{Set()}.
   \end{itemize}
-
-  \begin{block}{Quiz}<3->
-    \begin{itemize}
-    \item What is the identity of the \texttt{Set[A]/union} Monoid?
-    \item Is \texttt{Set[A]/union} commutative?
-    \end{itemize}
-  \end{block}
 
   \note {
     Vamos a falar de programacao agora. Como falamos antes, agora a conjunto do
@@ -580,11 +403,12 @@ has \alert{wider applications.}\\[2ex] \rightline
   \begin{block}{}
   \begin{lstlisting}
 trait Monoid[A] {
-  // The identity
-  def zero: A
 
   // The associative operation
   def append(a: A, b: => A): A
+
+  // The identity
+  def zero: A
 }
   \end{lstlisting}
   \end{block}
@@ -667,17 +491,19 @@ object MonoidSyntax {
   \begin{block}{}
   \begin{lstlisting}
 val intAddMon = new Monoid[Int] {
-  def zero: Int = 0
 
   def append(a: Int, b: => Int): Int =
     a + b
+
+  def zero: Int = 0
 }
 
 val mulMon = new Monoid[Int] {
-  def zero: Int = 1
 
   def append(a: Int, b: => Int): Int =
     a * b
+
+  def zero: Int = 1
 }
   \end{lstlisting}
   \end{block}
@@ -717,18 +543,15 @@ val mulMon = new Monoid[Int] {
 \begin{frame}[fragile]\frametitle{THE LIST MONOID}
   \begin{block}{A default (?) Monoid for Lists}
   \begin{lstlisting}
-implicit def freeMon[A]: Monoid[List[A]] = new Monoid[List[A]] {
 
-  def zero: List[A] = List()
+implicit def freeMon[A]: Monoid[List[A]] = new Monoid[List[A]] {
 
   def append(as: List[A], bs: => List[A]): List[A] =
     as ++ bs
+
+  def zero: List[A] = List()
 }
   \end{lstlisting}
-  \end{block}
-
-  \begin{block}{Quiz}
-Is \texttt{freeMon} a commutative monoid?
   \end{block}
 
   \note {
@@ -767,11 +590,11 @@ implicit def pairMon[A: Monoid, B: Monoid] = new Monoid[(A, B)] {
   /* ~\phantom{cit def pairMon[A: Mon}\rotatebox[origin=c]{90}{$\Rsh$}~ syntax sugar for:
      (implicit am: Monoid[A], implicit bm: Monoid[B]) */
 
-  def zero: (A,B) =
-    (Monoid[A].zero, Monoid[B].zero)
-
   def append(a: (A, B), b: => (A, B)): (A,B) =
     (a._1 |+| b._1, a._2 |+| b._2)
+
+  def zero: (A,B) =
+    (Monoid[A].zero, Monoid[B].zero)
 }
   \end{lstlisting}
   \end{block}
@@ -809,75 +632,19 @@ implicit def pairMon[A: Monoid, B: Monoid] = new Monoid[(A, B)] {
 \end{frame}
 
 
-\begin{frame}[fragile]\frametitle{IS THERE A MONOID FOR FUNCTIONS?}
-  It seems hard for arbitrary functions \texttt{A => B}.
-
-  \pause
-  But how about \alert{\texttt{A => A}}?
-
-  \pause
-
-  \begin{block}{Functions that take and return the same type}
-
-  \begin{lstlisting}
-implicit def endoMon[A] = new Monoid[A => A] {
-
-    def zero: A => A = ~\only<3->{identity}~
-
-    def append(f: A => A, g: => (A => A)): A => A =
-      ~\only<3->{g andThen f}~
-  }
-  \end{lstlisting}
-  \end{block}
-  \begin{block}<3->{Quiz}
-    \begin{itemize}
-      \item Is it a commutative Monoid?
-      \item Can we do \texttt{(f andThen g)} instead?
-    \end{itemize}
-  \end{block}
-
-  \note {
-
-    Continuando para coisas mais dificis. Como voces combinariam funcoes de A a B?
-
-    \hrulefill
-
-    Parece dificil, mas e se foram funcoes de A a A. Como podemos combinar duas
-    funcoes de A a A e obter outra funcao de A a A?
-
-    \hrulefill
-
-    Bom, posso simplesmente compor as duas funcoes neh? Isso me da uma nova
-    funcao que tambem vai de A a A. E qual eh a identidade da composicao de
-    funcoes? a funcao identidade justamente. Si compongo cualquer funcao com a
-    funcao identidade obtenho a mesma funcao original.
-
-    Entao o codigo fica muito simples: crio um novo monoid onde o zero eh a
-    funcao identidade e o append eh a composicao das funcoes. Olhem o tipo de
-    append: recebe duas funcoes e devolve uma funcao.
-
-    Certo?
-
-    Voces acham que eh um monoide commutativo esse aqui? [esparar]. Nao, claro
-    que nao, por exemplo primeiro somar 1 e depois elevar ao cubo, nao eh o
-    mesmo do que primeiro elevar ao cubo e depois sumar 1.
-  }
-\end{frame}
-
-
-\begin{frame}[fragile] \frametitle{A DIFFERENT MONOID FOR FUNCTIONS}
-  How about \texttt{(A => B)} where \alert{\texttt{B} has a Monoid?}
+\begin{frame}[fragile] \frametitle{A MONOID FOR FUNCTIONS}
+  \texttt{Monoid[A => B]} where \alert{\texttt{B} has a Monoid}
 
   \begin{block}{Functions that return a monoidal type}
   \begin{lstlisting}
 implicit def monFunMon[A, B:Monoid]: Monoid[A => B] =
   new Monoid[A => B] {
 
-    def zero: A => B =
-      _ => Monoid[B].zero
-
     def append(f: A => B, g: => (A => B)): A => B =
       a => f(a) |+| g(a)
+
+    def zero: A => B =
+      _ => Monoid[B].zero
 }
   \end{lstlisting}
   \end{block}
@@ -903,115 +670,6 @@ implicit def monFunMon[A, B:Monoid]: Monoid[A => B] =
   }
 \end{frame}
 
-% \begin{frame}[fragile] \frametitle{OPTION MONOIDS}
-%   % \begin{block}{Quiz}
-%   %   Would it make sense to try to write an instance of
-%   %   \texttt{Monoid[Option]?}
-%   % \end{block}
-
-%   % \note {
-%   %   Vamos escreber monoide para Option agora. Faiz sentido um Monoid[Option]?
-%   %   [esperar]. Por que nao? Porque option nao eh um tipo, eh um construtor de
-%   %   tipos! Nao posso devolver uma valor de tipo Option, tem que ser Option de
-%   %   alguma  coisa, Option[Int], Option[String], etc.
-
-%   % }
-
-%     There are several ways to combine two \texttt{Option[A]}
-
-%   \begin{block}{Taking the first \texttt{Some}}
-%   \begin{lstlisting}
-% def firstMon[A]: Monoid[Option[A]] = new Monoid[Option[A]] {
-
-%   def zero: Option[A] = None
-
-%   def append(a: Option[A], b: => Option[A]): Option[A] =
-%     a orElse b
-% }
-%   \end{lstlisting}
-%   \end{block}
-
-%   Similarly taking the last \texttt{Some}
-%   \begin{block}{Quiz}
-%     \begin{itemize}
-%     \item What does \texttt{firstMon} do when combining a bunch of \texttt{Options}?
-%     \item Is it commutative?
-%     \end{itemize}
-%   \end{block}
-
-%   \note {
-%     Vamos escreber um monoid para Option[A]. Que posso devolver no zero? Tem que
-%     ser um option de A. Bom, posso devolver None, sem problema.
-
-%     E como combino dois Option[A] para obter outro Option[A]? Bom, posso ficar
-%     com o primeiro que nao seja None. Se a eh um Some, usso a, e se nao uso b.
-%     Ou tambem poderia fazer no contrario se quiser.
-
-%     Que voces acham que o monoide esse faiz, se eu combinar um monte de
-%     Option[A] usando append? [esperar] vai me devolver o primeiro que esteja
-%     definido, que nao seja vazio.
-
-%     Eh commutativo? [esperar]. Nao, se falamos que devolve o primeiro Option que
-%     nao eh vazio, o da izquerda, se agora eu chamar com os argumentos no
-%     contrario, o resultado em geral sera diferente.
-%   }
-
-% \end{frame}
-
-
-\begin{frame}[fragile] \frametitle{OPTION WRAPPING A MONOIDAL TYPE}
-  \begin{block}{Using the wrapped monoid (one of several monoids for \texttt{Option[A]})}
-  \begin{lstlisting}
-def optionMon[A:Monoid]: Monoid[Option[A]] = new Monoid[Option[A]] {
-  def zero: Option[A] = None   // --- weird ---
-
-  def append(a: Option[A], b: => Option[A]): Option[A] =
-    (a,b) match {
-      case (a, None) => a
-      case (None, b) => b
-      case (Some(a), Some(b)) => Some(a |+| b)
-    }
-}
-  \end{lstlisting}
-  \end{block}
-
-  \begin{block}{Quiz}
-    \begin{itemize}
-      \item Why is \texttt{zero} weird?
-      \item Can we do \texttt{zero = Some(Monoid[A].zero)} instead?
-    \end{itemize}
-  \end{block}
-
-  \note {
-    Tem muitas formas de crear monoids para Option[A], aqui vemos uma que eh
-    util, mas na verdade todas as outras tambem sao utis.
-
-    Aqui vamos a usar o mesmo truque que usamos para funcoes. Vamos a pedir que
-    o tipo A, de noso monoid de Option[A] tenha um Monoide tambem. Entao, como
-    vamos combinar dois Option[A] para obter um outro Option[A]? Como o A tem um
-    monoide, podemos usa-lo para a combinacao. Entao, se os Option que
-    recebemos sao os dois Some de alguma coisa combinamos essas coisas usando a
-    operacao do monoide de A, se temos so um so Some, e o outro e None,
-    simplesmente retornamos o que tem informacao.
-
-    E para o zero? Para o zero precisamos devolver None, porque lembramos que
-    tem que ser uma identidade do append, e quando o apend recebe um None,
-    devolve o outro elemento sem modificar.
-
-    Mas eu marquei ai que a implementacao de zero esta estranha. Por que voces
-    acham que esta estranha essa implementacao, mesmo que esteja correta, todas
-    as leis se cumplem. [esperar] O segundo ponto do exercicio pode ajuda-los.
-    [esperar]. A racao pela qual essa implementacao eh estranha eh porque nao
-    usamos o metodo zero do monoide de A. Podemos usa-lo? que acontece se
-    devolvemos Some(m.zero)? Nao  podemos, isso violaria a lei de identidade
-    porque zero com None daria zero, ao envez de none.
-
-    A solucao de esse problema aparece com uma outra estrutura algebraica, mais
-    simples do que o monoid, que se chama semigroup. Um semigroup eh
-    simplesmente um monoide sem zero. Mas vamos deixar isso para uma outra vez,
-    ou voces podem ler ao respeito.
-  }
-\end{frame}
 
 \begin{frame} \frametitle{RECAP}
   We have seen:
@@ -1022,8 +680,7 @@ def optionMon[A:Monoid]: Monoid[Option[A]] = new Monoid[Option[A]] {
     \item Monoids for:
       \begin{itemize}
       \item Numbers, lists, tuples (if components have Monoids)
-      \item \texttt{A => A} and \texttt{A => M} where \texttt{M} has a Monoid
-      \item \texttt{Options}
+      \item \texttt{A => M} where \texttt{M} has a Monoid
       \item There are many, many more.
       \end{itemize}
   \end{itemize}
@@ -1044,7 +701,7 @@ def optionMon[A:Monoid]: Monoid[Option[A]] = new Monoid[Option[A]] {
   }
 \end{frame}
 
-\subsection{Usage}
+\section{Usage}
 \begin{frame}[fragile] \frametitle{SIMPLE USAGE EXAMPLES}
   \framesubtitle{\texttt{mconcat}}
 
@@ -1058,21 +715,9 @@ def sum(xs: Traversable[Int]): Int = ~\alert{mconcat}~(xs)(intAddMon)
 
 def concat[A](xs: Traversable[List[A]]): List[A] =
   ~\alert{mconcat}~(xs)(freeMon) // or get the Monoid implicitly
-
-def sumO[A](xs: Traversable[Option[Int]]): Int =
-  ~\alert{mconcat}~(xs)(optionMon(intAddMon))
-
-sumO(Vector()) = Nothing
-sumO(Vector(Some(5), Some(1), None, Some(3))) === Some(9)
   \end{lstlisting}
   \end{block}
 
-% def ~\alert{xyz}~[A](xs: Traversable[Option[A]]): Option[A] =
-%   mconcat(xs)(firstMon)
-
-  % \begin{block}<3->{Quiz}
-  %   What does \texttt{xyz} do?
-  % \end{block}
 
   \note {
     O primeiro que vamos fazer eh escribir uma funcao muito util, chamada de
@@ -1153,67 +798,11 @@ def filter[A](as: List[A], f: A => Boolean): List[A] =
 
 
 \begin{frame}[fragile] \frametitle{COMPOSING MONOIDS}
-  \framesubtitle{Combining predicates}
-  \begin{block}{Boolean has Monoids}
-  \begin{lstlisting}
-  implicit val allMonoid: Monoid[Boolean] = new Monoid[Boolean] {
-    def zero: Boolean = true
-    def append(a: Boolean, b: => Boolean): Boolean = a && b
-  }
-  \end{lstlisting}
-  \end{block}
-
-    Then predicates have Monoids. Remember?
-
-    \texttt{def monFunMon[A, B:Monoid]: Monoid[A => B]}
-
-  \begin{visibleenv}<2->
-  \begin{block}{}
-  \begin{lstlisting}
-  val numbers = (1 to 100).filter(   // type annotations needed
-    (_ % 2 == 0) |+| (_ >= 10) |+| (_ < 20)
-  )
-
-  === Vector(10, 12, 14, 16, 18)
-  \end{lstlisting}
-  \end{block}
-  \end{visibleenv}
-  \note {
-
-    Uma das grandes ventagems dos monoides eh que eles se componem muito bem.
-    Vamos ver 2 exemplos do que significa ``componer''.
-
-    Nesse primeiro exemplo vamos a escribir um Monoide para booleanos. Podemos
-    ver que o unico que o monoide faz eh faver o AND dos dois booleanos, e o
-    zero eh claro que eh true, porque true AND x = x para todo x. Entao muito
-    bem, AND eh uma operacao asociativa, true eh a identidade, entao boolean tem um monoide.
-
-    Mas se voces recordarem, tinhamos escribido um monoide para funcoes que
-    devolvem um monoide. Lembra? combinaba funcoes chamando as duas funcoes e
-    combinando os resultados com o monoide. Isso significa que se temos um
-    monoide para booleanos, tambem temos um monoides para funcoes que devolvem
-    booleanos, ou seja, para predicados.
-
-    \hrulefill
-
-    E que podemos fazer com esse Monoide? bom, por exemplo podemos combinar
-    predicados para chamar a filter. Esses 3 predicados estao sendo combinados
-    com AND pelo monoide, isso vai devolver so os elementos que cumplem os treis
-    predicados.
-
-    Nos nao escrebemos um monoide para predicados, mas esse monoide veio de
-    graca, porque escrebemos monoides para funcoes e para booleanos, e os
-    monoides se componem muito bem.
-  }
-\end{frame}
-
-\begin{frame}[fragile] \frametitle{COMPOSING MONOIDS}
   \framesubtitle{A Monoid to compute min/max.}
   \begin{block}{A monoid for minimum}
   \begin{lstlisting}
 def minMon[A:Ordering]: Monoid[Option[A]] =
   new Monoid[Option[A]] {~\pause~
-    def zero: Option[A] = None
 
     def append(a: Option[A], b: => Option[A]): Option[A] =
       (a, b) match {
@@ -1221,6 +810,8 @@ def minMon[A:Ordering]: Monoid[Option[A]] =
         case (x, None) => x
         case (Some(x), Some(y)) => Some(List(x,y).min)
       }
+
+    def zero: Option[A] = None
 }
   \end{lstlisting}
   \end{block}
@@ -1309,58 +900,6 @@ def minmax[A: Ordering](as: Traversable[A]): Option[(A,A)] =  ~\pause~
   }
 \end{frame}
 
-% \begin{frame}[fragile] \frametitle{COMPOSING MONOIDS}
-%   \begin{block}{Define a comparison}
-%   \begin{lstlisting}
-% sealed trait Ord[A] {
-%   def compare(a: A,  b:A): ~\alert{\texttt{\only<1>{??? // Scala uses Int}\only<2>{Ordering}}}~
-% }~\pause~
-
-% sealed trait Ordering
-
-% object Ordering {
-%   case object LT extends Ordering
-%   case object GT extends Ordering
-%   case object EQ extends Ordering
-% }
-%   \end{lstlisting}
-%   \end{block}
-% \end{frame}
-
-% \begin{frame}[fragile] \frametitle{COMPOSING MONOIDS}
-%   \begin{block}{An \texttt{Ordering} monoid}
-%   \begin{lstlisting}
-% val ordMon = new Monoid[Ordering] {
-%   def zero: Ordering = Ordering.EQ
-
-%   def append(a: Ordering, b: => Ordering): Ordering =
-%     a match {
-%       case Ordering.EQ => b
-%       case o => o
-%   }
-% }
-%   \end{lstlisting}
-%   \end{block}
-% \end{frame}
-
-% \begin{frame}[fragile] \frametitle{COMPOSING MONOIDS}
-%   \begin{block}{}
-%   \begin{lstlisting}
-% def sortBy(as: Array[A])(by: (A,A) => Ordering): Array[A] = ... ~\pause~
-% def comparing[A: Ord, B](f: B => A)(b1: B, b2: B): Ordering ~\pause~
-
-% case class Person(addr: Address, name: String, dob: Date)
-% case class Address(zip: Int, street: String) ~\pause~
-
-% val sorted = sortBy(people)(mconcat(List(
-%   comparing(_.address.zip),
-%   comparing(_.name),
-%   comparing(_.dob)))
-
-%   \end{lstlisting}
-%   \end{block}
-% \end{frame}
-
 \begin{frame} \frametitle{COMPOSING MONOIDS}
   Monoids compose extremely well.
   \begin{itemize}
@@ -1406,7 +945,7 @@ def minmax[A: Ordering](as: Traversable[A]): Option[(A,A)] =  ~\pause~
 
 \begin{frame} \frametitle{LARGER USE CASES}
   \framesubtitle{Parallelization}
-  \begin{block}{The Problem}
+  \begin{block}{The problem}
     \begin{itemize}
       \item We need to combine \texttt{A}'s with an operation:
        \(a_1 \bullet a_2 \bullet a_3 \dotsb \bullet a_n\)
@@ -1511,23 +1050,9 @@ object Parallel {
   }
 \end{frame}
 
-% \begin{frame}[fragile] \frametitle{LARGER USE CASES}
-%   \framesubtitle{Parallelization}
-%   \begin{itemize}
-%     \item You could have \emph{invented} the Monoid trying to write a parallel \texttt{fold}.
-%     \item This is how you \emph{discover} the laws for an algebraic structure.
-%     \item If you have a Monoid, you can \alert{fold it in parallel.}
-%     \item But pay attention to the \alert{monoid laws!!!}
-%     \item Huge performance win (in certain situations).
-%     \item Base of several parallel and distributed frameworks.
-%   \end{itemize}
-
-% \end{frame}
-
-
 \begin{frame} \frametitle{LARGER USE CASES}
   \framesubtitle{Incremental updates}
-  \begin{block}{The Problem}
+  \begin{block}{The problem}
     For some measured magnitude (e.g. latency), \alert{compute} and store \alert{mean} and
     \alert{variance.} Events arrive at high rate, \alert{millions per hour.}
   \end{block} \pause
@@ -1543,27 +1068,6 @@ object Parallel {
 
     \column{0.3\textwidth}
   Too much \alert{space}, too much \alert{time}. \(\mathcal{O}(N)\).
-  \end{columns}
-
-  \pause
-
-  \begin{columns}[c]
-    \column{0.6\textwidth}
-      \begin{block}{Unsound approach}
-        \begin{itemize}
-        \item Store previous \(\mu\) and \(\sigma^2\),
-        \item on measurement average previous and current,
-        \item store.
-        \end{itemize}
-      \end{block}
-
-    \column{0.3\textwidth}
-    Fast, low memory, \(\mathcal{O}(1)\) but \alert{incorrect}.
-    \begin{align*}
-      \mu[1,0,0] & = 1/3 \\
-      \mu[\mu[1,0], 0] &= 1/4
-    \end{align*}
-
   \end{columns}
 
   \note {
@@ -1642,7 +1146,7 @@ object Parallel {
     \[
     \begin{split}
       n\cdot \mu = \sum_{i=0}^{n-1} x_i \qquad  m\cdot \nu = \sum_{i=0}^{m-1} x_{i+n} \\
-      \frac{1}{n+m} \sum_{i=0}^{n+m-1} x_i = \frac{n\mu + m\nu} {n+m}
+      \frac{1}{n+m} \sum_{i=0}^{n+m-1} x_i = \frac{\alert{n}\mu + \alert{m}\nu} {\alert{n+m}}
     \end{split}
     \]
   \end{block}
@@ -1697,7 +1201,6 @@ final case class MeanVarV(
   \begin{block}{The MeanVar Monoid}
   \begin{lstlisting}
 val meanVarMonoid: Monoid[MeanVar] = new Monoid[MeanVar] {
-  def zero: MeanVar = EmptyMeanVar
 
   def append(a: MeanVar, b: => MeanVar): MeanVar = (a, b) match {
     case (EmptyMeanVar, a) => a
@@ -1709,6 +1212,7 @@ val meanVarMonoid: Monoid[MeanVar] = new Monoid[MeanVar] {
                 ~\alert{nt}~)
     }
   }
+  def zero: MeanVar = EmptyMeanVar
 }
   \end{lstlisting}
   \end{block}
@@ -1770,29 +1274,6 @@ object MeanVar {
   }
 \end{frame}
 
-% \begin{frame}[fragile] \frametitle{LARGER USE CASES}
-%   \framesubtitle{Incremental updates}
-%   \begin{block}{Utility functions: extracting from \texttt{MeanVars}}
-%   \begin{lstlisting}
-% object MeanVar {
-%   def sampleSize: MeanVar => Long = {
-%     case MeanVarV(_, _, n) => n
-%     case _ => 0
-%   }
-%   def mean: MeanVar => Option[Double] = {
-%     case MeanVarV(m1, _, _) => Some(m1)
-%     case _ => None
-%   }
-%   def variance: MeanVar => Option[Double] = {
-%     case MeanVarV(_, _, 1) => Some(0)
-%     case MeanVarV(_, m2, n) => Some(m2/(n - 1.0))
-%     case _ => None
-%   }
-% }
-%   \end{lstlisting}
-%   \end{block}
-% \end{frame}
-
 \begin{frame}[fragile] \frametitle{LARGER USE CASES}
   \framesubtitle{Incremental updates}
   \begin{block}{Updating the statistics (pseudocode)}
@@ -1844,14 +1325,6 @@ object MeanVar {
     \item Didn't we say \texttt{Double} under \texttt{(+)} is not a Monoid?
   \end{itemize}
   \end{block}
-  % \begin{block}{Take-home quiz}
-  %   \begin{itemize}
-  %   \item How can we do rolling averages? We would need to \emph{delete} the older
-  %   accumulated data.
-  %   \item Write two different Monoids for \texttt{Map[K, V]}. Do you need to
-  %     impose restrictions on \texttt{V}?
-  %   \end{itemize}
-  % \end{block}
 
   \note {
     Algums detalhes.
@@ -1883,14 +1356,6 @@ object MeanVar {
     \item Don't be afraid of other algebraic structures (Functor, Monad).
     \item \alert{Learn how to abstract}, copy and steal.
   \end{itemize}
-  % \begin{block}{Take-home quiz}
-  %   \begin{itemize}
-  %   \item How can we do rolling averages? We would need to \emph{delete} the older
-  %   accumulated data.
-  %   \item Write two different Monoids for \texttt{Map[K, V]}. Do you need to
-  %     impose restrictions on \texttt{V}?
-  %   \end{itemize}
-  % \end{block}
 
   \note {
     Conclusoes.
@@ -1916,7 +1381,7 @@ object MeanVar {
   }
 \end{frame}
 
-\subsection*{References}
+\section*{References}
 \begin{frame} \frametitle{REFERENCES}
   \begin{columns}[c]
     \column{0.7\textwidth}
@@ -1965,15 +1430,10 @@ object MeanVar {
   }
 \end{frame}
 
-\section{Monoids in Design [next session]}
-
-\begin{frame}{Monoids in Design (ToDo)}
-\end{frame}
-
-
 % \begin{frame}{ToDo / Fixme}
 %   \begin{itemize}
 %     \item grammarly
+%      \item swap zero and append
 %     \item topic for design session: aggregations (a la beautiful folds)
 %   \end{itemize}
 % \end{frame}
