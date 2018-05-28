@@ -348,17 +348,24 @@ has \alert{wider applications.}\\[2ex] \rightline
 \section{Creating Monoids}
 
 \begin{frame}\frametitle{BASIC MONOIDS IN PROGRAMMING}
+  In programming we identify the carrier set with a type.
+
+  \begin{block}{A few monoids}
   \begin{itemize}
-    \item<1-> \texttt{Integer} under \texttt{(+)} with \texttt{0}.
-    \item<1-> \texttt{Integer} under \texttt{(*)} with \texttt{1}.
+    \item<1-> \texttt{Int} under \texttt{(+)} with \texttt{0}.
+    \item<1-> \texttt{Int} under \texttt{(*)} with \texttt{1}.
     \item\only<1>{\texttt{Double} under \texttt{(+)} with \texttt{0}?}
          \only<2->{\alert{\sout{\texttt{Double} under \texttt{(+)} with \texttt{0}}}
            \hspace{2em}
       \( (0.1+0.2)+0.3 \neq 0.1+(0.2+0.3)\).}
     \item<3-> \texttt{Boolean} under \texttt{||} with \texttt{False}.
     \item<3-> \texttt{Boolean} under \texttt{\&\&} with \texttt{True}.
-    \item<3-> \texttt{Set[A]} under \texttt{union} with \texttt{Set()}.
+    \item<3-> \texttt{Set[A]} under \texttt{union} with \texttt{Set.empty}.
   \end{itemize}
+  \end{block}
+
+  \visible<3->{There are many more.}
+
 
   \note {
     Vamos a falar de programacao agora. Como falamos antes, agora a conjunto do
@@ -395,8 +402,8 @@ has \alert{wider applications.}\\[2ex] \rightline
 \begin{frame}[fragile]\frametitle{MODELING MONOIDS IN SCALA}
   If the type \texttt{A} \emph{has} a monoid we need:
   \begin{itemize}
-    \item a way to create an \texttt{A} from nothing,
     \item a way to combine two \texttt{A}s.
+    \item a ``special'' value of type \texttt{A} for the identity.
   \end{itemize}
   \pause
 
@@ -404,7 +411,7 @@ has \alert{wider applications.}\\[2ex] \rightline
   \begin{lstlisting}
 trait Monoid[A] {
 
-  // The associative operation
+  // The associative operation (can't throw)
   def append(a: A, b: => A): A
 
   // The identity
@@ -460,7 +467,7 @@ trait Monoid[A] {
   \begin{lstlisting}
 import MonoidSyntax._  // assume this in all slides
 
-a |+| b === implicitly[Monoid[A]].append(a,b)  // nicer syntax
+~\fbox{a |+| b}~ === implicitly[Monoid[A]].append(a,b)  // nicer syntax
   \end{lstlisting}
   \end{block}
 
@@ -541,6 +548,12 @@ val mulMon = new Monoid[Int] {
 \end{frame}
 
 \begin{frame}[fragile]\frametitle{THE LIST MONOID}
+  \begin{block}{}
+    List(1,2,3,4) |+| List(5,6,7,8) = List(...)
+  \end{block}
+
+  \pause
+
   \begin{block}{A default (?) Monoid for Lists}
   \begin{lstlisting}
 
@@ -851,7 +864,7 @@ def minMon[A:Ordering]: Monoid[Option[A]] =
 def min[A: Ordering](as: Traversable[A]): Option[A] =
   foldMap(as, (a:A) => Option(a))(minMon) // map and reduce ~\pause~
 
-def minMaxMon[A:Ordering] = ~\alt<2>{???}{\alert{pairMon(minMon, maxMon)}}~
+def minMaxMon[A:Ordering] = ~\alt<2,3>{???}{\alert{pairMon(minMon, maxMon)}}~
 
 def minmax[A: Ordering](as: Traversable[A]): Option[(A,A)] =  ~\pause~
   foldMap(as, (a:A) => (Option(a), Option(a)))(minMaxMon) match {
@@ -862,7 +875,7 @@ def minmax[A: Ordering](as: Traversable[A]): Option[(A,A)] =  ~\pause~
   \end{lstlisting}
   \end{block}
 
-  \visible<3->{
+  \visible<4->{
   \begin{itemize}
     \item Note how easily the Monoids \alert{compose}.
     \item Can extend to more \alert{aggregates} \texttt{(min, max, sum, size)}.
@@ -947,11 +960,10 @@ def minmax[A: Ordering](as: Traversable[A]): Option[(A,A)] =  ~\pause~
   \framesubtitle{Parallelization}
   \begin{block}{The problem}
     \begin{itemize}
-      \item We need to combine \texttt{A}'s with an operation:
-       \(a_1 \bullet a_2 \bullet a_3 \dotsb \bullet a_n\)
-      \item The operation \(\bullet\) is expensive.
-      \item Example: combining rendered images
-      \item Obvious solution: \texttt{mconcat(List(a1, a2, ..., an))}
+      \item Merge multiple renders into one.
+      \item Merge is an expensive operation.
+      \item \texttt{merge(img1, merge(img2, merge(img3, ...)))}
+      \item Obvious solution: \texttt{mconcat( List(img1, img2, ..., imgn) )}
     \end{itemize}
   \end{block}
 
@@ -1108,9 +1120,8 @@ object Parallel {
   \begin{block}{A better approach}
   \begin{itemize}
     \item Find a \alert{monoid} to combine \alert{mean/variance} of \(n\) samples.
-    \item Serialize the Monoid to storage.
     \item Accumulate several (or 1) new measurements.
-    \item \alert{Combine} the old and new results using the monoid.
+    \item \alert{Combine} the old and new stats using the monoid.
     \item Store.
   \end{itemize}
   \end{block}
@@ -1205,6 +1216,7 @@ val meanVarMonoid: Monoid[MeanVar] = new Monoid[MeanVar] {
   def append(a: MeanVar, b: => MeanVar): MeanVar = (a, b) match {
     case (EmptyMeanVar, a) => a
     case (a, EmptyMeanVar) => a ~\pause~
+
     case (MeanVarV(m1a, m2a, na), MeanVarV(m1b, m2b, nb)) => {
       val (nt, delta) = (na + nb, m1b - m1a)
       MeanVarV(~\alert{(na * m1a + nb * m1b ) / nt}~,
@@ -1213,7 +1225,6 @@ val meanVarMonoid: Monoid[MeanVar] = new Monoid[MeanVar] {
     }
   }
   def zero: MeanVar = EmptyMeanVar
-}
   \end{lstlisting}
   \end{block}
 
@@ -1245,7 +1256,7 @@ object MeanVar {
   def singleton(x: Double): MeanVar = MeanVarV(x, 0, 1)
 
   def sample(xs: Traversable[Double]): MeanVar = ~\pause~
-    foldMap(xs, singleton)
+    foldMap(xs, singleton)  // === mconcat(xs.map(singleton))
 }
   \end{lstlisting}
   \end{block}
@@ -1348,9 +1359,8 @@ object MeanVar {
 
 \begin{frame} \frametitle{CONCLUSIONS}
   \begin{itemize}
-    \item You could have \emph{invented} the Monoid trying to write incremental
-      updates or trying to parallelize your code.
-    \item \emph{Discover} the laws for an algebraic structure.
+    \item You could have \emph{invented} the Monoid.
+    \item You could have \emph{discovered} the laws.
     \item Only write \alert{lawful} Monoids.
     \item \alert{Use the monoid}. They are everywhere.
     \item Don't be afraid of other algebraic structures (Functor, Monad).
