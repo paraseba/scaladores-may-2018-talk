@@ -127,22 +127,6 @@
     \centering
     \Large \textbf{Ask questions as we go!}
   \end{block}
-
-  \note{
-    Hoje vamos falar sobre Monoides. Depois de uma breve introducao
-    sobre abstracao, vou mostrar que eh um monoide, e um monte de
-    exemplos de monoides interesantes. Finalmente vamos ver varios
-    casos onde podemos usar monoides para melhorar nosso codigo
-    e para resolver problemas concretos dificis.
-
-    Para manter voces acordados, e ter certeca que estao entendendo,
-    vou fazer perguntas que completam o material.
-
-    Podem me interromper se tever duvidas, ou nao entender. Mesmo se o
-    que nao entender for o sotaque, me interrompe e com uma mistura de
-    portugues, espanhol e ingles vamos nos entender.
-  }
-
 \end{frame}
 
 
@@ -163,23 +147,6 @@
       }
     }
   \end{itemize}
-
-  \note {
-    Um pouco acerca de mim: faco programacao funcional exclusivamente
-    a ums 8 anos. Scala, Haskell, Clojure e outros. Trabalho em data
-    science e infrastrutura para big data, mas com alguns periodos de
-    software para enterprise. Adoro FP, me faiz sentir inteligente, me
-    diverte, me desafia. Nao imagino como seria voltar para a programacao
-    imperativa.
-
-    Um problema da FP eh que da medo. Muitas palavras em latim, muitos
-    matematicos, um pouco de soberbia... Precisamos mudar isso. FP nao
-    eh dificil, so eh diferente. Nao precisa ser matematico, nem genio,
-    so ter vontade.
-
-    Se voce quer aprender, ou se voce quer que seu teame aprenda FP? me
-    contata. Vamos conversar.
-  }
 \end{frame}
 
 \section{Abstraction}
@@ -191,23 +158,6 @@ removing any \alert{dependence} on real world objects, and \alert{generalizing} 
 has \alert{wider applications.}\\[2ex] \rightline
   {{\rm --- Wikipedia, \href{https://en.wikipedia.org/wiki/Abstraction_(mathematics)}{\underline{Abstraction (mathematics)}}}}
   \end{quote}
-
-  \note {
-    Eu peguei essa cita da pagina da wikipedia dedicada a abstracao em
-    matematica. Pega um tempo para ler [esperar 15 segundos].
-
-    Se nao chegou a ler, olha so as partes em vermelho: esencia do conceito,
-    dependencias, generalizar, reusar. Sao as mesmas palavras que usamos para
-    descreber o que chamamos software de qualidade! Lembre que tirei isso de uma
-    pagina que fala de matematica!
-
-    Casualidade? Nao acho.
-
-    Na verdade, o conceito de abstracao que temos na industria de software esta
-    muito pouco desenvolvido. A maioria das pessoas quando pensa em abstracao
-    pensa em indirecao, ou evitar repeticao de codigo. Mas abstracao nao tem
-    nada a ver com isso! Mas essa eh uma outra palestra.
-  }
 \end{frame}
 
 
@@ -225,30 +175,6 @@ has \alert{wider applications.}\\[2ex] \rightline
     \centering \Large
     \textbf{They have been doing this for centuries.}
   \end{block}
-
-  \note {
-
-    Na verdade os maiores expertos em abstracao sao os matematicos. Eles, por
-    exemplo, consiguem ``reusar'' nao so teoremas, mas teorias completas! Quando foi
-    a ultima vez que voce reusou uma coisa tao simples como um mecanismo de signup?
-
-    Os caras sao incansavels na hora de generalizar os resultados, e o mais
-    importante, sabem achar o nivel certo de abstracao para cada tarefa.
-    Uma das caracteristicas que mais valore em um desenvolvedor e se ele percebe
-    quando o nivel de abstracao esta errado.
-
-    Uma das caracteristicas fundamentales da matematica eh o que eles chaman de
-    elegancia, que eh muito similar ao que a gente chama de elegancia no codigo.
-
-    \hrulefill
-
-    Em definitiva, os matematicos arrasam em abstracao ha seculos! Precisamos
-    aprender e imitar.
-
-    E com isso em mente, vamos pegar umo dos exemplos de abstracao inventado
-    pelos matematicos [passar pagina], e vamos a ver como podemos usar ele no nosso codigo.
-  }
-
 \end{frame}
 
 
@@ -275,73 +201,6 @@ has \alert{wider applications.}\\[2ex] \rightline
     \item[\sout{Commutativity:}] \(a \bullet b \neq b \bullet a\)
   \end{description}
   \end{block}
-
-  \note {
-
-    O monoide eh um conceito muito simples na verdade. Os  matematicos chamam a
-    este tipo de conceito uma estrutura algebraica, mas no caso do monoide eh
-    simplesmente uma generalizacao de
-    operacoes algebraicas como a soma. Vamos ver
-    em mais detalhe:
-
-    \hrulefill
-
-    Para apresentar um Monoide em matematica voce precisa dar tres coisas:
-
-    A primeria eh um conjunto, que pode estar formado por cualquer numero e
-    tipo de elementos. Por exemplo, o conjunto dos numeros positivos, ou o
-    conjunto dos temes de futbol, ou o conjunto dos cabalos com cabeca de homem
-    (que eh o conjunto vazio.). Cuando falamos em software, esse conjunto vai se
-    convertir em um tipo, vamos pensar um tipo como o conjunto de todos os
-    valores possivels desse tipo. Boolean por exemplo, eh um conjunto com dois
-    elementos, true e false.
-
-    A segunda coisa que voce precisa apresentar para ter um monoide eh uma
-    operacao binaria em esse conjunto, que chamamos com esse simbolo de bolinha.
-    Ou seja uma operacao que recebe dois
-    elementos do conjunto e devolve um outro elemento desse mesmo conjunto. Se
-    continuamos com o essemplo do conjunto de numeros positivos, a soma, recebe
-    dois numeros positivos e devolve outro numero positivo.
-
-    Finalmente, o tercer componente, voce precisa escolher um elemento do conjunto
-    que vamos chamar \(u\).
-
-    Entao, um monoide tem treis componentes: um conjunto, uma operacao de dois
-    argumentos e um elemento ``especial'' chamado unidad, ou identidad, ou zero
-
-    \hrulefill
-
-    Mas para que essas 3 coisas realmente formem um monoide, eh precisso
-    elas  cumplir com certas reglas ou leis. Se voce tem os treis componentes
-    mas eles nao cumplem as leis, voce nao tem um monoide, tem uma porcaria que
-    se usar como monoide vai dar problema.
-
-    A primeira lei ja falamos: a operacao bolinha tem que dar como resultado um
-    elemento do set do monoide, nao pode dar uma coisa por fora. No exemplo do conjunto
-    de numeros positivos, a resta nao funcionaria como operacao, porque a resta
-    de dois numeros positivos, pode dar um numero negativo, que fica fora do conjunto.
-
-    A segunda lei: a operacao bolinha precisa ser asociativa, isso significa que
-    nao importa como voce coloca os parentesis, obtem o mesmo resultado. A soma
-    por exemplo eh uma operacao asociativa, sumar 1 e 2, e ao resultado sumar 3,
-    eh o mesmo que sumar 1 ao resultado de 2 mais 3.
-
-    Finalmente, a terceira lei do monoide: o elemento ``especial'' que
-    escolhemos, \(u\), tem que ser o neutro ou identidade da operacao que
-    escolhimos. Ou seja, se o combino com qualquer outro elemento do conjunto usando
-    a operacao, nao pode modificar o resultado. No exemplo da soma nos numeros positivos, a identidade
-    eh o numero cero, porque se sumo qualquer numero positivo com cero, obtenho
-    o mesmo numero, tanto fazendo a + 0 quanto 0 + a.
-
-    Importante, vejam que os monoides nao precisam ser commutativos, isso
-    significa que a operacao bolinha nao necesariamente permite intercambiar os
-    argumentos. O unico que precisa ser comutativo eh a combinacao com a
-    identidade, na terceira lei.
-
-    Como podem ver, o monoide eh super simples, uma operacao asociativa com uma
-    identidade. E so. Mas a pesar de ele ser tao simples, eh extremamente
-    importante e extremamente conveniente.
-  }
 \end{frame}
 
 
@@ -365,38 +224,6 @@ has \alert{wider applications.}\\[2ex] \rightline
   \end{block}
 
   \visible<3->{There are many more.}
-
-
-  \note {
-    Vamos a falar de programacao agora. Como falamos antes, agora a conjunto do
-    monoid vai a ser um tipo. Entao para identificar um monoide precisamos um
-    tipo A, uma funcao que pega dois A e devolve um A, e um valor ou termino de tipo A que sera a identidade.
-
-    Igual que na matematica inteiros com adicao ou multiplicacao formam
-    monoides. A operacao eh asociativa, para todo pair de inteiros obtenho um
-    outro inteiro sumando ou multiplicando, e tem uma identidade.
-
-    Interesante que ja vemos que o mesmo tipo pode ter mais de um monoid, de
-    fato tem muitos monoides interessantes nos inteiros.
-
-    O que voces acham da soma nos numeros de ponto flutuante. Pareceria que
-    forma um monoide, mas, viola alguma das leis? [esperar]
-
-    \hrulefill
-
-    Viola a lei de associatividade. A soma de ponto flotante nao eh associativa,
-    entao nao temos um monoide.
-
-    \hrulefill
-
-   E tem mais exemplos de monoides. Por exemplo os booleanos com OR e False,
-   formam um monoide. Porque a || false eh igual a false || a = a
-
-   Os sets formam um monoide usando a uniao como operacao. Qual eh a identidade?
-
-   Os mapas formam um monoide tambem, na verdade varios, mas por exemplo podemos
-   usar o merge como operacao e o mapa vacio como identidade.
-  }
   \end{frame}
 
 \begin{frame}[fragile]\frametitle{MODELING MONOIDS IN SCALA}
@@ -424,42 +251,6 @@ trait Monoid[A] {
   \begin{block}{But wait}
     What happened to the laws?
   \end{block}
-
-  \note {
-    Vamos ver agora como escribir monoides em scala, como modelar eles. Que
-    vamos precisar? um tipo A, uma funcao que recebe dois A e devolve outro A. E
-    uma identidade, que eh un valor de tipo A. Correto? Os treis componentes do monoide.
-    Como escrebemos isso em scala?
-
-    \hrulefill
-
-    Bom, podemos usar um trait. O jeito de ler isso seria: para um tipo A, posso
-    ter um monoide se eu implementar duas funcoes: uma a funcao sem argumentos que me devolve a
-    identidade do monoide (aqui chamamos de zero), e outra que eh a operacao
-    binaria do monoide (aqui chamamos de append).
-
-    Nao da muita bola para o fato de que o segundo argumento de append eh
-    passado por nome, eh um detalhe opcional, e nao quero me focar nisso agora.
-
-    Correto? parece uma codificacao razoavel do conceito de monoide? Simples neh?
-
-  \hrulefill
-
-    Interessante perceber que com esse trait, podemos ter muitas instancias
-    diferentes, que eh o que queriamos verdade? Um inteiro pode ter muitos
-    monoides differentes, com differentes identidades e operacoes.
-
-    Mas para asegurar que um objeto que implementa esse trait realmente eh um
-    monoide, lembremos que precissamos verificar as leis do monoide. Se eu te
-    dou un objecto que extiende esse trait, como voce se sabe que o objeto
-    cumple as leis? Bom ... nao sabe. Voce vai a escutar por ai que os sistema
-    de tipos do scala nao eh suficientemente poderoso para capturar as leis do
-    monoide. E eh isso que significa, os tipos nao garantem que o objeto eh um
-    monoid, voce tem que confiar em quem implementou. Fazer o que. Mas sempre,
-    vamos ter que verificar manualmente as leis, nao queremos dar para ninguem
-    um objeto que parece um monoide mas que nao eh, as consequencias sao
-    terrives, e ja vamos falar disso mais para frente.
-  }
 \end{frame}
 
 \begin{frame}[fragile]\frametitle{OPTIONAL SYNTAX SUGAR}
@@ -485,13 +276,6 @@ object MonoidSyntax {
 }
   \end{lstlisting}
   \end{block}
-  \note {
-    Uma coisa que vou adicionar agora, so para deixar mais curtos os slides eh
-    uma syntaxe optional. Ao embez de ter que ussar o metodo append do trait que
-    acabamos de definir, posso usar esse operador de soma com barras de modulo,
-    que fica mais curto. Nao precisa entender o codigo, so saibam que se tem um
-    monoide que posso achar implicitamente, posso usar o operador soma modulo.
-  }
 \end{frame}
 
 \begin{frame}[fragile]\frametitle{TWO MONOIDS FOR \texttt{Int}}
@@ -515,41 +299,11 @@ val mulMon = new Monoid[Int] {
   \end{lstlisting}
   \end{block}
   Monoids \alert{instances} are first class citizens
-
-  \note {
-    Pronto! vamos a escreber uns monoids entao!
-
-    Os dois mais facis que vimos, inteiros com soma e inteiros com multiplicacao.
-
-    Interessante perceber que esses sao monoides, ou seja, cumplem as leis do
-    monoid, mesmo que os inteiros fazem overflow quando pasa do numero maximo.
-    Pode tentar probar isso em casa.
-
-    Simplesmente preciso cria uma clase anonima, que implemente as duas funcioes
-    do trait Monoid.
-
-    Entao, new Monoid[Int], o zero eh o numero zero, e o append eh a soma. E o
-    mesmo para a multiplicacao, identidade 1 o append multiplicacao.
-
-    Como voces vem, os monoides sao objetos como cualquer outro, simplemente um
-    valor que posso passar a funcioes, colocar em listas, etc.
-
-    Um ponto importante. Lembram das leis dos monoides? Eu escrivi dois monoids,
-    mas cade as leis? Como sei que a operacao eh commutativa, como sei que tem
-    um neuto ou identidade? A resposta eh que nao sei. Em scala as leis tem que
-    ser probadas com papel e lapis, ou com tests, nao posso codificar as leis no
-    sistema de tipos. Outras linguagens mais complexas permitem, mas nao vamos
-    entrar nisso. O importante, toda vez que escrivir um monoide, verifique as
-    leis manualmente, idealmente escriba num comentario se foram dificis de
-    probar, e faza tests.
-
-    Pronto, ja sabemos o que eh um monoide, e ja escrebimos os primeiros dois. Facil!
-  }
 \end{frame}
 
 \begin{frame}[fragile]\frametitle{THE LIST MONOID}
   \begin{block}{}
-    List(1,2,3,4) |+| List(5,6,7,8) = List(...)
+    List(1,2,3,4) |+| List(5,6,7,8) = List(???)
   \end{block}
 
   \pause
@@ -566,19 +320,6 @@ implicit def freeMon[A]: Monoid[List[A]] = new Monoid[List[A]] {
 }
   \end{lstlisting}
   \end{block}
-
-  \note {
-    Vamos a escreber um monoid mais interesante agora. Se usamos listas de A
-    como o tipo do nosso Monoid. Que podemos usar como zero e append? Bom, a
-    concatenacao de listas eh asociativa, e a lista vacia concatenada com
-    qualquer outra lista, tanto no comeco como no final, deixa a lista igual.
-    Entao isso forma um monoide.
-
-    Voces acham que esse eh um monoide commutativo? [esperar]. Nao, claro que
-    nao eh a concatenado com b nao eh o mesmo que b concatenado com a.
-
-    Ja temos 3 monoides! (nao sabemos para que serve, mas confia...) Vamos por mais!
-  }
 \end{frame}
 
 \begin{frame}[fragile]\frametitle{MONOID FOR TUPLES}
@@ -611,37 +352,6 @@ implicit def pairMon[A: Monoid, B: Monoid] = new Monoid[(A, B)] {
 }
   \end{lstlisting}
   \end{block}
-
-  \note {
-    Podemos criar um monoide para pares? como combinamos dois pares (a,b)? por
-    exemplo, te dou dois pares de um inteiro e uma lista. [esperar]
-
-    \hrulefill
-
-    Teriamos que combinar cada componente neh? o 4 com o 8 e a lista hello com a
-    lista world. Mas como combinamos esses componentes? Alguma ideia? [esperar]
-
-    Bom, se os componentes tiveram eles mesmos monoids, poderiamos usar o
-    monoid para combina-los neh?
-
-    \hrulefill
-
-    Entao vamos la para escriber o metodo append do monoid de pares,
-    simplesmente uso o monoide dos elementos. Da para ver? o primeiro mais na
-    definicao de append corresponde a o monoid do tipo A, e o segundo mais ao
-    monoide do tipo B. Em geral sao codigos diferentes. Em nosso caso, se usamos
-    o monoide de suma de inteiros e o monoide de concatenacao de listas, o
-    resultado vai ser o par 6 com a lista helloworld
-
-    Quanto ao zero, o mesmo truque, uso o zero do monoid do tipo de cada componente.
-
-    Agora olha a definicao da funcao, estou devolvendo um novo monoid para pares A
-    e B, mas isso so vai a funcionar se posso achar monoids para A e para B. Se
-    nao tenho esses monoides, nao saberia como combinar as componentes, e o
-    codigo nao compila. A syntaxe essa A:Monoid e B: Monoid, eh so syntax sugar
-    para parametros implicitos, eh o mesmo que receber dois parametros
-    implicitos de tipo Monoid[A] e Monoid[B].
-  }
 \end{frame}
 
 
@@ -662,25 +372,6 @@ implicit def monFunMon[A, B:Monoid]: Monoid[A => B] =
   \end{lstlisting}
   \end{block}
   Convince yourself that \texttt{zero} is an identity and that \texttt{append} is associative.
-
-  \note {
-    Tem mais um monoide simples que podemos escreber fara funcoes. Acabamos de
-    escreber um para funcoes de tipo A => A, mas se a funcao retorna um tipo que
-    tem um monoide ele mesmo, similar ao caso dos pares, podemos usar o monoide
-    de B para combinar os resultados.
-
-    Vamos la, para implementar a funcao zero, preciso devolver o que? Um valor
-    de tipo funcao de A a B. Como posso criar essa funcao do nada? Bom, como eu
-    tenho um monoide para B, poso devolver uma funcao que sempre devolve o zero
-    de B.
-
-    E para o append? tenho duas funcoes que devolvem um B, as chamo as duas, e
-    depois combino os dois B usando a operacao do monoide.
-
-    Agora nao eh tao obvio ver que as leis do monoide se cumplem, mas pensando
-    um pouquinho voces podem verificar. Nao esquecam, muito importante verificar
-    as leis.
-  }
 \end{frame}
 
 
@@ -702,16 +393,6 @@ implicit def monFunMon[A, B:Monoid]: Monoid[A => B] =
     \centering
     But we haven't seen \alert{why} or \alert{how} to use monoids.
   \end{block}
-
-  \note {
-    Recapitulando: ja Vimos o que eh um monoide, ja vimos como modelar um
-    monoide em scala, usando um trait com os dois metodos zero e append. E ja
-    vimos varios monoides implementados, para numeros, listas, pares, funciones, etc
-
-    Mas o que nao vimos eh como usar os monoides, para que eles servem o como
-    usal-os. O resto da palestra vai ser exemplos de como usar monoides em
-    codigo, para resolver problemas. Vamos la!
-  }
 \end{frame}
 
 \section{Usage}
@@ -730,36 +411,6 @@ def concat[A](xs: Traversable[List[A]]): List[A] =
   ~\alert{mconcat}~(xs)(freeMon) // or get the Monoid implicitly
   \end{lstlisting}
   \end{block}
-
-
-  \note {
-    O primeiro que vamos fazer eh escribir uma funcao muito util, chamada de
-    mconcat. Essa funcao recebe uma lista ou sequencia de elementos, e usa um
-    monoide implicito para comprimir, o juntar,o colapsar todos eles em um elemento so.
-    Entao recebe uma lista de A e develve um unico A.
-
-    Como implementamos mconcat? Simplesmente temos que por um |+| entre cada umo
-    dos elementos da lista. E isso eh essatamente o que os folds fazem. Nesse
-    caso estou implementando com foldLeft, mas foldRight daria o mesmo resultado.
-    A unica diferenca entre usar foldLeft e foldRight seria como os parentesis
-    sao colocados, e se o zero do monoide se combina com o primeiro o ultimo
-    elemento, mas ja sabemos que essas duas coisas, para um monoide, e so para
-    um monoide, nao importam.
-
-    \hrulefill
-
-    Agora que temos a funcao mconcat, vemos que ela eh muito util, nos permite
-    implementar funcoes bem utis como essas 3 aqui. Podemos somar uma lista de
-    inteiros, simplesmente passando um monoide de soma que ja vimos. Podemos
-    concatenar listas, pasando o monoide de listas. E podemos hacer coisas mais
-    interessantes como sumo Options[Int], ignorando os que estajam vazios.
-    Podem ver o monoid que estou usando em sumO, eh o monoide de Option
-    que vimos, que precisa de um outro monoid para combinar. Aqui tambem podemos
-    ver aquela coisa estranha que tinhamos visto nesse monoid, quando a lista
-    esta vazia a funcao devolve None, ao en vez de cero. Porque o zero do monoid
-    de Option era None.
-  }
-
 \end{frame}
 
 \begin{frame}[fragile] \frametitle{SIMPLE USAGE EXAMPLES}
@@ -784,29 +435,6 @@ def filter[A](as: List[A], f: A => Boolean): List[A] =
     else List())(freeMon)
   \end{lstlisting}
   \end{block}
-
-  \note {
-    Mais uma funcao muito util que podemos definir eh foldMap, essa funcao
-    aparece muito, eh super util, e se comporta mais ou menos como um mini
-    MapReduce. foldMap procesa uma sequencia de As e recebe uma funcao que sabe
-    convertir um A em um outro tipo cualquer M, mas com a condicao de que o M
-    precisa ter um Monoid
-
-    Para implementa-la, podemos fazer como no comentario, simplesmente mapear
-    com a funcao f, e depois chamar mconcat para colapsar todos os M com o
-    monoide. Isso funciona sem problema mais faze duas passadas pela sequencia,
-    entoa tem uma outra implementacao tambem simples usando foldLeft ou
-    foldRight. Mas quando pensar em foldMap, convein imaginar ela como map,
-    seguido de mconcat: map seguido de reduce.
-
-    Tendo foldMap podemos implementar uma grande lista de funcoes, em
-    particular, tendo foldMap podemos implementar foldLeft, foldRight etc. Como
-    exemplo aqui vemos a funcao filter implementada como um foldMap. o que
-    fazemos eh convirtir cada elemento da lista em uma lista, e depois deixar
-    que o monoide de listas (que so concatena) junte as listinhas de um
-    elemento. A lista que devolvemos eh uma lista que esta vazia para os
-    elementos que nao cumplem o predicado, e contem o elemento se o predicado se satisface.
-  }
 \end{frame}
 
 
@@ -829,31 +457,6 @@ def minMon[A:Ordering]: Monoid[Option[A]] =
   \end{lstlisting}
   \end{block}
   We can do the same for \texttt{maxMon}
-
-  \note {
-    Mais um exemplo de composicao. Vamos tentar escreber uma funcao que computa
-    o minimo e o maximo de uma lista numa passada so. Para isso vamos a precisar
-    monoides que computem min e max.
-
-    Entao, para poder calcura o minimo de dois tipos A, preciso alguma forma de
-    comparar os A, por isso na definicao de minMon pedimos que A tenha um
-    Ordering. Agora, por que escrebimos um monoide para Option[A] e nao para A
-    diretamente? [esperar]. O problema eh como escreber o zero. O zero de um
-    monoide que calcula minimos de tipo A deveria ser o maximo valor possivel de
-    A, desta forma se combino um a qualquer, vamos chama-lo x, com o maximo A
-    possivel, sempre x vai ser o resultado. Mas em geral, nao sabemos qual eh o
-    maximo A, ou poderia nem ter um maximo. Isso se resolve fazendo o monoide
-    para Option, e devolvendo None em zero
-
-    \hrulefill
-
-    Agora para implementar append, se temos dois Some, devolvemos o Some do
-    minimo, e se temos um None, devolvemos o outro option.
-
-    Pronto?
-
-    Claro que podemos fazer o mesmo para max
-  }
 \end{frame}
 
 
@@ -881,36 +484,6 @@ def minmax[A: Ordering](as: Traversable[A]): Option[(A,A)] =  ~\pause~
     \item Can extend to more \alert{aggregates} \texttt{(min, max, sum, size)}.
   \end{itemize}
   }
-
-  \note {
-    Agora que temos o monoid para calcular minimo, escreber a funcao min eh
-    muito facil. Recebemos uma lista de A, e fazemos um map-reduce com foldMap:
-    convertimos cada A em um Option[A] porque isso eh o que nosso monoide de
-    minimo quer, e depois deixamos o monoide colapsar todos os option num so.
-
-    Obviamente, min vai retornar None se a lista estava vazia porque o zero de
-    noso monoide retorna None
-
-    Mas agora, como escrebemos uma funcao que faza min e max ao mesmo tempo?
-    Logico que podemos fazer foldMap duas vezes, uma com o monoide de minimo e
-    outra com o de maximo, mas queremos so uma passada.
-
-    \hrulefill
-
-    Vamos precisar um monoide para computar as duas coisas. E uma funcao que
-    devolva um option de um par (A,A), vai devolver None para lista vazia e o
-    minimo e maximo se tiver elementos. Como construimos o Monoid? Precisamos
-    escreber um monoid novo?
-
-    \hrulefill
-
-    Nao. Monoides se componem lembra? Temos um monoide para pares, temos um
-    monoide para min e outro para max. Entao, podemos compone-los e criar um
-    monoide para minimo e maximo. Isso seria um monoide de um par de Option[A].
-
-    Entao, so temos que chamar a foldMap, convirtindo cada elemento a um par de
-    Option e no final temos que convertir o par de Option em um Option de um par.
-  }
 \end{frame}
 
 \begin{frame} \frametitle{COMPOSING MONOIDS}
@@ -933,27 +506,6 @@ def minmax[A: Ordering](as: Traversable[A]): Option[(A,A)] =  ~\pause~
     \centering
     \Large \textbf{Sign of a good abstraction}
   \end{block}
-  \note {
-    Entao lembre, os monoides se componem muito bem. Por exemplo, se temos
-    monoides para os tipos A e B
-
-    \hrulefill
-
-    Entao podemos ter monoide para Option[B]
-
-    \hrulefill
-
-    E para o par de A e Option[B]. E para as listas desses pares.
-
-    \hrulefill
-
-    E para as funcoes que retornam esses pares
-
-    \hrulefill
-
-    E para as funcoes que retornam esas funcoes que rotornam esses pares
-    E para os Sets de essas funcoes. etc
-  }
 \end{frame}
 
 \begin{frame} \frametitle{LARGER USE CASES}
@@ -969,42 +521,6 @@ def minmax[A: Ordering](as: Traversable[A]): Option[(A,A)] =  ~\pause~
 
   \pause
   \include{tree}
-
-  \note{
-    Esses foram algums exemplos de de uso de Monoides, mas exemplos reducidos a
-    pedacinhos de codigo. Poderiamos ter escrito esse codigo sem usar monoides,
-    e nao seria grave. Mas vamos ver agora dois exemplos maiores, donde o monoide
-    tem um rol muito mais importante na solucao.
-
-    O primeiro eh um problema muito geral: precisamos combinar um monte de
-    elementos a1, a2, etc. usando uma operacao que eh muito cara no CPU. Tem
-    muitos exemplos disso, por exemplo, tem duas listas ordenadas, que quer
-    fazer o merge e ficar com uma lista ordenada.
-
-    \hrulefill
-
-    Entao, como nos ajudams os monoides aqui? Se a operacao bullet fora um
-    monoide, ou seja fora asociativa com identidade, sabemos que calcular
-    qualquer um desses arbores dara o mesmo resultado. Cada um desses arbores
-    equivale a colocar os parenteses de algum jeito diferente na expresao a1
-    bullet a2 bullet a2 etc. e sabemos que como colocar os parenteses nao
-    importa num monoide. Entao podemos por exemplo, escolher a arbore da
-    dereita, evaluar as operacoes na sub-arbore vermelha num thread, e a verde
-    num outro thread, e quando elas terminam, combinar os dois resultados. Mas
-    tambem podemos fazer isso recursivamente e continuar dividindo a arbore e
-    usar tantos threads como for melhor.
-
-    De novo, isso so pode ser feito porque temos um monoide, uma operacao asociativa.
-
-    O que temos que ter cuidado eh a ordem dos nodos, lembrando que nao todos os
-    monoides sao commutativos, entao temos que combinar o resultado da arbore
-    vermelha, a izquerda e a verde a direita cuando os combinamos com bullet.
-
-    Esse eh um bom momento para pensar que acontece se escrebemos um monoide que
-    nao cumple com as leis do monoide. O resultado estara incorreto! Cada vez
-    que a gente correr o programa teremos um resultado diferente. Por isso,
-    nunca escreba um monoide que nao satisfaiz as leis
-  }
 \end{frame}
 
 \begin{frame}[fragile] \frametitle{LARGER USE CASES}
@@ -1033,33 +549,6 @@ object Parallel {
       \large \textbf{That's just a Monoid!}
     \end{block}
   }
-
-
-  \note {
-    Bom, como implementamos isso em paralelo? O unico que precisamos fazer
-    eh reimplementar a funcao mconcat para correr em paralelo. Essa aqui e a
-    implementacao que a gente tem. Como a transformamos em paralela?
-
-    \hrulefill
-
-    o primeiro que podemos fazer eh utilizar o metodo fold ao envez de foldLeft.
-    Se olham a documentacao do scala, o metodo fold fala isso que esta ai
-    embaixo. a operacao que passamos a fold deve ser asociativa e ter uma
-    identidade. Ta vendo? eles nao falam em Monoide, mas isso eh exatamente um
-    Monoide! E eles so podem implementar join para monoides pelos motivos que
-    vimos.
-
-    Join nao da garantia de em que ordem vai se fazer as evaluacoes, mas ainda
-    nao eh paralela, so poderia correr em paralelo, eh a mesma coisa que
-    foldLeft (um pouco menos geral no tipo), mas com limitacoes de que operacao
-    e neutro pode se passar.
-
-    \hrulefill
-
-    Agora para convertir esse codigo em paralelo, so precissamos fazer uma coisa:
-    convertir nosso traversable em um traversable paralelo. Pronto. Esse codigo
-    vai correr em tantos threads como tenha disponivel o CPU.
-  }
 \end{frame}
 
 \begin{frame} \frametitle{LARGER USE CASES}
@@ -1081,38 +570,6 @@ object Parallel {
     \column{0.3\textwidth}
   Too much \alert{space}, too much \alert{time}. \(\mathcal{O}(N)\).
   \end{columns}
-
-  \note {
-    Vamos agora para o ultimo problema que vamos estudar. Temos um sistema que
-    mede alguma certa variable, por exemplo, o tempo que demora um request HTTP,
-    ou cualquer outra coisa do tipo. Nosso sistema precisa calcular a media e
-    variancia das medicoes. O que faz o problema mais complexo eh que as
-    medicoes chegam muito rapidamente, vamos supor milhoes de medicoes por hora.
-    Entao, chegam muitas medicoes, precisamos manter um computo da media e a
-    variancia em algum tipo de banco de dados o store.
-
-    \hrulefill
-
-    A primeira ideia eh a mais simples. Cada vez que chega uma nova medicao,
-    simplesmente guarda-la no banco de dados. Quando precisamos calcular a media
-    ou variancia, carregamos todas as medicoes e calculamos. Se nao queremos
-    esperar tanto quando precisamos a media, podemos precalcular ela a
-    intervalos regulares e guardar. O problema eh que esse sistema eh de ordem N
-    em espaco e tempo. Quantas mais medicoes temos mais lento fica, e com
-    milhoes de medicoes por hora, nao vai funcionar.
-
-    \hrulefill
-
-    Uma ideia mais pratica seria ao envez de guardar no banco todas as medicoes,
-    guardar so a media e a variancia. Depois, quando chega uma nova medicao, ou
-    grupo de medicoes, calcular media e variancia e combinar com as anteriores.
-    Esse algoritmo eh de ordem 1, nao precisso guardar as medicoes, mas para
-    calcular medias, nao podo fazer a media das medias. Simplesmente a
-    matematica nao funciona.
-
-    Mas a ideia eh boa... combinar os resultados velhos com os novos... tem
-    cheiro de monoide. So temos que arrumar a matematica.
-  }
 \end{frame}
 
 \begin{frame} \frametitle{LARGER USE CASES}
@@ -1133,21 +590,6 @@ object Parallel {
     \item Trade off freshness by scale.
   \end{itemize}
   \end{block}
-
-  \note {
-    Entao, como podemos fazer? O primeiro sera encontrar um monoide que consiga
-    combinar os resultados de media e variancia anteriores com os novos. Depois,
-    vamos acumulando medicoes, calculamos, e vamos guardando os resultados.
-    Quando chegam novos resultados, o monoide sabe como combinar os velhos com
-    os novos.
-
-    Com esse algoritme vamos ter resultados exatos, se conseguimos escreber um
-    monoide correto, as atualizacoes nao dependem da cantidad de dados. Outra
-    ventagem eh que podemos decidir a cada quanto tempo combinar as medicoes,
-    dependendo de que resolucao precisamos nos resultados. Podemos acumular
-    medicoes por 1 segundo, ou 1 minuto, e so depois combinar com as velhas.
-  }
-
 \end{frame}
 
 \begin{frame} \frametitle{LARGER USE CASES}
@@ -1165,19 +607,6 @@ object Parallel {
   We need previous \alert{mean} and \alert{sample size.}
 
   Generalizing, to compute the nth-moment, we need to store n+1 values.
-
-  \note {
-    Entao, temos que desenhar nosso monoide. O que precisamos para conseguir
-    combinar a media e variancia velhas com as novas? Essas equacoes ai, o que
-    estao dizendo eh basicamente, que se eu tenho duas meias, que quero calcular
-    a meia real dos dados, preciso calcular a meia mas usando pesos, o peso eh o
-    tamanho de cada mostra. Entao multiplico a meia velha pelo seu tamanho e a
-    nova tambem, somo e depois divido pela quantidade total de mostras.
-
-    A formula da variancia eh mais complexa mas similar. Conclucao, para
-    combinar meias e variancias, preciso guardar a meia, a variancia e o numero
-    de mostras velhas.
-  }
 \end{frame}
 
 \begin{frame}[fragile] \frametitle{LARGER USE CASES}
@@ -1194,17 +623,6 @@ final case class MeanVarV(
   n: Long) extends MeanVar
   \end{lstlisting}
   \end{block}
-
-  \note {
-    Entao, agora que sabemos o que guardar, vamos escreber um tipo. Meu tipo
-    MeanVar aqui, eh um tipo soma. Pode ter duas formas: ou eh um Empty, no
-    casso em que estou querendo computar a meia de 0 mostras, obviamente nao
-    posso, entao a meia eh Empty. Ou posso calcular e nesse caso guardo 3
-    valores: a meia m1, a variancia m2 e o tamanho da mostra n.
-
-    Certo? Nada demais.
-
-  }
 \end{frame}
 
 \begin{frame}[fragile] \frametitle{LARGER USE CASES}
@@ -1227,24 +645,6 @@ val meanVarMonoid: Monoid[MeanVar] = new Monoid[MeanVar] {
   def zero: MeanVar = EmptyMeanVar
   \end{lstlisting}
   \end{block}
-
-  \note {
-    Agora vamos a escreber o monoide para MeanVar. A identidade que seria? Tem
-    que ser um MeanVar que nao mude os outros MeanVars quando se combina, entao
-    vai ser o EmptyMeanVar. Podem pensar que estaria combinando uma mostra com
-    uma mostra vazia, isso nao vai alterar a mostra.
-
-    Otimo. O append agora, tenho dois MeanVar e perciso devolver um outro. Se um
-    dos dois eh o EmptyMeanVar, nao preciso fazer nada, eh a identidade, entao
-    simplesmente devolvo o outro MeanVar.
-
-    E para o caso em que realmente preciso combinar dois MeanVars com dados, eh
-    so aplicar a formula que vimos antes. Se olham a parte em vermelho, estou
-    aplicando a formula, o promedio pesado pelo tamanho da mostra. A formula da
-    variancia eh um pouco mais complicada, mas nada demais.
-
-    Pronto, temos um monoide que sabe combinar medias e variancias.
-  }
 \end{frame}
 
 \begin{frame}[fragile] \frametitle{LARGER USE CASES}
@@ -1260,29 +660,6 @@ object MeanVar {
 }
   \end{lstlisting}
   \end{block}
-
-  \note {
-    So faltaria agora escreber umas funcoes para poder criar esses objetos
-    MeanVar, vamos coloca-las no objeto companion
-
-    Primeiro uma funcao chamada singleton para crear um MeanVar quando a mostra tem um unico
-    valor. Se quero calcular a media de uma mostra com um unico ponto,
-    obviamente a media eh o valor do ponto, a variancia cero, e o numero de
-    mostras 1.
-
-    Agora vamos ao caso mais interessante, calcular o MeanVar para uma mostra.
-    Como podemos fazer? [esperar]
-
-    \hrulefill
-
-    Bom, tem muitas formas possivels. Mas a mais
-    facil eh, convertir a cada ponto em um MeanVar com 1 dato so, e depois
-    combinar todos eles com o monoide. Como fazo isso? Com nossa querida
-    foldMap. Mapeio todos os pontos aplicando a funcao singleton, e depois o
-    monoide vai combinar todos eles.
-
-    E pronto, temos todo o que precisavamos.
-  }
 \end{frame}
 
 \begin{frame}[fragile] \frametitle{LARGER USE CASES}
@@ -1304,25 +681,6 @@ object MeanVar {
      storeStats(oldStats |+| newStats)
   \end{lstlisting}
   \end{block}
-
-  \note {
-    So resta escreber o algoritmo completo, que vamos fazer em pseudocodigo.
-
-    Tenho uma forma de obter as medicoes novas, chamadas aqui de newSample. Isso
-    pode ser um callback toda vez que tem uma medicao nova, o pode esperar ate
-    acumular uma certa quantidade de medicoes, ou pode esperar ate acumular por
-    certo tempo.
-
-    Depois, usando nossa funcao sample podemos convertir essas medicoes em um
-    MeanVar, chamado aqui de newStats.
-
-    Depois, vou no banco de dados e obtenho o MeanVar antigo. Percebam que isso
-    eh uma operacao muito simples, so preciso trazer 3 numeros do banco.
-
-    Finalmente, uso o monoide de MeanVar para combinar a velha com a nova, e
-    guardo no banco de dados.
-
-  }
 \end{frame}
 
 
@@ -1336,25 +694,6 @@ object MeanVar {
     \item Didn't we say \texttt{Double} under \texttt{(+)} is not a Monoid?
   \end{itemize}
   \end{block}
-
-  \note {
-    Algums detalhes.
-
-    Ese mecanismo pode ser extendido para calcular coisas mais interessantes que
-    media e variancia, pode calcular kurtosis skewness e de  fato cualquer
-    momento da distribuicao. De fato pode se calcular em aproximacao outras
-    coisas tambem usando um monoide, como histogramas por exemplo.
-
-    Eh interessante ver que nunca escribimos o algoritmo de media ou variancia,
-    so explicamos como combinar duas medias e duas variancias. Com isso eh
-    suficiente para que o monoide faza todo o trabalho. Meio magico neh?
-
-    E finalmente ... lembra que falei que os doubles com a soma nao erao um
-    monoid? como poderia ser isso que tem um monte de artimetica de monoide?
-    Bom, na verdade nao eh, mas para numeros razoavels a aproximacao eh
-    suficentemente boa.
-
-  }
 \end{frame}
 
 \begin{frame} \frametitle{CONCLUSIONS}
@@ -1366,29 +705,6 @@ object MeanVar {
     \item Don't be afraid of other algebraic structures (Functor, Monad).
     \item \alert{Learn how to abstract}, copy and steal.
   \end{itemize}
-
-  \note {
-    Conclusoes.
-
-    Esses dois ultimos exemplos, a parallelizacao e update incremental, sao boms
-    exemplos de como voce poderia ter inventado o monoide. Tentando escreber o
-    algoritmo paralelo, voce tevese descoberto que ia funcionar so, se a
-    operacao eh asociativa, e so se a identidade se pode combinar sem
-    consequencias. Tevesse chamado isso de algum outro jeito, por exemplo como a
-    documentacao de scala faz, mas ... voce tevera reinventado o monoide.
-
-    Lembre o que acontece se seus monoides nao cumplem com as leis do monoide:
-    resultado incorreto, nunca faza isso.
-
-    No contrario, se voce ja sabe do monoide, recomendo que voce pense neles
-    quando esta tentando resolver um problema, vai perceber que ajuda muito a
-    resolver problemas e para abstraer suas solucoes.
-
-    Finalmente, aprenda abstracao, aprenda de onde puder, mas se um dia tiver
-    vontades, da uma leida em algum tema de matematica abstrata, vais se
-    surprender com quanto se parece com programacao.
-
-  }
 \end{frame}
 
 \section*{References}
@@ -1420,24 +736,6 @@ object MeanVar {
         \includegraphics[width=\textwidth]{functional-programming-in-scala.png}
     \end{figure}
   \end{columns}
-
-  \note {
-    Se voces querem ver os slides, ou o codigo que tem testes  poder achar no
-    meu github
-
-    Se voces querem aprender mais, recomendo muito o livro Functional
-    Programming in Scala. Eh uma des melhores introducoes a PF que ja vi, em
-    cualquer linguagem.
-
-    Se querem uma coisa mais basica e curta de programacao funcional, em haskell
-    ao envez de scala, o paper why functional programming matters eh
-    maravilhoso, recomendo ler tudo ano.
-
-    Se querem brincar com PF em scala, tem muitas bibliotecas muito boas. Mas
-    para nombra uma, podem olhar scalaz, que eh muito completa. A documentacao
-    deixa bastante a desejar mas, acompanhando com o livro e trabalho, pode ser feito.
-
-  }
 \end{frame}
 
 % \begin{frame}{ToDo / Fixme}
