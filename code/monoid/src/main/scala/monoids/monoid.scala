@@ -138,7 +138,7 @@ object SimpleMonoids {
     def append(a: Option[A], b: => Option[A]): Option[A] = (a, b) match {
       case (None, x) => x
       case (x, None) => x
-      case (Some(x), Some(y)) => Some(List(x,y).min)
+      case (Some(x), Some(y)) => Some(Ordering[A].min(x,y))
     }
   }
 
@@ -148,7 +148,7 @@ object SimpleMonoids {
     def append(a: Option[A], b: => Option[A]): Option[A] = (a, b) match {
       case (None, x) => x
       case (x, None) => x
-      case (Some(x), Some(y)) => Some(List(x,y).max)
+      case (Some(x), Some(y)) => Some(Ordering[A].max(x,y))
     }
   }
 

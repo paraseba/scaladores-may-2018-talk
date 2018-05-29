@@ -444,7 +444,7 @@ def minMon[A:Ordering]: Monoid[Option[A]] =
       (a, b) match {
         case (None, x) => x
         case (x, None) => x
-        case (Some(x), Some(y)) => Some(List(x,y).min)
+        case (Some(x), Some(y)) => Some(Ordering[A].min(x,y))
       }
 
     def zero: Option[A] = None
