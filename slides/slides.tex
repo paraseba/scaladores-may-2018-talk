@@ -162,7 +162,7 @@ has \alert{wider applications.}\\[2ex] \rightline
   Mathematicians are the \alert{masters of abstraction.}
   \begin{itemize}
   \item Maximize generality.
-  \item Maximize simplicity (elegance)
+  \item Maximize simplicity (elegance).
   \item Analogies and ``analogies between analogies''.
   \item Reuse whole theories.
   \item Find the right level of abstraction.
@@ -296,7 +296,7 @@ val mulMon = new Monoid[Int] {
 }
   \end{lstlisting}
   \end{block}
-  Monoids \alert{instances} are first class citizens
+  Monoids \alert{instances} are first class citizens.
 \end{frame}
 
 \begin{frame}[fragile]\frametitle{THE LIST MONOID}
@@ -378,8 +378,8 @@ implicit def monFunMon[A, B:Monoid]: Monoid[A => B] =
       two methods: \texttt{zero, append}).
     \item Monoids for:
       \begin{itemize}
-      \item Numbers, lists, tuples (if components have monoids)
-      \item \texttt{A => M} where \texttt{M} has a monoid
+      \item Numbers, lists, tuples (if components have monoids).
+      \item \texttt{A => M} where \texttt{M} has a monoid.
       \item There are many, many more.
       \end{itemize}
   \end{itemize}
@@ -451,7 +451,7 @@ def minMon[A:Ordering]: Monoid[Option[A]] =
 }
   \end{lstlisting}
   \end{block}
-  We can do the same for \texttt{maxMon}
+  We can do the same for \texttt{maxMon}.
 \end{frame}
 
 
@@ -710,18 +710,19 @@ object MeanVar {
       \begin{itemize}
 
         \item This talk: slides, all the \alert{code and many tests} \\
-          \href{https://github.com/paraseba/scaladores-may-2018-talk}{\underline{https://github.com/paraseba/scaladores-may-2018-talk}}
+          \href{https://github.com/paraseba/scaladores-may-2018-talk}{\scriptsize \underline{\texttt{https://github.com/paraseba/scaladores-may-2018-talk}}}
 
-        \item \textit{Functional Programming in Scala.}\\ Paul Chiusano \& Runar Bjarnason
+        \item \textit{Functional Programming in Scala}\\ Paul Chiusano \& Runar Bjarnason
 
         \item \textit{Why Functional Programming Matters} \\
           John Hughes.
 
         \item Scalaz library \\
-          {\href{https://github.com/scalaz/scalaz}{\underline{https://github.com/scalaz/scalaz}}}
+          {\href{https://github.com/scalaz/scalaz}{\scriptsize\underline{\texttt{https://github.com/scalaz/scalaz}}}}
 
-        \item \textit{Computing skewness and kurtosis in one pass.} \\
-          {\footnotesize \href{https://www.johndcook.com/blog/skewness\_kurtosis/}{\underline{https://www.johndcook.com/blog/skewness\_kurtosis/}}}
+        \item \textit{Computing skewness and kurtosis in one pass} \\
+          {\footnotesize
+            \href{https://www.johndcook.com/blog/skewness\_kurtosis/}{\scriptsize\underline{\texttt{https://www.johndcook.com/blog/skewness\_kurtosis/}}}}
       \end{itemize}
 
     \column{0.3\textwidth}
