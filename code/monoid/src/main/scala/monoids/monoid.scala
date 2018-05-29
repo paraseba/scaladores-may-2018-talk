@@ -89,8 +89,8 @@ object SimpleMonoids {
 
     def zero: (A,B) = (Monoid[A].zero, Monoid[B].zero)
 
-    def append(a: (A, B), b: => (A, B)): (A,B) =
-      (a._1 |+| b._1, a._2 |+| b._2)
+    def append(x: (A, B), y: => (A, B)): (A,B) =
+      (x._1 |+| y._1, x._2 |+| y._2)
   }
 
 

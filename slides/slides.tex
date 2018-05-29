@@ -86,9 +86,6 @@
 
 }
 
-\pgfdeclareimage[height=0.5cm]{assoc-logo}{assoc.png}
-\logo{\pgfuseimage{assoc-logo}}
-
 %\setbeameroption{show notes on second screen}
 %\setbeameroption{show only notes}
 
@@ -136,7 +133,7 @@
   \begin{itemize}
   \item \alert{Functional Programming} for a while.
   \item Mostly big data and enterprise.
-  \item You or your team want to learn FP?
+  \item You or your team want to learn more about FP?
     \vspace{4mm}
 
     {\addtolength{\parindent}{5mm}
@@ -204,7 +201,7 @@ has \alert{wider applications.}\\[2ex] \rightline
 \end{frame}
 
 
-\section{Creating Monoids}
+\section{Writing Monoids}
 
 \begin{frame}\frametitle{BASIC MONOIDS IN PROGRAMMING}
   In programming we identify the carrier set with a type.
@@ -220,6 +217,7 @@ has \alert{wider applications.}\\[2ex] \rightline
     \item<3-> \texttt{Boolean} under \texttt{||} with \texttt{False}.
     \item<3-> \texttt{Boolean} under \texttt{\&\&} with \texttt{True}.
     \item<3-> \texttt{Set[A]} under \texttt{union} with \texttt{Set.empty}.
+    \item<3-> \texttt{Map[A,B]} under \texttt{(++)} with \texttt{Map.empty}.
   \end{itemize}
   \end{block}
 
@@ -335,17 +333,14 @@ implicit def freeMon[A]: Monoid[List[A]] = new Monoid[List[A]] {
 
   If \texttt{A} and \texttt{B} have monoids themselves, we can \alert{combine componentwise}.
 
-
-  \pause
-
   \begin{block}{}
   \begin{lstlisting}
 implicit def pairMon[A: Monoid, B: Monoid] = new Monoid[(A, B)] {
   /* ~\phantom{cit def pairMon[A: Mon}\rotatebox[origin=c]{90}{$\Rsh$}~ syntax sugar for:
      (implicit am: Monoid[A], implicit bm: Monoid[B]) */
 
-  def append(a: (A, B), b: => (A, B)): (A,B) =
-    (a._1 |+| b._1, a._2 |+| b._2)
+  def append(x: (A, B), y: => (A, B)): (A,B) =
+    (x._1 |+| y._1, x._2 |+| y._2)
 
   def zero: (A,B) =
     (Monoid[A].zero, Monoid[B].zero)
@@ -356,7 +351,7 @@ implicit def pairMon[A: Monoid, B: Monoid] = new Monoid[(A, B)] {
 
 
 \begin{frame}[fragile] \frametitle{A MONOID FOR FUNCTIONS}
-  \texttt{Monoid[A => B]} where \alert{\texttt{B} has a monoid}
+  \texttt{Monoid[A => B]} \pause where \alert{\texttt{B} has a monoid}
 
   \begin{block}{Functions that return a monoidal type}
   \begin{lstlisting}
@@ -439,7 +434,7 @@ def filter[A](as: List[A], f: A => Boolean): List[A] =
 
 
 \begin{frame}[fragile] \frametitle{COMPOSING MONOIDS}
-  \framesubtitle{A monoid to compute min/max.}
+  \framesubtitle{A monoid to compute min/max}
   \begin{block}{A monoid for minimum}
   \begin{lstlisting}
 def minMon[A:Ordering]: Monoid[Option[A]] =
@@ -467,7 +462,7 @@ def minMon[A:Ordering]: Monoid[Option[A]] =
 def min[A: Ordering](as: Traversable[A]): Option[A] =
   foldMap(as, (a:A) => Option(a))(minMon) // map and reduce ~\pause~
 
-def minMaxMon[A:Ordering] = ~\alt<2,3>{???}{\alert{pairMon(minMon, maxMon)}}~
+def minMaxMon[A:Ordering] = ~\alt<2,3>{\alert{???}}{\alert{pairMon(minMon, maxMon)}}~
 
 def minmax[A: Ordering](as: Traversable[A]): Option[(A,A)] =  ~\pause~
   foldMap(as, (a:A) => (Option(a), Option(a)))(minMaxMon) match {
@@ -481,7 +476,7 @@ def minmax[A: Ordering](as: Traversable[A]): Option[(A,A)] =  ~\pause~
   \visible<4->{
   \begin{itemize}
     \item Note how easily the monoids \alert{compose}.
-    \item Can extend to more \alert{aggregates} \texttt{(min, max, sum, size)}.
+    \item Can be extended to other \alert{aggregates} \texttt{(min, max, sum, size)}.
   \end{itemize}
   }
 \end{frame}
@@ -577,6 +572,7 @@ object Parallel {
   \begin{block}{A better approach}
   \begin{itemize}
     \item Find a \alert{monoid} to combine \alert{mean/variance} of \(n\) samples.
+    \item Store only the stats, not the measurements.
     \item Accumulate several (or 1) new measurements.
     \item \alert{Combine} the old and new stats using the monoid.
     \item Store.
@@ -630,6 +626,7 @@ final case class MeanVarV(
   \begin{block}{The MeanVar monoid}
   \begin{lstlisting}
 val meanVarMonoid: Monoid[MeanVar] = new Monoid[MeanVar] {
+  def zero: MeanVar = EmptyMeanVar
 
   def append(a: MeanVar, b: => MeanVar): MeanVar = (a, b) match {
     case (EmptyMeanVar, a) => a
@@ -642,7 +639,6 @@ val meanVarMonoid: Monoid[MeanVar] = new Monoid[MeanVar] {
                 ~\alert{nt}~)
     }
   }
-  def zero: MeanVar = EmptyMeanVar
   \end{lstlisting}
   \end{block}
 \end{frame}
@@ -700,7 +696,7 @@ object MeanVar {
   \begin{itemize}
     \item You could have \emph{invented} the monoid.
     \item You could have \emph{discovered} the laws.
-    \item Only write \alert{lawful} monoids.
+    \item Write only \alert{lawful} monoids.
     \item \alert{Use the monoid}. They are everywhere.
     \item Don't be afraid of other algebraic structures (Functor, Monad).
     \item \alert{Learn how to abstract}, copy and steal.
@@ -721,11 +717,11 @@ object MeanVar {
         \item \textit{Why Functional Programming Matters} \\
           John Hughes.
 
-        \item \textit{Computing skewness and kurtosis in one pass.} \\
-          {\footnotesize \href{https://www.johndcook.com/blog/skewness\_kurtosis/}{\underline{https://www.johndcook.com/blog/skewness\_kurtosis/}}}
-
         \item Scalaz library \\
           {\href{https://github.com/scalaz/scalaz}{\underline{https://github.com/scalaz/scalaz}}}
+
+        \item \textit{Computing skewness and kurtosis in one pass.} \\
+          {\footnotesize \href{https://www.johndcook.com/blog/skewness\_kurtosis/}{\underline{https://www.johndcook.com/blog/skewness\_kurtosis/}}}
       \end{itemize}
 
     \column{0.3\textwidth}
