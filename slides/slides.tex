@@ -582,8 +582,11 @@ object Parallel {
 \begin{frame} \frametitle{LARGER USE CASES}
   \framesubtitle{Incremental updates}
   \begin{block}{The problem}
-    For some measured magnitude (e.g. latency), \alert{compute} and store \alert{mean} and
-    \alert{variance.} Events arrive at high rate, \alert{millions per hour.}
+    \begin{itemize}
+      \item System measures request latency.
+      \item \alert{compute} and store \alert{mean} and \alert{variance.}
+      \item Events arrive at high rate, \alert{millions per hour.}
+    \end{itemize}
   \end{block} \pause
   \begin{columns}[c]
     \column{0.6\textwidth}
