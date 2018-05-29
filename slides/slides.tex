@@ -184,7 +184,6 @@ has \alert{wider applications.}\\[2ex] \rightline
     \item A binary \alert{operation} (\(\bullet\))
     \item An \alert{element} of the set \(u\)
   \end{itemize}
-  We sometimes say ``\(A\) \emph{has} a monoid''.
   \end{block}
 
   \pause
@@ -198,6 +197,7 @@ has \alert{wider applications.}\\[2ex] \rightline
     \item[\sout{Commutativity:}] \(a \bullet b \neq b \bullet a\)
   \end{description}
   \end{block}
+  We sometimes say ``\(A\) \emph{has} a monoid''.
 \end{frame}
 
 
@@ -301,7 +301,7 @@ val mulMon = new Monoid[Int] {
 
 \begin{frame}[fragile]\frametitle{THE LIST MONOID}
   \begin{block}{}
-    List(1,2,3,4) |+| List(5,6,7,8) = List(???)
+    List[Int](1, 2, 3, 4) |+| List[Int](5, 6, 7, 8) = List[Int](???)
   \end{block}
 
   \pause
@@ -358,11 +358,11 @@ implicit def pairMon[A: Monoid, B: Monoid] = new Monoid[(A, B)] {
 implicit def monFunMon[A, B:Monoid]: Monoid[A => B] =
   new Monoid[A => B] {
 
-    def append(f: A => B, g: => (A => B)): A => B =
-      a => f(a) |+| g(a)
-
     def zero: A => B =
       _ => Monoid[B].zero
+
+    def append(f: A => B, g: => (A => B)): A => B =
+      a => f(a) |+| g(a)
 }
   \end{lstlisting}
   \end{block}
@@ -398,9 +398,11 @@ implicit def monFunMon[A, B:Monoid]: Monoid[A => B] =
   \begin{lstlisting}
 // (a1 |+| a2) |+| a3 === a1 |+| (a2 |+| a3)
 def mconcat[A:Monoid](as: Traversable[A]): A =
-  as.foldLeft(Monoid[A].zero)(_ |+| _)~\pause~
+  as.foldLeft(Monoid[A].zero)(_ |+| _)
+  // === as.foldRight(Monoid[A].zero)(_ |+| _)~\pause~
 
-def sum(xs: Traversable[Int]): Int = ~\alert{mconcat}~(xs)(intAddMon)
+def sum(xs: Traversable[Int]): Int =
+  ~\alert{mconcat}~(xs)(intAddMon)
 
 def concat[A](xs: Traversable[List[A]]): List[A] =
   ~\alert{mconcat}~(xs)(freeMon) // or get the Monoid implicitly
@@ -508,7 +510,7 @@ def minmax[A: Ordering](as: Traversable[A]): Option[(A,A)] =  ~\pause~
   \begin{block}{The problem}
     \begin{itemize}
       \item Merge multiple renders into one.
-      \item Merge is an expensive operation.
+      \item \texttt{merge} is an expensive operation.
       \item \texttt{merge(img1, merge(img2, merge(img3, ...)))}
       \item Obvious solution: \texttt{mconcat( List(img1, img2, ..., imgn) )}
     \end{itemize}
