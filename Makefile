@@ -23,7 +23,7 @@ testtex: $(SLIDESDIR)/slides.pdf
 
 test: testtex testcode
 
-$(SLIDESDIR)/slides.pdf: $(SLIDESDIR)/slides.tex $(SLIDESDIR)/additive-color.pdf_tex $(SLIDESDIR)/tree.tex $(SLIDESDIR)/functional-programming-in-scala.png $(SLIDESDIR)/assoc.png
+$(SLIDESDIR)/slides.pdf: $(SLIDESDIR)/slides.tex $(SLIDESDIR)/tree.tex $(SLIDESDIR)/functional-programming-in-scala.png
 	cd $(SLIDESDIR) && $(PDFLATEX) slides.tex
 
 console:
