@@ -338,6 +338,7 @@ implicit def freeMon[A]: Monoid[List[A]] = new Monoid[List[A]] {
 }
   \end{lstlisting}
   \end{block}
+  Our first noncommutative monoid.
 \end{frame}
 
 \begin{frame}[fragile]\frametitle{MONOID FOR TUPLES}
@@ -386,7 +387,9 @@ implicit def monFunMon[A, B:Monoid]: Monoid[A => B] =
 }
   \end{lstlisting}
   \end{block}
-  Convince yourself that \texttt{zero} is an identity and that \texttt{append} is associative.
+  Convince yourself it is a lawful monoid.
+
+  Is it commutative?
 \end{frame}
 
 
@@ -406,7 +409,7 @@ implicit def monFunMon[A, B:Monoid]: Monoid[A => B] =
 
   \begin{block}{}
     \centering
-    But we haven't seen \alert{why} or \alert{how} to use monoids.
+    But \alert{why} or \alert{how} to use monoids.
   \end{block}
 \end{frame}
 
@@ -503,8 +506,8 @@ def minmax[A: Ordering](as: Traversable[A]): Option[(A,A)] =  ~\pause~
   }
 \end{frame}
 
-\begin{frame} \frametitle{COMPOSING MONOIDS}
-  Monoids compose extremely well.
+\begin{frame} \frametitle{POWERFUL ABSTRACTION}
+  \textbf{\large Monoids compose extremely well.}
   \begin{itemize}
     \item \texttt{A: Monoid}
     \item \texttt{B: Monoid}
@@ -519,9 +522,17 @@ def minmax[A: Ordering](as: Traversable[A]): Option[(A,A)] =  ~\pause~
     \item \texttt{X => Y => List[(A, Option[B])]: Monoid}
     \item \texttt{Map[String, X => Y => List[(A, Option[B])]]: Monoid}
   \end{itemize}
+
+  \textbf{\large Monoids are very expressive.}
+  \pause
+  \begin{itemize}
+    \item \texttt{mconcat: sum, concat, ...}
+    \item \texttt{foldMap: fold*, filter, map, ...}
+  \end{itemize}
+
   \begin{block}{}
     \centering
-    \Large \textbf{Sign of a good abstraction}
+    \Large \textbf{Signs of a good abstraction}
   \end{block}
 \end{frame}
 
