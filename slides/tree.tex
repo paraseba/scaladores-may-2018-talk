@@ -1,39 +1,39 @@
 \begin{center}
-\begin{tikzpicture}[sibling distance=2em, level distance=2em]
+\begin{tikzpicture}[sibling distance=2.2em, level distance=2em]
   \node {\(\bullet\)}
-    child { node {\(a_1\)} }
+    child { node {\(img_1\)} }
     child { node {\(\bullet\)}
-      child { node {\(a_2\)}}
+      child { node {\(img_2\)}}
       child { node {\(\bullet\)}
-        child { node {\(a_3\)}}
+        child { node {\(img_3\)}}
         child { node {\(\vdots\)}
     }}};
 \end{tikzpicture}
 \qquad
-\begin{tikzpicture}[sibling distance=2em, level distance=2em]
+\begin{tikzpicture}[sibling distance=2.2em, level distance=2em]
   \node {\(\bullet\)}
     child { node {\(\bullet\)}
       child { node {\(\bullet\)}
         child {node {\(\vdots\)}}
-        child {node {\(a_{n-3}\)}}}
-      child { node {\(a_{n-2}\)}}
+        child {node {\(img_{n-3}\)}}}
+      child { node {\(img_{n-2}\)}}
         }
-    child { node {\(a_n\)} };
+    child { node {\(img_n\)} };
 \end{tikzpicture}
 \qquad
-\begin{tikzpicture}[level distance=2em, level 3/.style={sibling distance=2em}, level 2/.style={sibling distance=1.5em}, level 1/.style={sibling distance=3em}]
+\begin{tikzpicture}[level distance=2em, level 3/.style={sibling distance=3em}, level 2/.style={sibling distance=2.5em}, level 1/.style={sibling distance=6em}]
   \usebeamercolor{example text}
   \node {\(\bullet\)}
   child { node[color=fg] {\(\bullet\)}
     child { node[color=fg] {\(\bullet\)}
       child {node[color=fg] {\texttt{zero}}}
-      child {node[color=fg] {\(a_1\)}}}
-    child { node[color=fg] {\(a_2\)}}
+      child {node[color=fg] {\(img_1\)}}}
+    child { node[color=fg] {\(img_2\)}}
   }
   child { node[color=red] {\(\bullet\)}
-    child { node[color=red] {\(a_3\)} }
+    child { node[color=red] {\(img_3\)} }
     child { node[color=red] {\(\bullet\)}
-      child { node[color=red] {\(a_4\)}}
+      child { node[color=red] {\(img_4\)}}
       child { node[color=red] {\(\vdots\)}
       }}};
 \end{tikzpicture}
