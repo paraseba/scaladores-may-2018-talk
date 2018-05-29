@@ -181,13 +181,13 @@ has \alert{wider applications.}\\[2ex] \rightline
 \section{What is a Monoid}
 
 \begin{frame} \frametitle{WHAT IS A MONOID?}
-  \begin{block}{Components - A Triplet \((A, \bullet, u)\)}
+  \begin{block}{Components - A triplet \((A, \bullet, u)\)}
   \begin{itemize}
     \item A [carrier] \alert{set} (\(A\))
     \item A binary \alert{operation} (\(\bullet\))
     \item An \alert{element} of the set \(u\)
   \end{itemize}
-  We sometimes say ``\(A\) \emph{has} a Monoid''.
+  We sometimes say ``\(A\) \emph{has} a monoid''.
   \end{block}
 
   \pause
@@ -247,7 +247,7 @@ trait Monoid[A] {
   \end{lstlisting}
   \end{block}
 
-  We can have more than one Monoid for the same \texttt{A}
+  We can have more than one monoid for the same \texttt{A}
   \begin{block}{But wait}
     What happened to the laws?
   \end{block}
@@ -308,7 +308,7 @@ val mulMon = new Monoid[Int] {
 
   \pause
 
-  \begin{block}{A default (?) Monoid for Lists}
+  \begin{block}{A default (?) monoid for Lists}
   \begin{lstlisting}
 
 implicit def freeMon[A]: Monoid[List[A]] = new Monoid[List[A]] {
@@ -333,7 +333,7 @@ implicit def freeMon[A]: Monoid[List[A]] = new Monoid[List[A]] {
 
   \pause
 
-  If \texttt{A} and \texttt{B} have Monoids themselves, we can \alert{combine componentwise}.
+  If \texttt{A} and \texttt{B} have monoids themselves, we can \alert{combine componentwise}.
 
 
   \pause
@@ -356,7 +356,7 @@ implicit def pairMon[A: Monoid, B: Monoid] = new Monoid[(A, B)] {
 
 
 \begin{frame}[fragile] \frametitle{A MONOID FOR FUNCTIONS}
-  \texttt{Monoid[A => B]} where \alert{\texttt{B} has a Monoid}
+  \texttt{Monoid[A => B]} where \alert{\texttt{B} has a monoid}
 
   \begin{block}{Functions that return a monoidal type}
   \begin{lstlisting}
@@ -380,11 +380,11 @@ implicit def monFunMon[A, B:Monoid]: Monoid[A => B] =
   \begin{itemize}
     \item Monoid definition (binary assoc operation with identity).
     \item Monoid \texttt{trait} (one type parameter,
-      two methods: \texttt{zero, append})
+      two methods: \texttt{zero, append}).
     \item Monoids for:
       \begin{itemize}
-      \item Numbers, lists, tuples (if components have Monoids)
-      \item \texttt{A => M} where \texttt{M} has a Monoid
+      \item Numbers, lists, tuples (if components have monoids)
+      \item \texttt{A => M} where \texttt{M} has a monoid
       \item There are many, many more.
       \end{itemize}
   \end{itemize}
@@ -439,7 +439,7 @@ def filter[A](as: List[A], f: A => Boolean): List[A] =
 
 
 \begin{frame}[fragile] \frametitle{COMPOSING MONOIDS}
-  \framesubtitle{A Monoid to compute min/max.}
+  \framesubtitle{A monoid to compute min/max.}
   \begin{block}{A monoid for minimum}
   \begin{lstlisting}
 def minMon[A:Ordering]: Monoid[Option[A]] =
@@ -461,7 +461,7 @@ def minMon[A:Ordering]: Monoid[Option[A]] =
 
 
 \begin{frame}[fragile] \frametitle{COMPOSING MONOIDS}
-  \framesubtitle{A Monoid to compute min/max}
+  \framesubtitle{A monoid to compute min/max}
   \begin{block}{Calculate \texttt{min} \& \texttt{max} in a \alert{single pass}}
   \begin{lstlisting}
 def min[A: Ordering](as: Traversable[A]): Option[A] =
@@ -480,7 +480,7 @@ def minmax[A: Ordering](as: Traversable[A]): Option[(A,A)] =  ~\pause~
 
   \visible<4->{
   \begin{itemize}
-    \item Note how easily the Monoids \alert{compose}.
+    \item Note how easily the monoids \alert{compose}.
     \item Can extend to more \alert{aggregates} \texttt{(min, max, sum, size)}.
   \end{itemize}
   }
@@ -546,7 +546,7 @@ object Parallel {
     \texttt{op}: a binary operator that must be \alert{associative.}
     \begin{block}{}
       \centering
-      \large \textbf{That's just a Monoid!}
+      \large \textbf{That's just a monoid!}
     \end{block}
   }
 \end{frame}
@@ -585,7 +585,7 @@ object Parallel {
 
   \begin{block}{How is it better?}
   \begin{itemize}
-    \item \alert{Exact} if we can find the right Monoid.
+    \item \alert{Exact} if we can find the right monoid.
     \item \alert{\(\mathcal{O}(1)\) updates} (independent of sample size).
     \item Trade off freshness by scale.
   \end{itemize}
@@ -627,7 +627,7 @@ final case class MeanVarV(
 
 \begin{frame}[fragile] \frametitle{LARGER USE CASES}
   \framesubtitle{Incremental updates}
-  \begin{block}{The MeanVar Monoid}
+  \begin{block}{The MeanVar monoid}
   \begin{lstlisting}
 val meanVarMonoid: Monoid[MeanVar] = new Monoid[MeanVar] {
 
@@ -691,16 +691,16 @@ object MeanVar {
     \item We never wrote the alg. to compute mean/var, only to combine them.
     \item Extensible to higher momenta.
     \item Extensible to approximate histograms and other fun stuff.
-    \item Didn't we say \texttt{Double} under \texttt{(+)} is not a Monoid?
+    \item Didn't we say \texttt{Double} under \texttt{(+)} is not a monoid?
   \end{itemize}
   \end{block}
 \end{frame}
 
 \begin{frame} \frametitle{CONCLUSIONS}
   \begin{itemize}
-    \item You could have \emph{invented} the Monoid.
+    \item You could have \emph{invented} the monoid.
     \item You could have \emph{discovered} the laws.
-    \item Only write \alert{lawful} Monoids.
+    \item Only write \alert{lawful} monoids.
     \item \alert{Use the monoid}. They are everywhere.
     \item Don't be afraid of other algebraic structures (Functor, Monad).
     \item \alert{Learn how to abstract}, copy and steal.
