@@ -33,11 +33,12 @@ import scala.collection.parallel.ForkJoinTaskSupport
 import java.util.concurrent.ForkJoinPool
 
 import Arbitrary.arbitrary
+import monoid.monoids._
 import SimpleMonoids._
 
 
 class MonoidSpec extends FunSuite with Checkers with Matchers {
-  import MonoidSyntax._
+  import SemigroupSyntax._
 
   def assoc[M:Monoid](f: (M,M) => Boolean)(a: M, b: M, c: M): Boolean =
     f((a |+| b) |+| c, a |+| (b |+| c))
@@ -153,7 +154,7 @@ class MonoidSpec extends FunSuite with Checkers with Matchers {
   test("pairMon is a lawful monoid") {
     // use a non-commutative underlying monoids
     check((a: (List[Int], Option[Int]), b: (List[Int], Option[Int]), c: (List[Int], Option[Int])) =>
-      monoidLaws(a,b,c)(pairMon))
+      monoidLaws(a,b,c)(pairMon(freeMon[Int], optionMon[Int](intAddMon))))
   }
 
   test("pairMon uses underlying monoid") {

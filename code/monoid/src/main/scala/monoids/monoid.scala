@@ -19,17 +19,20 @@ along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-package monoids
+package monoid.monoids
 
 import scala.collection.immutable._
 import scala.collection.parallel.TaskSupport
 
-
-trait Monoid[M] {
-
-  def zero: M
+trait Semigroup[M] {
 
   def append(a: M, b: => M): M
+
+}
+
+trait Monoid[M] extends Semigroup[M] {
+
+  def zero: M
 
 }
 
@@ -37,19 +40,23 @@ object Monoid {
   def apply[A:Monoid]: Monoid[A] = implicitly[Monoid[A]]
 }
 
-object MonoidSyntax {
-  @SuppressWarnings(Array("org.wartremover.warts.ImplicitConversion"))
-  implicit def ToMonoidOps[A:Monoid](v: A): MonoidOps[A] =
-    new MonoidOps[A](v)
+object Semigroup {
+  def apply[A:Semigroup]: Semigroup[A] = implicitly[Semigroup[A]]
+}
 
-  final class MonoidOps[A:Monoid](val self: A) {
+object SemigroupSyntax {
+  @SuppressWarnings(Array("org.wartremover.warts.ImplicitConversion"))
+  implicit def ToSemigroupOps[A:Semigroup](v: A): SemigroupOps[A] =
+    new SemigroupOps[A](v)
+
+  final class SemigroupOps[A:Semigroup](val self: A) {
     def |+|(other: => A): A =
-      Monoid[A].append(self, other)
+      Semigroup[A].append(self, other)
   }
 }
 
 object SimpleMonoids {
-  import MonoidSyntax._
+  import SemigroupSyntax._
 
   implicit def intAddMon: Monoid[Int] = new Monoid[Int] {
     def zero = 0
@@ -73,12 +80,12 @@ object SimpleMonoids {
     def append(as: List[A], bs: => List[A]): List[A] = as ++ bs
   }
 
-  implicit def firstMon[A]: Monoid[Option[A]] = new Monoid[Option[A]] {
+  def firstMon[A]: Monoid[Option[A]] = new Monoid[Option[A]] {
     def zero = None
     def append(a: Option[A], b: => Option[A]): Option[A] = a orElse b
   }
 
-  def optionMon[A:Monoid]: Monoid[Option[A]] =
+  implicit def optionMon[A:Semigroup]: Monoid[Option[A]] =
     new Monoid[Option[A]] {
 
       def zero: Option[A] = None
@@ -96,6 +103,13 @@ object SimpleMonoids {
     def append(f: A => A, g: => (A => A)): A => A = g andThen f
   }
 
+  implicit def monFunSemi[A, B:Semigroup]: Semigroup[A => B] =
+    new Semigroup[A => B] {
+
+      def append(f: A => B, g: => (A => B)): A => B =
+        a => f(a) |+| g(a)
+    }
+
   implicit def monFunMon[A, B:Monoid]: Monoid[A => B] =
     new Monoid[A => B] {
 
@@ -112,6 +126,14 @@ object SimpleMonoids {
 
     def append(x: (A, B), y: => (A, B)): (A,B) =
       (x._1 |+| y._1, x._2 |+| y._2)
+  }
+
+  implicit def tripleMon[A: Monoid, B: Monoid, C: Monoid]: Monoid[(A,B,C)] = new Monoid[(A, B, C)] {
+
+    def zero: (A,B,C) = (Monoid[A].zero, Monoid[B].zero, Monoid[C].zero)
+
+    def append(x: (A, B, C), y: => (A, B, C)): (A,B, C) =
+      (x._1 |+| y._1, x._2 |+| y._2, x._3 |+| y._3)
   }
 
 
@@ -173,6 +195,14 @@ object SimpleMonoids {
     }
   }
 
+  def maxSemi[A:Ordering]: Semigroup[A] = new Semigroup[A] {
+    def append(a: A, b: => A): A = Ordering[A].max(a,b)
+  }
+
+  def minSemi[A:Ordering]: Semigroup[A] = new Semigroup[A] {
+    def append(a: A, b: => A): A = Ordering[A].min(a,b)
+  }
+
   def min[A: Ordering](as: Traversable[A]): Option[A] =
     foldMap(as, (a:A) => Option(a))(minMon) // map and reduce
 
@@ -191,7 +221,7 @@ object SimpleMonoids {
 
 object Parallel {
 
-  import MonoidSyntax._
+  import SemigroupSyntax._
 
   // We receive a Task Support to make testing easier, thread pools are shared between tests
   def mconcat[A:Monoid](as: Traversable[A])(ts: TaskSupport): A = {
