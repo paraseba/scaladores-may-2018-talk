@@ -27,7 +27,8 @@ test:
   artifacts:
     paths:
       - code/monoid/target/scala-2.12/scoverage-report/
-      - slides/slides.pdf
+      - slides/part1/part1.pdf
+      - slides/part2/part2.pdf
 
 pages:
   stage: deploy
@@ -40,7 +41,7 @@ pages:
 
   script:
     - mv code/monoid/target/scala-2.12/scoverage-report/ public/coverage
-    - mv slides/slides.pdf public/
+    - mv slides/part1/part1.pdf slides/part2/part2.pdf public/
 
   artifacts:
     paths:

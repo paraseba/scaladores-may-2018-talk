@@ -5,11 +5,25 @@
 [![pipeline status](https://gitlab.com/paraseba/scaladores-may-2018-talk/badges/master/pipeline.svg)](https://gitlab.com/paraseba/scaladores-may-2018-talk/commits/master)
 [![coverage report](https://gitlab.com/paraseba/scaladores-may-2018-talk/badges/master/coverage.svg)](https://gitlab.com/paraseba/scaladores-may-2018-talk/commits/master)
 
-[PDF Slides](https://paraseba.gitlab.io/scaladores-may-2018-talk/slides.pdf)
+### Part 1
+
+[PDF Slides](https://paraseba.gitlab.io/scaladores-may-2018-talk/part1.pdf)
+
+[Meetup Event Part](https://www.meetup.com/scaladores/events/250823565/)
+
+[Video](https://www.youtube.com/watch?v=z2N-g6iSJJc)
+
+### Part 2
+
+[PDF Slides](https://paraseba.gitlab.io/scaladores-may-2018-talk/part2.pdf)
+
+[Meetup Event](https://www.meetup.com/scaladores/events/255995819/)
+
+
+
+### Code
 
 [Test coverage report](https://paraseba.gitlab.io/scaladores-may-2018-talk/coverage)
-
-[Meetup Event](https://www.meetup.com/scaladores/events/250823565/)
 
 You can find all the Scala code in [code/monoid](code/monoid).
 

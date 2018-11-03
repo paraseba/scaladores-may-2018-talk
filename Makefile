@@ -22,6 +22,7 @@ PHONY: cleantex cleancode clean testcode testtex test all console sbt pdf covera
 CODEDIR=./code/monoid
 PDFLATEX=latexmk -interaction=nonstopmode -file-line-error -auxdir=tmp -outdir=tmp
 SLIDESDIR1=slides/part1
+SLIDESDIR2=slides/part2
 
 all: test
 
@@ -37,12 +38,15 @@ clean: cleantex cleancode
 testcode:
 	cd $(CODEDIR) && sbt test
 
-testtex: $(SLIDESDIR1)/part1.pdf
+testtex: pdf1 pdf2
 
 test: testtex testcode
 
 $(SLIDESDIR1)/part1.pdf: $(SLIDESDIR1)/part1.tex $(SLIDESDIR1)/tree.tex $(SLIDESDIR1)/functional-programming-in-scala.png
 	cd $(SLIDESDIR1) && $(PDFLATEX) -pdf part1.tex && cp tmp/part1.pdf .
+
+$(SLIDESDIR2)/part2.pdf: $(SLIDESDIR2)/part2.tex $(SLIDESDIR2)/beside.png $(SLIDESDIR2)/brain.jpg $(SLIDESDIR2)/composeenv.png $(SLIDESDIR2)/envelope.png $(SLIDESDIR2)/papers.jpg $(SLIDESDIR2)/trace.png $(SLIDESDIR2)/tracevsenv.png
+	cd $(SLIDESDIR2) && $(PDFLATEX) -pdf part2.tex && cp tmp/part2.pdf .
 
 console:
 	cd $(CODEDIR) && sbt console
@@ -51,9 +55,13 @@ sbt:
 	cd $(CODEDIR) && sbt
 
 pdf1: $(SLIDESDIR1)/part1.pdf
+pdf2: $(SLIDESDIR2)/part2.pdf
 
 coverage:
 	cd $(CODEDIR) && sbt coverage test coverageReport
 
 present1: $(SLIDESDIR1)/part1.pdf
 	@zathura --fork $(SLIDESDIR1)/part1.pdf
+
+present2: $(SLIDESDIR2)/part2.pdf
+	@zathura --fork $(SLIDESDIR2)/part2.pdf
