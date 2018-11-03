@@ -20,13 +20,14 @@ PHONY: cleantex cleancode clean testcode testtex test all console sbt pdf covera
 .DEFAULT_GOAL := all
 
 CODEDIR=./code/monoid
-PDFLATEX=latexmk -pdf -interaction=nonstopmode -file-line-error
-SLIDESDIR=slides
+PDFLATEX=latexmk -interaction=nonstopmode -file-line-error -auxdir=tmp -outdir=tmp
+SLIDESDIR1=slides/part1
 
-all: $(SLIDESDIR)/slides.pdf test
+all: test
 
 cleantex:
-	cd $(SLIDESDIR) && latexmk -C
+	cd $(SLIDESDIR1) && $(PDFLATEX) -C part1.tex
+	cd $(SLIDESDIR2) && $(PDFLATEX) -C part2.tex
 
 cleancode:
 	cd $(CODEDIR) && sbt clean
@@ -36,12 +37,12 @@ clean: cleantex cleancode
 testcode:
 	cd $(CODEDIR) && sbt test
 
-testtex: $(SLIDESDIR)/slides.pdf
+testtex: $(SLIDESDIR1)/part1.pdf
 
 test: testtex testcode
 
-$(SLIDESDIR)/slides.pdf: $(SLIDESDIR)/slides.tex $(SLIDESDIR)/tree.tex $(SLIDESDIR)/functional-programming-in-scala.png
-	cd $(SLIDESDIR) && $(PDFLATEX) slides.tex
+$(SLIDESDIR1)/part1.pdf: $(SLIDESDIR1)/part1.tex $(SLIDESDIR1)/tree.tex $(SLIDESDIR1)/functional-programming-in-scala.png
+	cd $(SLIDESDIR1) && $(PDFLATEX) -pdf part1.tex && cp tmp/part1.pdf .
 
 console:
 	cd $(CODEDIR) && sbt console
@@ -49,10 +50,10 @@ console:
 sbt:
 	cd $(CODEDIR) && sbt
 
-pdf: $(SLIDESDIR)/slides.pdf
+pdf1: $(SLIDESDIR1)/part1.pdf
 
 coverage:
 	cd $(CODEDIR) && sbt coverage test coverageReport
 
-present: $(SLIDESDIR)/slides.pdf
-	@zathura --fork slides/slides.pdf
+present1: $(SLIDESDIR1)/part1.pdf
+	@zathura --fork $(SLIDESDIR1)/part1.pdf

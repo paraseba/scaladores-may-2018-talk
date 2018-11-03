@@ -18,11 +18,7 @@
 /code/monoid/project/project
 /code/monoid/project/target
 /code/monoid/target
-/auto
-/slides/auto
-/slides/tree.aux
+/slides/*/auto
+/slides/*/tmp
 
-/slides/slides.*
-/slides/tree.*
-!/slides/slides.tex
-!/slides/tree.tex
+/slides/*/part*.pdf
