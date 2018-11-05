@@ -21,41 +21,16 @@
 % Title: Monoid driven design
 % Titulo: Desenho dirigido por monoides
 
-% Abstract:
-% We will learn about Monoids, a concept invented (discovered?) by mathematicians
-% that we can leverage to great value in our code and designs.
-
-% The talk is structured in two sessions, in this first one (5/29) we'll learn what
-% Monoids are, go through many examples, and write code that creates and uses Monoids. In
-% the second session (June maybe?) we will see how we can use Monoids to guide software design.
-
-% Despite the weird name, Monoids are easy to understand, and once you do, you'll
-% start finding them everywhere. More importantly, after a little practice
-% you'll gain intuition and you'll be able to integrate Monoids in your code and
-% designs, obtaining more abstract and reusable results.
-
-% Requirements:
-% This is an intermediate level talk. No knowledge of math or functional
-% programming is required. I'll assume you can understand simple Scala code.
-% In particular, if you don't know what implicit parameters are, spend 10 minutes
-% learning about them. You don't need to understand the details of implicit search
-% mechanisms or anything like that.
-
 
 % Resumo:
-% Na primeira parte da palestra (https://www.youtube.com/watch?v=z2N-g6iSJJc)
-% descubrimos os monoides e vimos varios exemplos de como usa-los na programacao.
-% Nesta segunda parte vamos ver em profundidade um exemplo de como os monoides podem nos
-% guiar en el desenho do nosso sistema.
-%
+
+% Essa é a segunda parte da palestra no tema de monoides. Na primeira parte (https://www.youtube.com/watch?v=z2N-g6iSJJc) falamos dos monoides e vimos muitos exemplos de como usá-los na programação. Nesta segunda parte vamos ver com profundidade um exemplo de como os monoides podem nos guiar e ajudar no desenho do nosso sistema.
 
 % Requerimentos:
-% Para aproveitar a palestra ao maximo, os participantes deveriam saber o que eh
-% um monoide, eh exemplos basicos de monoides utis. Recomendo assistir a
-% primeira parte de palestra onde poderam encontrar todas as informacoes
-% necessarias:
-% youtube: https://www.youtube.com/watch?v=z2N-g6iSJJc)
-% slides: https://github.com/paraseba/scaladores-may-2018-talk
+% Para aproveitar a palestra ao máximo, os participantes devem saber o que é um monoide e conhecer os exemplos mais usuais. Recomendo assistir a primeira parte de palestra onde poderão encontrar todas as informações necessárias:
+
+% Youtube: https://www.youtube.com/watch?v=z2N-g6iSJJc
+% Slides: https://github.com/paraseba/scaladores-may-2018-talk
 
 
 % Bio:
@@ -152,12 +127,12 @@
 \begin{frame}[plain]
   \begin{block}{}
 
-  Brent A. Yorgey,
+  It's hard to find an example using \textbf{only} \texttt{Monoids.}
+  \vspace{0.8cm}
 
-  {\it \bf ``Monoids: Theme and Variations (Functional Perl)''}.
+  Brent A. Yorgey, {\it \bf ``Monoids: Theme and Variations (Functional Perl)''}.
 
   July 2012.
-
   \end{block}
 \end{frame}
 }
@@ -171,14 +146,14 @@ trait Semigroup[M] {
   def ~\alert{append}~(a: M, b: => M): M
 }
 
-trait Monoid[A] extends Semigroup[M] {
-  def ~\alert{zero}~: A
+trait Monoid[M] extends Semigroup[M] {
+  def ~\alert{zero}~: M
 }
 
 object SemigroupSyntax {
-  final class SemigroupOps[A:Semigroup](val self: A) {
-    def ~\alert{|+|}~(other: => A): A =
-      Semigroup[A].append(self, other)
+  final class SemigroupOps[M:Semigroup](val self: M) {
+    def ~\alert{|+|}~(other: => M): M =
+      Semigroup[M].append(self, other)
   }
   \end{lstlisting}
   \end{block}
@@ -193,6 +168,7 @@ object SemigroupSyntax {
       \end{itemize}
   \end{block}
 
+  \vspace{-0.2cm}
   \begin{block}{The Canonical Examples}
 
   \begin{columns}
@@ -210,6 +186,7 @@ object SemigroupSyntax {
       \end{itemize}
   \end{columns}
   \end{block}
+  \vspace{-0.2cm}
 
   \begin{block}{Using \texttt{Monoids}}
   \begin{lstlisting}
@@ -223,21 +200,7 @@ val l = List(1,2,3) |+| List(4,5,6)
   \end{block}
 \end{frame}
 
-\begin{frame}[fragile] \frametitle{REFRESHER ON WRITING MONOIDS}
-  \begin{block}{Writing a \texttt{List Monoid}}
-  \begin{lstlisting}
-implicit def listMon[A]: Monoid[List[A]] = new Monoid[List[A]] {
-  def append(as: List[A], bs: => List[A]): List[A] =
-    as ++ bs
-
-  def zero: List[A] = List()
-}
-  \end{lstlisting}
-  \vspace{-.5cm}
-  \end{block}
-
-  \vspace{-.1cm}
-
+\begin{frame}[fragile] \frametitle{PREREQUISITES}
   \begin{block}{The All-Purpose Function: \texttt{mconcat}}
   \begin{lstlisting}
 // mconcat(List(a1,a2,a3,...)) === a1 |+| a2 |+| a3 |+| ...
@@ -246,10 +209,7 @@ def mconcat[A:Monoid](as: Traversable[A]): A =
 
 val five = mconcat(List(0,1,2,2))(intAddMonoid)
   \end{lstlisting}
-  \vspace{-.5cm}
   \end{block}
-
-  \vspace{-.1cm}
 
   \begin{block}{}
     \centering
@@ -260,30 +220,40 @@ val five = mconcat(List(0,1,2,2))(intAddMonoid)
 \end{frame}
 
 \begin{frame}[fragile] \frametitle{DIAGRAM 1.0 --- A LIST OF PRIMITIVES}
-  \begin{block}{A Diagram as a List of Primitives}
-  \begin{lstlisting}
+  \begin{columns}
+    \column{0.65\textwidth}
+      \begin{block}{A Diagram as a List of Primitives}
+      \begin{lstlisting}
 sealed trait Prim { def draw(...) ... }
 
-final case class Point(x: Double,
-                       y: Double,
-                       c: Color, ...) extends Prim
+final case class Point(
+  x: Double,
+  y: Double,
+  c: Color, ...) extends Prim
 
 final case class Line(...) extends Prim
 final case class Ellipse(...) extends Prim
 ... ~\pause~
 
-// Let's say the primitives are drawn in the list order
-final case class Diagram(primitives: List[Prim])
-  \end{lstlisting}
-  \end{block}
+// Primitives are drawn in the list order
+final case class Diagram(
+  primitives: List[Prim])
+      \end{lstlisting}
+      \end{block}
 
-  How do \texttt{Diagrams} combine (or compose)?
+    \column{0.35\textwidth}
+      \includegraphics[width=\textwidth]{Factorization.png}
+
+      How do \texttt{Diagrams} combine or compose?
+  \end{columns}
 \end{frame}
 
 \begin{frame}[fragile] \frametitle{DIAGRAM 1.0 --- A LIST OF PRIMITIVES}
 Diagrams compose by drawing them on top of each other.
   \begin{block}{The Diagram Monoid}
   \begin{lstlisting}
+final case class Diagram(primitives: List[Prim])
+
 object Diagram {
 
   val diagramMonoid = new Monoid[Diagram] {
@@ -303,7 +273,7 @@ object Diagram {
 def wSemi[Out, ~\alert{In:Semigroup}~](un: Out => In,
                              wr: In => Out): Semigroup[Out] = ~\pause~
   new Semigroup[Out] {
-    def append(x:Out, y: => Out) = wr(un(x) |+| un(y))
+    def append(x:Out, y: => Out): Out = wr(un(x) |+| un(y))
   } ~\pause~
 
 def wMon[Out, In:Monoid](un: Out => In,
@@ -338,6 +308,7 @@ object Diagram {
 
 \begin{frame}[fragile] \frametitle{DIAGRAM 1.0 --- A LIST OF PRIMITIVES}
   \begin{block}{Fixing the Order}
+    \vspace{-0.2cm}
   \begin{lstlisting}
 final case class Dual[M](undual: M)
 
@@ -348,13 +319,13 @@ implicit def dualMonoid[M:Monoid] = new Monoid[Dual[M]] {
     Dual(~\alert{b}~.undual |+| ~\alert{a}~.undual)
 } ~\pause~
 
-final case class Diagram(primitives: Dual[List[Prim]])
+final case class Diagram(primitives: ~\alert{Dual[List[Prim]]}~)
 
 object Diagram {
   val diaMon: Monoid[Diagram] = wMon(_.primitives, Diagram(_))
 }
   \end{lstlisting}
-    \vspace{-0.3cm}
+    \vspace{-0.5cm}
   \end{block}
 
 Look how expressive the type for \texttt{Diagram} is!
@@ -462,7 +433,9 @@ val semiGroup: Semigroup[Envelope] = wSemi(_.f, Envelope(_))
   \begin{lstlisting}
 // libraries provide this type out of the box
 implicit def optionMon[A:Semigroup] = new Monoid[Option[A]] {
+
     def zero: Option[A] = None
+
     def append(a: Option[A], b: => Option[A]): Option[A] =
       (a,b) match {
         case (a, None) => a
@@ -552,7 +525,7 @@ Envelopes clearly don't work.
   \begin{block}{A \texttt{Trace} Is (Again) a Function}
   \begin{lstlisting}
 // points on the plane
-type P2 = (Double, Double)
+type P2 = (Double, Double) ~\pause~
 
 final case class Trace(f: P2 => V2 => Double)
   \end{lstlisting}
@@ -571,7 +544,7 @@ final case class Min[A](unmin: A)
 implicit def minSemi[A:Ordering] = new Semigroup[Min[A]] {
   def append(a: Min[A], b: => Min[A]): Min[A] =
     Min(Ordering[A].min(a.unmin, b.unmin))
-} ~\pause~
+}
 
 // final case class Trace(f: P2 => V2 => Double)
 final case class Trace(f: P2 => V2 => ~\alert{Min}~[Double])
@@ -612,6 +585,8 @@ object Trace{
   \end{block}
 
 Again, full expressiveness for \texttt{Trace} type!
+
+The process is simple: find the right \texttt{Monoid}, \texttt{mconcat} all primitives.
 \end{frame}
 
 \begin{frame}[fragile] \frametitle{DIAGRAM 4.0 --- CACHING}
@@ -678,12 +653,12 @@ In pictures, the \texttt{oldEnvelope} function:
     \node[setA,label=left:$d1$] (a) {};
     \node [setA,below = of a,label=left:$d2$] (b) {};
     \node [setA,below = of b,label=left:$d3$] (c) {};
-    \node[below=of c,anchor=north] {\texttt{(Diagram,|+|$_D$,zero$_D$)}};
+    \node[below=of c,anchor=north] {\texttt{(Diagram, |+|$_D$, zero$_D$)}};
 
     % % set B
     \node[setB, right=4cm of a, label=right:$e1$] (x) {};
     \node[setB, below = of x, label=right:$e2$] (y) {};
-    \node[below=of y,anchor=north] {\texttt{(Envelope,|+|$_E$,zero$_E$)}};
+    \node[below=of y,anchor=north] {\texttt{(Envelope, |+|$_E$, zero$_E$)}};
 
     % the arrows
     \draw[->,shorten >= 3pt] (a) -- node[label=above:$oldEnvelope$] {} (x);
@@ -701,6 +676,8 @@ In pictures, the \texttt{oldEnvelope} function:
 \end{frame}
 
 \begin{frame}[fragile] \frametitle{DIAGRAM 4.0 --- CACHING}
+\texttt{oldEnvelope(Diagram(Dual(ps), e, t)) ==? e}
+
   \begin{block}{Proof}
 \vspace{-.2cm}
   \begin{lstlisting}
@@ -808,8 +785,8 @@ A simpler example of a \texttt{Monoid} homomorphism.
       \node[fit= (za)  (d), shift={(-.8cm,0)} ] (ella) {};
       \node[fit= (zb) (z), shift={(.8cm,0)}  ] (ellb) {};
 
-      \node[below=of ella,anchor=north,shift={(0,-2.3cm)}] {\texttt{\uncover<2>{(List[A],++,List())}}};
-      \node[below=of ellb,anchor=north,shift={(0,-2.3cm)}] {\texttt{\uncover<2>{(Int,+,0)}}};
+      \node[below=of ella,anchor=north,shift={(0,-2.3cm)}] {\texttt{\uncover<2>{(List[A], ++, List())}}};
+      \node[below=of ellb,anchor=north,shift={(0,-2.3cm)}] {\texttt{\uncover<2>{(Int, +, 0)}}};
     \end{pgfonlayer}
     \end{tikzpicture}
   \end{adjustbox}
@@ -833,6 +810,9 @@ A simpler example of a \texttt{Monoid} homomorphism.
     \bf
     \Huge{Questions?}
   \end{block}
+
+  Code \& slides: \href{https://github.com/paraseba/scaladores-may-2018-talk}{https://github.com/paraseba/scaladores-may-2018-talk}.
+
 \end{frame}
 
 \end{document}
