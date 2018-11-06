@@ -88,7 +88,7 @@
 \adjustboxset{cfbox=blue {\fboxrule} 3ex, center}
 
 
-\title[Monoids]{DESIGNING WITH MONOIDS}
+\title[Monoids]{DESIGNING WITH MONOIDS \hspace{0.6cm} (Part II)}
 \author{Sebastian Galkin}
 \institute[@paraseba]{\texttt{@paraseba} \\ \texttt{paraseba@gmail.com}}
 \date[Scaladores]{Scaladores - Nov 2018}
@@ -109,10 +109,17 @@
 
 \begin{frame}
   \titlepage
-  \vspace{1cm}
+  \vspace{0.3cm}
+  Part I: \href{https://github.com/paraseba/scaladores-may-2018-talk}{https://github.com/paraseba/scaladores-may-2018-talk}
+  \vspace{0.2cm}
   \begin{block}{}
     \centering
-    \large{Ask questions as we go.}
+    \large{Ask questions!}
+  \end{block}
+
+  \begin{block}{}
+    \centering
+    \large{We can go back and forth between slides.}
   \end{block}
 \end{frame}
 
@@ -138,6 +145,7 @@
 }
 
 \begin{frame}[fragile] \frametitle{PREREQUISITES}
+Find much more on the first part of this talk.
 
   \begin{block}{Semigroup and Monoid}
   \begin{lstlisting}
@@ -149,17 +157,10 @@ trait Semigroup[M] {
 trait Monoid[M] extends Semigroup[M] {
   def ~\alert{zero}~: M
 }
-
-object SemigroupSyntax {
-  final class SemigroupOps[M:Semigroup](val self: M) {
-    def ~\alert{|+|}~(other: => M): M =
-      Semigroup[M].append(self, other)
-  }
   \end{lstlisting}
+  \vspace{-0.4cm}
   \end{block}
-\end{frame}
 
-\begin{frame}[fragile] \frametitle{PREREQUISITES}
   \begin{block}{The Laws}
       \begin{itemize}
         \tt
@@ -167,10 +168,24 @@ object SemigroupSyntax {
         \item a |+| zero === zero |+| a === a
       \end{itemize}
   \end{block}
+\end{frame}
+
+\begin{frame}[fragile] \frametitle{PREREQUISITES}
+  \begin{block}{Syntax}
+  \vspace{-0.3cm}
+  \begin{lstlisting}
+object SemigroupSyntax {
+  final class SemigroupOps[M:Semigroup](val self: M) {
+    def ~\alert{|+|}~(other: => M): M =
+      Semigroup[M].append(self, other)
+  }
+  \end{lstlisting}
+  \vspace{-0.5cm}
+  \end{block}
 
   \vspace{-0.2cm}
   \begin{block}{The Canonical Examples}
-
+  \vspace{-0.3cm}
   \begin{columns}
     \column{0.4\textwidth}
       \begin{itemize}
@@ -189,6 +204,7 @@ object SemigroupSyntax {
   \vspace{-0.2cm}
 
   \begin{block}{Using \texttt{Monoids}}
+  \vspace{-0.3cm}
   \begin{lstlisting}
 implicit val intSumMon: Monoid[Int] = ....
 implicit def listMon[A]: Monoid[List[A]] = ....
@@ -219,8 +235,11 @@ val five = mconcat(List(0,1,2,2))(intAddMonoid)
 
 \end{frame}
 
-\begin{frame}[fragile] \frametitle{DIAGRAM 1.0 --- A LIST OF PRIMITIVES}
+\begin{frame}[fragile] \frametitle{DIAGRAMS 1.0 --- A LIST OF PRIMITIVES}
   \begin{columns}
+    \column{0.35\textwidth}
+      \includegraphics[width=\textwidth]{factorization.png}
+
     \column{0.65\textwidth}
       \begin{block}{A Diagram as a List of Primitives}
       \begin{lstlisting}
@@ -239,16 +258,13 @@ final case class Ellipse(...) extends Prim
 final case class Diagram(
   primitives: List[Prim])
       \end{lstlisting}
+      \vspace{-.5cm}
       \end{block}
-
-    \column{0.35\textwidth}
-      \includegraphics[width=\textwidth]{factorization.png}
-
-      How do \texttt{Diagrams} combine or compose?
+  How do \texttt{Diagrams} combine or compose?
   \end{columns}
 \end{frame}
 
-\begin{frame}[fragile] \frametitle{DIAGRAM 1.0 --- A LIST OF PRIMITIVES}
+\begin{frame}[fragile] \frametitle{DIAGRAMS 1.0 --- A LIST OF PRIMITIVES}
 Diagrams compose by drawing them on top of each other.
   \begin{block}{The Diagram Monoid}
   \begin{lstlisting}
@@ -267,27 +283,27 @@ object Diagram {
   \end{block}
 \end{frame}
 
-\begin{frame}[fragile] \frametitle{DIAGRAM 1.0 --- A LIST OF PRIMITIVES}
+\begin{frame}[fragile] \frametitle{DIAGRAMS 1.0 --- A LIST OF PRIMITIVES}
   \begin{block}{Helper for Wrapped Monoids}
   \begin{lstlisting}
-def wSemi[Out, ~\alert{In:Semigroup}~](un: Out => In,
-                             wr: In => Out): Semigroup[Out] = ~\pause~
-  new Semigroup[Out] {
-    def append(x:Out, y: => Out): Out = wr(un(x) |+| un(y))
-  } ~\pause~
-
 def wMon[Out, In:Monoid](un: Out => In,
-                         wr: In => Out): Monoid[Out] =
+                         wr: In => Out): Monoid[Out] = ~\pause~
   new Monoid[Out] {
     def append(x: Out, y: => Out) = wr(un(x) |+| un(y))
     def zero = wr(implicitly[Monoid[In]].zero)
+  }
+
+def wSemi[Out, ~\alert{In:Semigroup}~](un: Out => In,
+                             wr: In => Out): Semigroup[Out] =
+  new Semigroup[Out] {
+    def append(x:Out, y: => Out): Out = wr(un(x) |+| un(y))
   }
   \end{lstlisting}
   \end{block}
 Using the implicit \texttt{Monoid} instance.
 \end{frame}
 
-\begin{frame}[fragile] \frametitle{DIAGRAM 1.0 --- A LIST OF PRIMITIVES}
+\begin{frame}[fragile] \frametitle{DIAGRAMS 1.0 --- A LIST OF PRIMITIVES}
   \begin{block}{The Diagram Monoid}
   \begin{lstlisting}
 // remember the definition of Diagram
@@ -306,7 +322,7 @@ object Diagram {
   But we would want \alert{\texttt{d1 |+| d2} to draw \texttt{d1} on top.}
 \end{frame}
 
-\begin{frame}[fragile] \frametitle{DIAGRAM 1.0 --- A LIST OF PRIMITIVES}
+\begin{frame}[fragile] \frametitle{DIAGRAMS 1.0 --- A LIST OF PRIMITIVES}
   \begin{block}{Fixing the Order}
     \vspace{-0.2cm}
   \begin{lstlisting}
@@ -331,7 +347,7 @@ object Diagram {
 Look how expressive the type for \texttt{Diagram} is!
 \end{frame}
 
-\begin{frame}[fragile] \frametitle{DIAGRAM 2.0 --- BESIDE}
+\begin{frame}[fragile] \frametitle{DIAGRAMS 2.0 --- BESIDE}
 A different way to compose \texttt{Diagrams}.
 
   \begin{figure}
@@ -356,7 +372,7 @@ def beside(v: V2, d1: Diagram, d2: Diagram): Diagram = ???
   \end{block}
 \end{frame}
 
-\begin{frame}[fragile] \frametitle{DIAGRAM 2.0 --- BESIDE}
+\begin{frame}[fragile] \frametitle{DIAGRAMS 2.0 --- BESIDE}
   \begin{figure}
       \centering
       \adjustbox{}{
@@ -377,7 +393,7 @@ def envelopeP(p: Prim): Envelope = ...
   \end{block}
 \end{frame}
 
-\begin{frame} \frametitle{DIAGRAM 2.0 --- BESIDE}
+\begin{frame} \frametitle{DIAGRAMS 2.0 --- BESIDE}
   \begin{figure}
       \centering
       \adjustbox{}{
@@ -390,7 +406,7 @@ def envelopeP(p: Prim): Envelope = ...
 \end{frame}
 
 
-\begin{frame}[fragile] \frametitle{DIAGRAM 2.0 --- BESIDE}
+\begin{frame}[fragile] \frametitle{DIAGRAMS 2.0 --- BESIDE}
   \begin{block}{Reminder: Functions that return a \texttt{Semigroup}}
   \begin{lstlisting}
 implicit def funSemi[A, B:Semigroup]: Semigroup[A => B] =
@@ -407,7 +423,7 @@ implicit def funSemi[A, B:Semigroup]: Semigroup[A => B] =
   \texttt{final case class Envelope(f: V2 => Double)}
 \end{frame}
 
-\begin{frame}[fragile] \frametitle{DIAGRAM 2.0 --- BESIDE}
+\begin{frame}[fragile] \frametitle{DIAGRAMS 2.0 --- BESIDE}
   \begin{block}{A \texttt{Semigroup} for \texttt{Envelopes}}
   \begin{lstlisting}
 // libraries provide this type out of the box
@@ -428,7 +444,7 @@ val semiGroup: Semigroup[Envelope] = wSemi(_.f, Envelope(_))
   But we push for a \texttt{Monoid} for \texttt{Envelope}.
 \end{frame}
 
-\begin{frame}[fragile] \frametitle{DIAGRAM 2.0 --- BESIDE}
+\begin{frame}[fragile] \frametitle{DIAGRAMS 2.0 --- BESIDE}
   \begin{block}{Reminder: \texttt{Option Monoid}}
   \begin{lstlisting}
 // libraries provide this type out of the box
@@ -447,7 +463,7 @@ implicit def optionMon[A:Semigroup] = new Monoid[Option[A]] {
   \end{block}
 \end{frame}
 
-\begin{frame}[fragile] \frametitle{DIAGRAM 2.0 --- BESIDE}
+\begin{frame}[fragile] \frametitle{DIAGRAMS 2.0 --- BESIDE}
   \begin{block}{A \texttt{Monoid} for \texttt{Envelopes}}
   \begin{lstlisting}
 final case class Envelope(f: ~\alert{Option}~[V2 => Max[Double]])
@@ -459,7 +475,7 @@ val envMonoid: Monoid[Envelope] = wMon(_.f, Envelope(_))
 Again, full expressiveness for \texttt{Envelope} type!
 \end{frame}
 
-\begin{frame} \frametitle{DIAGRAM 2.0 --- BESIDE}
+\begin{frame} \frametitle{DIAGRAMS 2.0 --- BESIDE}
 Now we can write \texttt{beside}
   \begin{figure}
       \centering
@@ -476,7 +492,7 @@ Now we can write \texttt{beside}
   (Distance to the end of the square in the direction \texttt{-v})
 \end{frame}
 
-\begin{frame}[fragile] \frametitle{DIAGRAM 2.0 --- BESIDE}
+\begin{frame}[fragile] \frametitle{DIAGRAMS 2.0 --- BESIDE}
   \begin{block}{\texttt{beside} Is Just Composition of Translated Diagrams}
   \begin{lstlisting}
 def beside(v: V2, d1: Diagram, d2: Diagram): Diagram =
@@ -499,7 +515,7 @@ def translate(v: V2, d: Diagram): Diagram =
   \end{block}
 \end{frame}
 
-\begin{frame} \frametitle{DIAGRAM 3.0 --- TRACES}
+\begin{frame} \frametitle{DIAGRAMS 3.0 --- TRACES}
 How to draw a ray between diagrams?
 
   \begin{figure}
@@ -513,7 +529,7 @@ How to draw a ray between diagrams?
 Envelopes clearly don't work.
 \end{frame}
 
-\begin{frame}[fragile] \frametitle{DIAGRAM 3.0 --- TRACES}
+\begin{frame}[fragile] \frametitle{DIAGRAMS 3.0 --- TRACES}
   \begin{figure}
       \centering
       \adjustbox{}{
@@ -533,7 +549,7 @@ final case class Trace(f: P2 => V2 => Double)
   \end{block}
 \end{frame}
 
-\begin{frame}[fragile] \frametitle{DIAGRAM 3.0 --- TRACES}
+\begin{frame}[fragile] \frametitle{DIAGRAMS 3.0 --- TRACES}
   How do \texttt{Traces} compose?
 
   \begin{block}{A \texttt{Semigroup} for \texttt{Traces}}
@@ -554,7 +570,7 @@ val semiGroup: Semigroup[Trace] = wSemi(_.f, Trace(_))
   \end{block}
 \end{frame}
 
-\begin{frame}[fragile] \frametitle{DIAGRAM 3.0 --- TRACES}
+\begin{frame}[fragile] \frametitle{DIAGRAMS 3.0 --- TRACES}
   But we push for a \texttt{Monoid}, not just a \texttt{Semigroup}!
 
   \begin{block}{Which One Should We Use?}
@@ -568,7 +584,7 @@ Option[P2 =>        V2 => Min[Double]]
   \end{block}
 \end{frame}
 
-\begin{frame}[fragile] \frametitle{DIAGRAM 3.0 --- TRACES}
+\begin{frame}[fragile] \frametitle{DIAGRAMS 3.0 --- TRACES}
   \begin{block}{The \texttt{Trace Monoid}}
   \begin{lstlisting}
 final case class Trace(f: P2 => V2 => Option[Min[Double]])
@@ -589,7 +605,7 @@ Again, full expressiveness for \texttt{Trace} type!
 The process is simple: find the right \texttt{Monoid}, \texttt{mconcat} all primitives.
 \end{frame}
 
-\begin{frame}[fragile] \frametitle{DIAGRAM 4.0 --- CACHING}
+\begin{frame}[fragile] \frametitle{DIAGRAMS 4.0 --- CACHING}
   Computing \texttt{Envelopes} and \texttt{Traces} can become expensive.
 
   \begin{block}{Cached \texttt{Diagrams}}
@@ -613,7 +629,7 @@ object Diagram {
   \end{block}
 \end{frame}
 
-\begin{frame}[fragile] \frametitle{DIAGRAM 4.0 --- CACHING}
+\begin{frame}[fragile] \frametitle{DIAGRAMS 4.0 --- CACHING}
   The only way to create composite diagrams is to use \texttt{|+|}
 
   \begin{block}{Complex \texttt{Diagrams}}
@@ -635,7 +651,7 @@ oldEnvelope(Diagram(Dual(ps), e, t)) ==? e
 
 
 
-\begin{frame}[fragile] \frametitle{DIAGRAM 4.0 --- CACHING}
+\begin{frame}[fragile] \frametitle{DIAGRAMS 4.0 --- CACHING}
 In pictures, the \texttt{oldEnvelope} function:
 
 \begin{figure}
@@ -675,7 +691,7 @@ In pictures, the \texttt{oldEnvelope} function:
 \end{figure}
 \end{frame}
 
-\begin{frame}[fragile] \frametitle{DIAGRAM 4.0 --- CACHING}
+\begin{frame}[fragile] \frametitle{DIAGRAMS 4.0 --- CACHING}
 \texttt{oldEnvelope(Diagram(Dual(ps), e, t)) ==? e}
 
   \begin{block}{Proof}
@@ -699,7 +715,7 @@ oldEnvelope(Diagram(Dual(p2 ++ p1), e1 |+|~$_E$~ e2, t1 |+|~$_T$~ t2))
   \end{block}
 \end{frame}
 
-\begin{frame}[fragile] \frametitle{DIAGRAM 4.0 --- CACHING}
+\begin{frame}[fragile] \frametitle{DIAGRAMS 4.0 --- CACHING}
   As it turns out, \texttt{oldEnvelope} is a \texttt{Monoid} homomorphism.
 
 \begin{figure}
@@ -745,7 +761,7 @@ oldEnvelope(Diagram(Dual(p2 ++ p1), e1 |+|~$_E$~ e2, t1 |+|~$_T$~ t2))
 \end{figure}
 \end{frame}
 
-\begin{frame}[fragile] \frametitle{DIAGRAM 4.0 --- CACHING}
+\begin{frame}[fragile] \frametitle{DIAGRAMS 4.0 --- CACHING}
 A simpler example of a \texttt{Monoid} homomorphism.
 
 \begin{figure}
