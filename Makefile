@@ -61,7 +61,7 @@ coverage:
 	cd $(CODEDIR) && sbt coverage test coverageReport
 
 present1: $(SLIDESDIR1)/part1.pdf
-	@zathura --fork $(SLIDESDIR1)/part1.pdf
+	@pdfpc -d 35 $(SLIDESDIR1)/part1.pdf &
 
 present2: $(SLIDESDIR2)/part2.pdf
-	@zathura --fork $(SLIDESDIR2)/part2.pdf
+	@pdfpc -d 35 $(SLIDESDIR2)/part2.pdf &

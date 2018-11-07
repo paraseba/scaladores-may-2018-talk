@@ -286,8 +286,8 @@ object Diagram {
 \begin{frame}[fragile] \frametitle{DIAGRAMS 1.0 --- A LIST OF PRIMITIVES}
   \begin{block}{Helper for Wrapped Monoids}
   \begin{lstlisting}
-def wMon[Out, In:Monoid](un: Out => In,
-                         wr: In => Out): Monoid[Out] = ~\pause~
+def wMon[Out, ~\alert{In:Monoid}~](un: Out => In,
+                         wr: In => Out): Monoid[Out] =
   new Monoid[Out] {
     def append(x: Out, y: => Out) = wr(un(x) |+| un(y))
     def zero = wr(implicitly[Monoid[In]].zero)
@@ -335,7 +335,7 @@ implicit def dualMonoid[M:Monoid] = new Monoid[Dual[M]] {
     Dual(~\alert{b}~.undual |+| ~\alert{a}~.undual)
 } ~\pause~
 
-final case class Diagram(primitives: ~\alert{Dual[List[Prim]]}~)
+final case class Diagram(primitives: ~\alert{\fbox{Dual[List[Prim]]}}~)
 
 object Diagram {
   val diaMon: Monoid[Diagram] = wMon(_.primitives, Diagram(_))
@@ -355,7 +355,7 @@ A different way to compose \texttt{Diagrams}.
       \adjustbox{}{
         \includegraphics[width=0.25\textwidth]{beside.png}
       }
-      \caption{Monoids: Theme and Variations (Functional Perl)}
+      \caption{Monoids: Theme and Variations}
   \end{figure}
 
 \vspace{-0.5cm}
@@ -376,9 +376,9 @@ def beside(v: V2, d1: Diagram, d2: Diagram): Diagram = ???
   \begin{figure}
       \centering
       \adjustbox{}{
-        \includegraphics[width=0.4\textwidth]{envelope.png}
+        \includegraphics[width=0.35\textwidth]{envelope.png}
       }
-      \caption{Monoids: Theme and Variations (Functional Perl)}
+      \caption{Monoids: Theme and Variations}
   \end{figure}
 
   \vspace{-0.5cm}
@@ -390,7 +390,10 @@ final case class Envelope(f: V2 => Double)
 
 def envelopeP(p: Prim): Envelope = ...
   \end{lstlisting}
+  \vspace{-0.4cm}
   \end{block}
+
+  How do \texttt{Envelopes} compose?
 \end{frame}
 
 \begin{frame} \frametitle{DIAGRAMS 2.0 --- BESIDE}
@@ -399,7 +402,7 @@ def envelopeP(p: Prim): Envelope = ...
       \adjustbox{}{
         \includegraphics[width=0.5\textwidth]{composeenv.png}
       }
-      \caption{Monoids: Theme and Variations (Functional Perl)}
+      \caption{Monoids: Theme and Variations}
   \end{figure}
 
   \texttt{Envelopes} compose by taking the maximum distance in every direction.
@@ -466,7 +469,7 @@ implicit def optionMon[A:Semigroup] = new Monoid[Option[A]] {
 \begin{frame}[fragile] \frametitle{DIAGRAMS 2.0 --- BESIDE}
   \begin{block}{A \texttt{Monoid} for \texttt{Envelopes}}
   \begin{lstlisting}
-final case class Envelope(f: ~\alert{Option}~[V2 => Max[Double]])
+final case class Envelope(f: ~\fbox{\alert{Option}[V2 => Max[Double]]}~)
 
 val envMonoid: Monoid[Envelope] = wMon(_.f, Envelope(_))
   \end{lstlisting}
@@ -482,7 +485,7 @@ Now we can write \texttt{beside}
       \adjustbox{}{
         \includegraphics[width=0.3\textwidth]{beside.png}
       }
-      \caption{Monoids: Theme and Variations (Functional Perl)}
+      \caption{Monoids: Theme and Variations}
   \end{figure}
   \vspace{-.5cm}
   Translate the square in the direction \texttt{v} by:
@@ -495,6 +498,13 @@ Now we can write \texttt{beside}
 \begin{frame}[fragile] \frametitle{DIAGRAMS 2.0 --- BESIDE}
   \begin{block}{\texttt{beside} Is Just Composition of Translated Diagrams}
   \begin{lstlisting}
+// Monoid magic
+def envelope(d: Diagram): Envelope =
+  mconcat(d.primitives.undual.map(envelopeP))
+
+def translate(v: V2, d: Diagram): Diagram =
+  Diagram(Dual(d.primitives.undual.map(translateP(v, _))))
+
 def beside(v: V2, d1: Diagram, d2: Diagram): Diagram =
   (envelope(d1).f, envelope(d2).f) match {
 
@@ -503,125 +513,28 @@ def beside(v: V2, d1: Diagram, d2: Diagram): Diagram =
 
     case _ => d1 |+| d2
   }
-
-// Monoid magic
-def envelope(d: Diagram): Envelope =
-  mconcat(d.primitives.undual.map(envelopeP))
-
-def translate(v: V2, d: Diagram): Diagram =
-  Diagram(Dual(d.primitives.undual.map(translateP(v, _))))
   \end{lstlisting}
   \vspace{-0.4cm}
   \end{block}
 \end{frame}
 
-\begin{frame} \frametitle{DIAGRAMS 3.0 --- TRACES}
-How to draw a ray between diagrams?
-
-  \begin{figure}
-      \centering
-      \adjustbox{}{
-        \includegraphics[width=0.9\textwidth]{tracevsenv.png}
-      }
-      \caption{Monoids: Theme and Variations (Functional Perl)}
-  \end{figure}
-
-Envelopes clearly don't work.
-\end{frame}
-
-\begin{frame}[fragile] \frametitle{DIAGRAMS 3.0 --- TRACES}
-  \begin{figure}
-      \centering
-      \adjustbox{}{
-        \includegraphics[width=0.3\textwidth]{trace.png}
-      }
-      \caption{Monoids: Theme and Variations (Functional Perl)}
-  \end{figure}
-
-  \begin{block}{A \texttt{Trace} Is (Again) a Function}
-  \begin{lstlisting}
-// points on the plane
-type P2 = (Double, Double) ~\pause~
-
-final case class Trace(f: P2 => V2 => Double)
-  \end{lstlisting}
-  \vspace{-0.4cm}
-  \end{block}
-\end{frame}
-
-\begin{frame}[fragile] \frametitle{DIAGRAMS 3.0 --- TRACES}
-  How do \texttt{Traces} compose?
-
-  \begin{block}{A \texttt{Semigroup} for \texttt{Traces}}
-  \begin{lstlisting}
-// libraries provide this type out of the box
-final case class Min[A](unmin: A)
-
-implicit def minSemi[A:Ordering] = new Semigroup[Min[A]] {
-  def append(a: Min[A], b: => Min[A]): Min[A] =
-    Min(Ordering[A].min(a.unmin, b.unmin))
-}
-
-// final case class Trace(f: P2 => V2 => Double)
-final case class Trace(f: P2 => V2 => ~\alert{Min}~[Double])
-
-val semiGroup: Semigroup[Trace] = wSemi(_.f, Trace(_))
-  \end{lstlisting}
-  \end{block}
-\end{frame}
-
-\begin{frame}[fragile] \frametitle{DIAGRAMS 3.0 --- TRACES}
-  But we push for a \texttt{Monoid}, not just a \texttt{Semigroup}!
-
-  \begin{block}{Which One Should We Use?}
-  \begin{lstlisting}
-// P2 => V2 => Min[Double]
-
-Option[P2 =>        V2 => Min[Double]]
-       P2 => Option[V2 => Min[Double]]
-       P2 =>        V2 => Option[Min[Double]]
-  \end{lstlisting}
-  \end{block}
-\end{frame}
-
-\begin{frame}[fragile] \frametitle{DIAGRAMS 3.0 --- TRACES}
-  \begin{block}{The \texttt{Trace Monoid}}
-  \begin{lstlisting}
-final case class Trace(f: P2 => V2 => Option[Min[Double]])
-
-def traceP(p: Prim): Trace = {...}
-
-object Trace{
-  implicit val traceMonoid: Monoid[Trace] = wMon(_.f, Trace(_))
-
-  def trace(d: Diagram): Trace =
-    mconcat(d.primitives.undual.map(traceP))
-}
-  \end{lstlisting}
-  \end{block}
-
-Again, full expressiveness for \texttt{Trace} type!
-
-The process is simple: find the right \texttt{Monoid}, \texttt{mconcat} all primitives.
-\end{frame}
-
-\begin{frame}[fragile] \frametitle{DIAGRAMS 4.0 --- CACHING}
-  Computing \texttt{Envelopes} and \texttt{Traces} can become expensive.
+\begin{frame}[fragile] \frametitle{DIAGRAMS 3.0 --- CACHING}
+  Computing \texttt{Envelopes} can become expensive.
 
   \begin{block}{Cached \texttt{Diagrams}}
   \begin{lstlisting}
 final case class Diagram private (
-  primitives: Dual[List[Prim]], env: Envelope, tr: Trace)
+  primitives: Dual[List[Prim]], env: Envelope)
 
 def envelope(d: Diagram): Envelope = d.env
-def trace(d: Diagram): Trace = d.tr
 
 def primDiag(p: Prim): Diagram =
-  Diagram(Dual(List(p)), envelopeP(p), traceP(p))
+  Diagram(Dual(List(p)), envelopeP(p))
 
 object Diagram {
   def mkDiag(ps: List[Prim]): Diagram = mconcat(ps.map(primDiag))
 
+  // using the tuple Monoid
   implicit val monoid: Monoid[Diagram] = wMon(..., ...)
 }
   \end{lstlisting}
@@ -629,7 +542,7 @@ object Diagram {
   \end{block}
 \end{frame}
 
-\begin{frame}[fragile] \frametitle{DIAGRAMS 4.0 --- CACHING}
+\begin{frame}[fragile] \frametitle{DIAGRAMS 3.0 --- CACHING}
   The only way to create composite diagrams is to use \texttt{|+|}
 
   \begin{block}{Complex \texttt{Diagrams}}
@@ -644,14 +557,12 @@ val d: Diagram = d1 |+| d2 |+| beside(v, d3, d4) |+| ...
 def oldEnvelope(d: Diagram): Envelope =
   mconcat(d.primitives.undual.map(envelopeP))
 
-oldEnvelope(Diagram(Dual(ps), e, t)) ==? e
+oldEnvelope(Diagram(Dual(ps), e)) ==? e
   \end{lstlisting}
   \end{block}
 \end{frame}
 
-
-
-\begin{frame}[fragile] \frametitle{DIAGRAMS 4.0 --- CACHING}
+\begin{frame}[fragile] \frametitle{DIAGRAMS 3.0 --- CACHING}
 In pictures, the \texttt{oldEnvelope} function:
 
 \begin{figure}
@@ -691,19 +602,19 @@ In pictures, the \texttt{oldEnvelope} function:
 \end{figure}
 \end{frame}
 
-\begin{frame}[fragile] \frametitle{DIAGRAMS 4.0 --- CACHING}
-\texttt{oldEnvelope(Diagram(Dual(ps), e, t)) ==? e}
+\begin{frame}[fragile] \frametitle{DIAGRAMS 3.0 --- CACHING}
+\texttt{oldEnvelope(Diagram(Dual(ps), e)) ==? e}
 
   \begin{block}{Proof}
 \vspace{-.2cm}
   \begin{lstlisting}
 oldEnvelope(zero~$_D$~)                                         ~\alert{$\longleftarrow$}~
-zero~$_D$~ = mkDiag(List()) = Diagram(Dual(List.empty), zero~$_E$~, zero~$_T$~)
+zero~$_D$~ = mkDiag(List()) = Diagram(Dual(List.empty), zero~$_E$~)
 oldEnvelope(mkDiag(List())) = mconcat(List.empty) = zero~$_E$~  ~\alert{$\longleftarrow$} \pause~
 
 
 oldEnvelope(d1 |+|~$_D$~ d2)  ~\alert{$\longleftarrow$}~
-oldEnvelope(Diagram(Dual(p2 ++ p1), e1 |+|~$_E$~ e2, t1 |+|~$_T$~ t2))
+oldEnvelope(Diagram(Dual(p2 ++ p1), e1 |+|~$_E$~ e2))
 = mconcat((p2 ++ p1).map(envelopeP))
 = mconcat(p2.map(envelopeP) ++ p1.map(envelopeP))
 = mconcat(p2.map(envelopeP)) |+|~$_E$~ mconcat(p1.map(envelopeP))
@@ -715,7 +626,7 @@ oldEnvelope(Diagram(Dual(p2 ++ p1), e1 |+|~$_E$~ e2, t1 |+|~$_T$~ t2))
   \end{block}
 \end{frame}
 
-\begin{frame}[fragile] \frametitle{DIAGRAMS 4.0 --- CACHING}
+\begin{frame}[fragile] \frametitle{DIAGRAMS 3.0 --- CACHING}
   As it turns out, \texttt{oldEnvelope} is a \texttt{Monoid} homomorphism.
 
 \begin{figure}
@@ -761,7 +672,7 @@ oldEnvelope(Diagram(Dual(p2 ++ p1), e1 |+|~$_E$~ e2, t1 |+|~$_T$~ t2))
 \end{figure}
 \end{frame}
 
-\begin{frame}[fragile] \frametitle{DIAGRAMS 4.0 --- CACHING}
+\begin{frame}[fragile] \frametitle{DIAGRAMS 3.0 --- CACHING}
 A simpler example of a \texttt{Monoid} homomorphism.
 
 \begin{figure}
@@ -777,17 +688,17 @@ A simpler example of a \texttt{Monoid} homomorphism.
     ]
 
     % set A
-    \node[setA,label=left:\texttt{\alt<2>{[]}{zero}}] (za) {};
+    \node[setA,label=left:\texttt{\alt<2->{[]}{zero}}] (za) {};
     \node[setA,below = of za, label=left:$d1$] (a) {};
     \node [setA,below = of a,label=left:$d2$] (b) {};
     \node [setA,below = of b,label=left:$d3$] (c) {};
-    \node [setA,below = of c,label=left:$d1$ \texttt{\alt<2>{++}{|+|}} $d3$] (d) {};
+    \node [setA,below = of c,label=left:$d1$ \texttt{\alt<2->{++}{|+|}} $d3$] (d) {};
 
     % % set B
-    \node[setB,right=3.5cm of za, label=right:\texttt{\alt<2>{0}{zero}}] (zb) {};
+    \node[setB,right=3.5cm of za, label=right:\texttt{\alt<2->{0}{zero}}] (zb) {};
     \node[setB, below = of zb, label=right:$e1$] (x) {};
     \node[setB, below = of x, label=right:$e2$] (y) {};
-    \node[setB, below = of y, label=right:$e1$ \texttt{\alt<2>{+}{|+|}} $e2$] (z) {};
+    \node[setB, below = of y, label=right:$e1$ \texttt{\alt<2->{+}{|+|}} $e2$] (z) {};
 
     % the arrows
     \draw[->,shorten >= 3pt, dashed, very thick] (za) to[out=45,in=140] node[label=above:$length$] {} (zb);
@@ -801,12 +712,36 @@ A simpler example of a \texttt{Monoid} homomorphism.
       \node[fit= (za)  (d), shift={(-.8cm,0)} ] (ella) {};
       \node[fit= (zb) (z), shift={(.8cm,0)}  ] (ellb) {};
 
-      \node[below=of ella,anchor=north,shift={(0,-2.3cm)}] {\texttt{\uncover<2>{(List[A], ++, List())}}};
-      \node[below=of ellb,anchor=north,shift={(0,-2.3cm)}] {\texttt{\uncover<2>{(Int, +, 0)}}};
+      \node[below=of ella,anchor=north,shift={(0,-2.3cm)}] {\texttt{\uncover<2->{(List[A], ++, List())}}};
+      \node[below=of ellb,anchor=north,shift={(0,-2.3cm)}] {\texttt{\uncover<3>{(Int, +, 0)}}};
     \end{pgfonlayer}
     \end{tikzpicture}
   \end{adjustbox}
 \end{figure}
+\end{frame}
+
+\begin{frame}[fragile] \frametitle{DIAGRAMS --- CURRENT MODEL}
+  \begin{block}{}
+  \begin{lstlisting}
+final case class Diagram private (
+  primitives: ~\alert{Dual}~[List[Prim]], env: Envelope)
+
+final case class Envelope(f: Option[V2 => ~\alert{Max}~[Double]])
+
+
+def mkDiag(ps: List[Prim]): Diagram
+
+def envelope(d: Diagram): Envelope
+
+def beside(v: V2, d1: Diagram, d2: Diagram): Diagram
+
+
+val diagramMonoid: ~\alert{Monoid[Diagram]}~
+
+val envelopeMonoid: ~\alert{Monoid[Envelope]}~
+  \end{lstlisting}
+  \vspace{-0.5cm}
+  \end{block}
 \end{frame}
 
 \begin{frame} \frametitle{CONCLUSIONS}
@@ -830,5 +765,96 @@ A simpler example of a \texttt{Monoid} homomorphism.
   Code \& slides: \href{https://github.com/paraseba/scaladores-may-2018-talk}{https://github.com/paraseba/scaladores-may-2018-talk}.
 
 \end{frame}
+
+\begin{frame} \frametitle{DIAGRAMS 4.0 --- TRACES}
+How to draw a ray between diagrams?
+
+  \begin{figure}
+      \centering
+      \adjustbox{}{
+        \includegraphics[width=0.9\textwidth]{tracevsenv.png}
+      }
+      \caption{Monoids: Theme and Variations}
+  \end{figure}
+
+Envelopes clearly don't work.
+\end{frame}
+
+\begin{frame}[fragile] \frametitle{DIAGRAMS 4.0 --- TRACES}
+  \begin{figure}
+      \centering
+      \adjustbox{}{
+        \includegraphics[width=0.3\textwidth]{trace.png}
+      }
+      \caption{Monoids: Theme and Variations}
+  \end{figure}
+
+  \begin{block}{A \texttt{Trace} Is (Again) a Function}
+  \begin{lstlisting}
+// points on the plane
+type P2 = (Double, Double) ~\pause~
+
+final case class Trace(f: P2 => V2 => Double)
+  \end{lstlisting}
+  \vspace{-0.4cm}
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile] \frametitle{DIAGRAMS 4.0 --- TRACES}
+  How do \texttt{Traces} compose?
+
+  \begin{block}{A \texttt{Semigroup} for \texttt{Traces}}
+  \begin{lstlisting}
+// libraries provide this type out of the box
+final case class Min[A](unmin: A)
+
+implicit def minSemi[A:Ordering] = new Semigroup[Min[A]] {
+  def append(a: Min[A], b: => Min[A]): Min[A] =
+    Min(Ordering[A].min(a.unmin, b.unmin))
+}
+
+// final case class Trace(f: P2 => V2 => Double)
+final case class Trace(f: P2 => V2 => ~\alert{Min}~[Double])
+
+val semiGroup: Semigroup[Trace] = wSemi(_.f, Trace(_))
+  \end{lstlisting}
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile] \frametitle{DIAGRAMS 4.0 --- TRACES}
+  But we push for a \texttt{Monoid}, not just a \texttt{Semigroup}!
+
+  \begin{block}{Which One Should We Use?}
+  \begin{lstlisting}
+// P2 => V2 => Min[Double]
+
+Option[P2 =>        V2 => Min[Double]]
+       P2 => Option[V2 => Min[Double]]
+       P2 =>        V2 => Option[Min[Double]]
+  \end{lstlisting}
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile] \frametitle{DIAGRAMS 4.0 --- TRACES}
+  \begin{block}{The \texttt{Trace Monoid}}
+  \begin{lstlisting}
+final case class Trace(f: P2 => V2 => Option[Min[Double]])
+
+def traceP(p: Prim): Trace = {...}
+
+object Trace{
+  implicit val traceMonoid: Monoid[Trace] = wMon(_.f, Trace(_))
+
+  def trace(d: Diagram): Trace =
+    mconcat(d.primitives.undual.map(traceP))
+}
+  \end{lstlisting}
+  \end{block}
+
+Again, full expressiveness for \texttt{Trace} type!
+
+The process is simple: find the right \texttt{Monoid}, \texttt{mconcat} all primitives.
+\end{frame}
+
 
 \end{document}
