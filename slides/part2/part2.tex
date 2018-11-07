@@ -164,8 +164,8 @@ trait Monoid[M] extends Semigroup[M] {
   \begin{block}{The Laws}
       \begin{itemize}
         \tt
-        \item (a |+| b) |+| c === a |+| (b |+| c)
-        \item a |+| zero === zero |+| a === a
+        \item append(a, append(b, c)) === append(append(a, b), c)
+        \item append(a, zero) === append(zero, a) === a
       \end{itemize}
   \end{block}
 \end{frame}
@@ -589,7 +589,7 @@ In pictures, the \texttt{oldEnvelope} function:
 
     % the arrows
     \draw[->,shorten >= 3pt] (a) -- node[label=above:$oldEnvelope$] {} (x);
-    \draw[->,shorten >= 3pt] (b) -- node[] {} (x);
+    \draw[->,shorten >= 3pt] (b) -- node[] {} (y);
     \draw[->,shorten >= 3pt] (c) -- node[] {} (y);
 
     % the boxes around the sets
@@ -645,7 +645,7 @@ oldEnvelope(Diagram(Dual(p2 ++ p1), e1 |+|~$_E$~ e2))
     \node[setA,below = of za, label=left:$d1$] (a) {};
     \node [setA,below = of a,label=left:$d2$] (b) {};
     \node [setA,below = of b,label=left:$d3$] (c) {};
-    \node [setA,below = of c,label=left:$d1$ \texttt{|+|} $d3$] (d) {};
+    \node [setA,below = of c,label=left:$d1$ \texttt{|+|} $d2$] (d) {};
 
     % % set B
     \node[setB,right=3.5cm of za, label=right:\texttt{zero}$_E$] (zb) {};
@@ -656,7 +656,7 @@ oldEnvelope(Diagram(Dual(p2 ++ p1), e1 |+|~$_E$~ e2))
     % the arrows
     \draw[->,shorten >= 3pt, dashed, very thick] (za) to[out=45,in=140] node[label=above:$oldEnvelope$] {} (zb);
     \draw[->,shorten >= 3pt] (a) -- node[] {} (x);
-    \draw[->,shorten >= 3pt] (b) -- node[] {} (x);
+    \draw[->,shorten >= 3pt] (b) -- node[] {} (y);
     \draw[->,shorten >= 3pt] (c) -- node[] {} (y);
     \draw[->,shorten >= 3pt, dashed, very thick] (d) to[out=-45,in=220] node[] {} (z);
 
@@ -692,7 +692,7 @@ A simpler example of a \texttt{Monoid} homomorphism.
     \node[setA,below = of za, label=left:$d1$] (a) {};
     \node [setA,below = of a,label=left:$d2$] (b) {};
     \node [setA,below = of b,label=left:$d3$] (c) {};
-    \node [setA,below = of c,label=left:$d1$ \texttt{\alt<2->{++}{|+|}} $d3$] (d) {};
+    \node [setA,below = of c,label=left:$d1$ \texttt{\alt<2->{++}{|+|}} $d2$] (d) {};
 
     % % set B
     \node[setB,right=3.5cm of za, label=right:\texttt{\alt<2->{0}{zero}}] (zb) {};
@@ -703,7 +703,7 @@ A simpler example of a \texttt{Monoid} homomorphism.
     % the arrows
     \draw[->,shorten >= 3pt, dashed, very thick] (za) to[out=45,in=140] node[label=above:$length$] {} (zb);
     \draw[->,shorten >= 3pt] (a) -- node[] {} (x);
-    \draw[->,shorten >= 3pt] (b) -- node[] {} (x);
+    \draw[->,shorten >= 3pt] (b) -- node[] {} (y);
     \draw[->,shorten >= 3pt] (c) -- node[] {} (y);
     \draw[->,shorten >= 3pt, dashed, very thick] (d) to[out=-45,in=220] node[] {} (z);
 
